@@ -1,15 +1,15 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { LoginPage } from "./pages";
-import { FluentProvider, webLightTheme } from "@fluentui/react-components";
+import { ThemeProvider } from "./context/theme-context";
 
 import "./reset.css";
 
 export const App = () => {
     return (
-        <FluentProvider theme={webLightTheme}>
+        <ThemeProvider>
             <LoginPage />
-        </FluentProvider>
+        </ThemeProvider>
     );
 };
 
