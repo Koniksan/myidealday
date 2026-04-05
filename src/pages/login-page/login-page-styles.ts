@@ -1,12 +1,6 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
 
 export const useLoginPageStyles = makeStyles({
-    title: {
-        fontSize: "44px",
-        lineHeight: "44px",
-        marginTop: 0,
-        marginBottom: "12px",
-    },
     subtitle: {
         marginBottom: "16px",
         fontSize: "18px",
@@ -34,6 +28,10 @@ export const useLoginPageStyles = makeStyles({
         width: "100%",
         fontSize: "14px",
         boxSizing: "border-box",
+        '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus': {
+            WebkitBoxShadow: `0 0 0px 1000px ${tokens.colorNeutralBackground1} inset`,
+            WebkitTextFillColor: tokens.colorNeutralForeground1,
+        },
     },
     passwordInput: {
         paddingRight: "40px",
@@ -49,11 +47,9 @@ export const useLoginPageStyles = makeStyles({
         fontSize: "14px",
         textDecoration: "none",
     },
-    themeToggle: {
-        position: "fixed",
-        top: "16px",
-        right: "16px",
-        fontSize: "20px",
+    loginError: {
+        color: tokens.colorPaletteRedForeground1,
+        textAlign: "center",
     },
     loginButton: {
         margin: "10px 0 0",

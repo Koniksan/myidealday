@@ -1,15 +1,24 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { LoginPage } from "./pages";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { LoginPage, UserPage } from "./pages";
 import { ThemeProvider } from "./context/theme-context";
+import { AuthProvider } from "./infrastructure/context/auth-context";
 
 import "./reset.css";
 
 export const App = () => {
     return (
-        <ThemeProvider>
-            <LoginPage />
-        </ThemeProvider>
+        <AuthProvider>
+            <ThemeProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<LoginPage />} />
+                        <Route path="/user" element={<UserPage />} />
+                    </Routes>
+                </BrowserRouter>
+            </ThemeProvider>
+        </AuthProvider>
     );
 };
 

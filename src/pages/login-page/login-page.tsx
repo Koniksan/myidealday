@@ -1,9 +1,12 @@
-import { Body1Strong, Button, Field, Input, Link, mergeClasses, Subtitle1, Tooltip } from "@fluentui/react-components";
-import { EyeOffRegular, EyeRegular, WeatherMoonRegular, WeatherSunnyRegular } from "@fluentui/react-icons";
+import { Body1Strong, Button, Caption1, Field, Input, Link, mergeClasses, Subtitle1 } from "@fluentui/react-components";
+import { EyeOffRegular, EyeRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLoginPageStyles } from "./login-page-styles";
 import { PageLayout } from "../../components";
-import { useTheme } from "../../context/theme-context";
+import { useAuth } from "../../infrastructure/context/auth-context";
+
+const CREDENTIALS = { email: "koniksan@gmail.com", password: "1111" };
 
 const validateIdentifier = (value: string) => {
     if (!value.trim()) return "Email or username is required.";
@@ -12,7 +15,6 @@ const validateIdentifier = (value: string) => {
 
 const validatePassword = (value: string) => {
     if (!value) return "Password is required.";
-    if (value.length < 6) return "Password must be at least 6 characters.";
     return null;
 };
 
@@ -22,8 +24,10 @@ export const LoginPage: React.FC = () => {
     const [password, setPassword] = useState("");
     const [identifierError, setIdentifierError] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [loginError, setLoginError] = useState<string | null>(null);
     const styles = useLoginPageStyles();
-    const { isDark, toggleTheme } = useTheme();
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,22 +35,18 @@ export const LoginPage: React.FC = () => {
         const pwErr = validatePassword(password);
         setIdentifierError(idErr);
         setPasswordError(pwErr);
-        if (!idErr && !pwErr) {
-            // proceed with login
+        if (idErr || pwErr) return;
+
+        if (identifier === CREDENTIALS.email && password === CREDENTIALS.password) {
+            login();
+            navigate("/user");
+        } else {
+            setLoginError("Invalid email or password.");
         }
     };
 
     return (
-        <PageLayout>
-            <Tooltip content={isDark ? "Switch to light mode" : "Switch to dark mode"} relationship="label">
-                <Button
-                    className={styles.themeToggle}
-                    appearance="subtle"
-                    icon={isDark ? <WeatherSunnyRegular /> : <WeatherMoonRegular />}
-                    onClick={toggleTheme}
-                />
-            </Tooltip>
-            <Subtitle1 as="h1" className={styles.title}> My ideal day</Subtitle1>
+        <PageLayout centered>
             <Body1Strong className={styles.subtitle}>Focus. Build. Repeat.</Body1Strong>
 
             <div className={styles.card}>
@@ -63,6 +63,7 @@ export const LoginPage: React.FC = () => {
                             value={identifier}
                             onChange={(e) => {
                                 setIdentifier(e.target.value);
+                                setLoginError(null);
                                 if (identifierError) setIdentifierError(validateIdentifier(e.target.value));
                             }}
                         />
@@ -82,6 +83,7 @@ export const LoginPage: React.FC = () => {
                             value={password}
                             onChange={(e) => {
                                 setPassword(e.target.value);
+                                setLoginError(null);
                                 if (passwordError) setPasswordError(validatePassword(e.target.value));
                             }}
                             contentAfter={
@@ -97,6 +99,9 @@ export const LoginPage: React.FC = () => {
                             }
                         />
                     </Field>
+                    {loginError && (
+                        <Caption1 className={styles.loginError}>{loginError}</Caption1>
+                    )}
                     <Button className={styles.loginButton} appearance="primary" type="submit">
                         Login
                     </Button>

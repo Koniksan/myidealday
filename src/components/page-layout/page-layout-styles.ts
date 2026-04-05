@@ -1,4 +1,4 @@
-import { makeStyles, tokens } from "@fluentui/react-components"
+import { makeStyles, tokens } from "@fluentui/react-components";
 
 export const useStyles = makeStyles({
     root: {
@@ -7,9 +7,10 @@ export const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        paddingTop: "56px",
+        fontFamily: 'Segoe UI, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif',
+    },
+    centered: {
         justifyContent: "center",
-        padding: "0 16px 48px",
-        fontFamily:
-            'Segoe UI, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif',
-    }
-})
+    },
+});
