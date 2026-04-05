@@ -1,9 +1,9 @@
 [x] - add fluentui components
-[] - add react-router
-[] - create logn page with email and password
-     [x] - add login form
-     [] - add email validation
-     [] - add password validation
-     [] - add login button
+[x] - add react-router
+[x] - create logn page with email and password
+     [x] - add login form1
+     [x] - add email validation
+     [x] - add password validation
+     [x] - add login button
      [] - add register link
-     [] - add forgot password link
+     [] - add forgot password link1
