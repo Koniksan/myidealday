@@ -1,6 +1,6 @@
 import { makeStyles } from "@fluentui/react-components";
 
-export const useDayListStyles = makeStyles({
+export const useDayCardListStyles = makeStyles({
     heading: {
         marginBottom: "24px",
     },

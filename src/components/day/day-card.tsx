@@ -1,16 +1,16 @@
 import { mergeClasses } from "@fluentui/react-components";
 import React from "react";
-import { useDayStyles } from "./day-styles";
+import { useDayCardStyles } from "./day-card-styles";
 
-export interface DayProps {
+export interface DayCardProps {
     day: number;
     shortName: string;
     isToday: boolean;
     isWeekend: boolean;
 }
 
-export const Day: React.FC<DayProps> = ({ day, shortName, isToday, isWeekend }) => {
-    const styles = useDayStyles();
+export const DayCard: React.FC<DayCardProps> = ({ day, shortName, isToday, isWeekend }) => {
+    const styles = useDayCardStyles();
 
     return (
         <div

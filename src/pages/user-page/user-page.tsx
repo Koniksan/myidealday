@@ -1,5 +1,5 @@
 import React from "react";
-import { DayList, PageLayout } from "../../components";
+import { DayCardList, PageLayout } from "../../components";
 import { useUserPageStyles } from "./user-page-styles";
 
 export const UserPage: React.FC = () => {
@@ -8,7 +8,7 @@ export const UserPage: React.FC = () => {
     return (
         <PageLayout>
             <div className={styles.root}>
-                <DayList />
+                <DayCardList />
             </div>
         </PageLayout>
     );

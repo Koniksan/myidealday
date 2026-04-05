@@ -1,6 +1,6 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
 
-export const useDayStyles = makeStyles({
+export const useDayCardStyles = makeStyles({
     card: {
         display: "flex",
         flexDirection: "column",

@@ -1,6 +1,6 @@
-import { DayProps } from "../day";
+import { DayCardProps } from "../day";
 
-export const useDayList = (): { days: DayProps[]; monthName: string; year: number } => {
+export const useDayCardList = (): { days: DayCardProps[]; monthName: string; year: number } => {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
@@ -8,7 +8,7 @@ export const useDayList = (): { days: DayProps[]; monthName: string; year: numbe
     const today = now.getDate();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const days: DayProps[] = Array.from({ length: daysInMonth }, (_, i) => {
+    const days: DayCardProps[] = Array.from({ length: daysInMonth }, (_, i) => {
         const date = new Date(year, month, i + 1);
         const dow = date.getDay();
         return {
