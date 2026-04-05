@@ -7,6 +7,6 @@ export const useDayCardListStyles = makeStyles({
     grid: {
         display: "grid",
         gridTemplateColumns: "repeat(7, 1fr)",
-        gap: "10px",
+        gap: "12px",
     },
 });
