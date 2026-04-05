@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { LoginPage, UserPage } from "./pages";
-import { ThemeProvider } from "./context/theme-context";
+import { ThemeProvider } from "./infrastructure/context/theme-context";
 import { AuthProvider } from "./infrastructure/context/auth-context";
 
 import "./reset.css";

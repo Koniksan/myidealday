@@ -1,7 +1,7 @@
 import { Button, Text, Tooltip } from "@fluentui/react-components";
 import { WeatherMoonRegular, WeatherSunnyRegular } from "@fluentui/react-icons";
 import React from "react";
-import { useTheme } from "../../context/theme-context";
+import { useTheme } from "../../infrastructure/context/theme-context";
 import { useAuth } from "../../infrastructure/context/auth-context";
 import { UserLogo } from "../user-logo";
 import { useHeaderStyles } from "./header-styles";
