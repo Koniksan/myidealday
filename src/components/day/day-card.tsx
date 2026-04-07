@@ -1,5 +1,5 @@
 import { Checkbox, Input, mergeClasses } from "@fluentui/react-components";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDayCardStyles } from "./day-card-styles";
 
 interface Task {
@@ -12,13 +12,24 @@ export interface DayCardProps {
     shortName: string;
     isToday: boolean;
     isWeekend: boolean;
+    planTasks?: string[];
 }
 
-export const DayCard: React.FC<DayCardProps> = ({ day, shortName, isToday, isWeekend }) => {
+export const DayCard: React.FC<DayCardProps> = ({ day, shortName, isToday, isWeekend, planTasks = [] }) => {
     const styles = useDayCardStyles();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [adding, setAdding] = useState(false);
     const [draft, setDraft] = useState("");
+    const syncedCountRef = useRef(0);
+
+    useEffect(() => {
+        const newCount = planTasks.length;
+        if (newCount > syncedCountRef.current) {
+            const incoming = planTasks.slice(syncedCountRef.current).map(label => ({ label, checked: false }));
+            setTasks(prev => [...prev, ...incoming]);
+            syncedCountRef.current = newCount;
+        }
+    }, [planTasks]);
 
     const progress = tasks.length > 0
         ? (tasks.filter(t => t.checked).length / tasks.length) * 100
