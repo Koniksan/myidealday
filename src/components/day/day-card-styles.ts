@@ -5,6 +5,8 @@ export const useDayCardStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
+        width: "180px",
+        flexShrink: 0,
         minHeight: "200px",
         borderRadius: "10px",
         background: tokens.colorNeutralBackground2,

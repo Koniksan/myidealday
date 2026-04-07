@@ -8,8 +8,8 @@ export const useDayCardListStyles = makeStyles({
         marginBottom: "24px",
     },
     grid: {
-        display: "grid",
-        gridTemplateColumns: "repeat(7, 1fr)",
+        display: "flex",
+        flexWrap: "wrap",
         gap: "12px",
     },
     dialogInputRow: {
