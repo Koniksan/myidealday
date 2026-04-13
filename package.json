@@ -12,6 +12,8 @@
     "license": "ISC",
     "dependencies": {
         "@fluentui/react-components": "9.73.5",
+        "@supabase/supabase-js": "^2.103.0",
+        "dotenv-webpack": "^9.0.0",
         "react": "19.2.4",
         "react-dom": "19.2.4",
         "react-router-dom": "^7.14.0"

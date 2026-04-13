@@ -1,36 +1,48 @@
+import { supabase } from "./supabase-client";
+
 export interface StoredTask {
+    id?: string;
     label: string;
     checked: boolean;
+    position: number;
 }
 
-type DayKey = string; // "YYYY-MM-DD"
-
-const STORAGE_KEY = "myidealday:tasks";
-
-const toDayKey = (year: number, month: number, day: number): DayKey =>
+const toDateString = (year: number, month: number, day: number): string =>
     `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-const readAll = (): Record<DayKey, StoredTask[]> => {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : {};
-    } catch {
-        return {};
-    }
+export const loadTasks = async (year: number, month: number, day: number): Promise<StoredTask[]> => {
+    const { data, error } = await supabase
+        .from("tasks")
+        .select("id, label, checked, position")
+        .eq("date", toDateString(year, month, day))
+        .order("position", { ascending: true });
+
+    if (error) throw error;
+    return data ?? [];
 };
 
-const writeAll = (data: Record<DayKey, StoredTask[]>): void => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+export const saveTask = async (
+    year: number,
+    month: number,
+    day: number,
+    task: Omit<StoredTask, "id">,
+): Promise<StoredTask> => {
+    const { data, error } = await supabase
+        .from("tasks")
+        .insert({ date: toDateString(year, month, day), ...task })
+        .select("id, label, checked, position")
+        .single();
+
+    if (error) throw error;
+    return data;
 };
 
-export const loadTasks = (year: number, month: number, day: number): StoredTask[] => {
-    const key = toDayKey(year, month, day);
-    return readAll()[key] ?? [];
+export const updateTask = async (id: string, patch: Partial<Pick<StoredTask, "checked" | "label">>): Promise<void> => {
+    const { error } = await supabase.from("tasks").update(patch).eq("id", id);
+    if (error) throw error;
 };
 
-export const saveTasks = (year: number, month: number, day: number, tasks: StoredTask[]): void => {
-    const key = toDayKey(year, month, day);
-    const data = readAll();
-    data[key] = tasks;
-    writeAll(data);
+export const deleteTask = async (id: string): Promise<void> => {
+    const { error } = await supabase.from("tasks").delete().eq("id", id);
+    if (error) throw error;
 };

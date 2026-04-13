@@ -12,6 +12,8 @@ export const useDayCardList = (): { days: DayCardProps[]; monthName: string; yea
         const date = new Date(year, month, i + 1);
         const dow = date.getDay();
         return {
+            year,
+            month,
             day: i + 1,
             shortName: date.toLocaleString("default", { weekday: "short" }),
             isToday: i + 1 === today,

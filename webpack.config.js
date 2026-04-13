@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = (env, argv) => {
   const isProd = argv.mode === "production";
@@ -47,6 +48,7 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "src/index.html"),
       }),
+      new Dotenv({ safe: true, allowEmptyValues: false }),
     ],
 
     devtool: isProd ? "source-map" : "eval-cheap-module-source-map",
