@@ -51,6 +51,12 @@ export const useLoginPageStyles = makeStyles({
         color: tokens.colorPaletteRedForeground1,
         textAlign: "center",
     },
+    register: {
+        textAlign: "center",
+        marginTop: "10px",
+        fontSize: "13px",
+        color: tokens.colorNeutralForeground3,
+    },
     loginButton: {
         margin: "10px 0 0",
         width: "fit-content",

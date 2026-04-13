@@ -1,4 +1,4 @@
-import { Body1Strong, Button, Caption1, Field, Input, Link, mergeClasses, Subtitle1 } from "@fluentui/react-components";
+import { Body1Strong, Button, Caption1, Field, Input, Link, mergeClasses, Text, Subtitle1 } from "@fluentui/react-components";
 import { EyeOffRegular, EyeRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -110,6 +110,13 @@ export const LoginPage: React.FC = () => {
                 <Link href="#" className={styles.forgot} onClick={(e) => e.preventDefault()}>
                     Forgot password?
                 </Link>
+
+                <Text className={styles.register}>
+                    {"Don't have an account? "}
+                    <Link href="#" onClick={(e) => e.preventDefault()}>
+                        Sign up
+                    </Link>
+                </Text>
             </div>
         </PageLayout>
 

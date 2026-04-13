@@ -5,5 +5,5 @@
      [x] - add email validation
      [x] - add password validation
      [x] - add login button
-     [] - add register link
-     [] - add forgot password link
+     [x] - add register link
+     [x] - add forgot password link
