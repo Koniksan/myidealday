@@ -6,8 +6,6 @@ import { useLoginPageStyles } from "./login-page-styles";
 import { PageLayout } from "../../components";
 import { useAuth } from "../../infrastructure/context/auth-context";
 
-const CREDENTIALS = { email: "koniksan@gmail.com", password: "1111" };
-
 const validateIdentifier = (value: string) => {
     if (!value.trim()) return "Email or username is required.";
     return null;
@@ -29,7 +27,7 @@ export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const idErr = validateIdentifier(identifier);
         const pwErr = validatePassword(password);
@@ -37,11 +35,11 @@ export const LoginPage: React.FC = () => {
         setPasswordError(pwErr);
         if (idErr || pwErr) return;
 
-        if (identifier === CREDENTIALS.email && password === CREDENTIALS.password) {
-            login();
-            navigate("/user");
+        const error = await login(identifier, password);
+        if (error) {
+            setLoginError(error);
         } else {
-            setLoginError("Invalid email or password.");
+            navigate("/user");
         }
     };
 

@@ -1,7 +1,7 @@
 import { Checkbox, Input, mergeClasses } from "@fluentui/react-components";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDayCardStyles } from "./day-card-styles";
-import { loadTasks, saveTask, updateTask, StoredTask } from "../../infrastructure/storages/day-storage";
+import { saveTask, updateTask, StoredTask } from "../../infrastructure/storages/day-storage";
 
 export interface DayCardProps {
     year: number;
@@ -10,33 +10,18 @@ export interface DayCardProps {
     shortName: string;
     isToday: boolean;
     isWeekend: boolean;
-    planTasks?: string[];
+    initialTasks?: StoredTask[];
 }
 
-export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, planTasks = [] }) => {
+export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, initialTasks = [] }) => {
     const styles = useDayCardStyles();
-    const [tasks, setTasks] = useState<StoredTask[]>([]);
+    const [tasks, setTasks] = useState<StoredTask[]>(initialTasks);
     const [adding, setAdding] = useState(false);
     const [draft, setDraft] = useState("");
-    const syncedCountRef = useRef(0);
 
     useEffect(() => {
-        loadTasks(year, month, day).then(setTasks).catch(console.error);
-    }, [year, month, day]);
-
-    useEffect(() => {
-        const newCount = planTasks.length;
-        if (newCount > syncedCountRef.current) {
-            const incoming = planTasks.slice(syncedCountRef.current);
-            incoming.forEach((label, i) => {
-                const position = (tasks.length + syncedCountRef.current) + i;
-                saveTask(year, month, day, { label, checked: false, position })
-                    .then(saved => setTasks(prev => [...prev, saved]))
-                    .catch(console.error);
-            });
-            syncedCountRef.current = newCount;
-        }
-    }, [planTasks]);
+        setTasks(initialTasks);
+    }, [initialTasks]);
 
     const progress = tasks.length > 0
         ? (tasks.filter(t => t.checked).length / tasks.length) * 100
@@ -111,7 +96,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     />
                 )}
 
-                <button className={styles.addButton} onClick={() => setAdding(true)}>
+                <button className={mergeClasses(styles.addButton, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
                     + add task
                 </button>
             </div>

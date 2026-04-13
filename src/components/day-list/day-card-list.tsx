@@ -11,7 +11,7 @@ import {
     TagGroup,
     Title2,
 } from "@fluentui/react-components";
-import { AddRegular, DismissRegular } from "@fluentui/react-icons";
+import { AddRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { DayCard } from "../day";
 import { useDayCardListStyles } from "./day-card-list-styles";
@@ -19,16 +19,33 @@ import { useDayCardList } from "./useDayCardList";
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
-    const { days, monthName, year } = useDayCardList();
+    const { days, monthName, year, planLabels, addPlanToAllDays, editPlan } = useDayCardList();
 
-    const [planTasks, setPlanTasks] = useState<string[]>([]);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [originalLabels, setOriginalLabels] = useState<string[]>([]);
     const [dialogItems, setDialogItems] = useState<string[]>([]);
     const [draft, setDraft] = useState("");
 
+    const openAddDialog = () => {
+        setIsEditMode(false);
+        setOriginalLabels([]);
+        setDialogItems([]);
+        setDraft("");
+        setDialogOpen(true);
+    };
+
+    const openEditDialog = () => {
+        setIsEditMode(true);
+        setOriginalLabels([...planLabels]);
+        setDialogItems([...planLabels]);
+        setDraft("");
+        setDialogOpen(true);
+    };
+
     const addDialogItem = () => {
         const label = draft.trim();
-        if (label) {
+        if (label && !dialogItems.includes(label)) {
             setDialogItems(prev => [...prev, label]);
             setDraft("");
         }
@@ -38,9 +55,15 @@ export const DayCardList: React.FC = () => {
         setDialogItems(prev => prev.filter((_, i) => i !== index));
 
     const applyPlan = () => {
-        if (dialogItems.length > 0) setPlanTasks(prev => [...prev, ...dialogItems]);
-        setDialogItems([]);
-        setDraft("");
+        if (isEditMode) {
+            const labelsToRemove = originalLabels.filter(l => !dialogItems.includes(l));
+            const labelsToAdd = dialogItems.filter(l => !originalLabels.includes(l));
+            if (labelsToRemove.length > 0 || labelsToAdd.length > 0) {
+                editPlan(labelsToAdd, labelsToRemove).catch(console.error);
+            }
+        } else {
+            if (dialogItems.length > 0) addPlanToAllDays(dialogItems).catch(console.error);
+        }
         setDialogOpen(false);
     };
 
@@ -50,28 +73,32 @@ export const DayCardList: React.FC = () => {
         setDialogOpen(false);
     };
 
+    const hasExistingPlan = planLabels.length > 0;
+
     return (
         <>
             <div className={styles.header}>
                 <Title2 as="h1">{monthName} {year}</Title2>
                 <Button
                     appearance="primary"
-                    icon={<AddRegular />}
-                    onClick={() => setDialogOpen(true)}
+                    icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}
+                    onClick={hasExistingPlan ? openEditDialog : openAddDialog}
                 >
-                    Add plan
+                    {hasExistingPlan ? "Edit plan" : "Add plan"}
                 </Button>
             </div>
 
             <div className={styles.grid}>
-                {days.map(({ day, shortName, isToday, isWeekend }) => (
+                {days.map(({ year, month, day, shortName, isToday, isWeekend, initialTasks }) => (
                     <DayCard
                         key={day}
+                        year={year}
+                        month={month}
                         day={day}
                         shortName={shortName}
                         isToday={isToday}
                         isWeekend={isWeekend}
-                        planTasks={planTasks}
+                        initialTasks={initialTasks}
                     />
                 ))}
             </div>
@@ -79,7 +106,7 @@ export const DayCardList: React.FC = () => {
             <Dialog open={dialogOpen} onOpenChange={(_, d) => !d.open && cancelDialog()}>
                 <DialogSurface>
                     <DialogBody>
-                        <DialogTitle>Add plan to all days</DialogTitle>
+                        <DialogTitle>{isEditMode ? "Edit plan" : "Add plan to all days"}</DialogTitle>
                         <DialogContent>
                             <div className={styles.dialogInputRow}>
                                 <Input
@@ -121,7 +148,7 @@ export const DayCardList: React.FC = () => {
                                 onClick={applyPlan}
                                 disabled={dialogItems.length === 0}
                             >
-                                Add to all days
+                                {isEditMode ? "Save changes" : "Add to all days"}
                             </Button>
                         </DialogActions>
                     </DialogBody>

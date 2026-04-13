@@ -14,9 +14,11 @@ export const useDayCardStyles = makeStyles({
         cursor: "default",
         overflow: "hidden",
         transition: "box-shadow 0.15s, border-color 0.15s",
+        "--add-btn-opacity": "0",
         ":hover": {
             boxShadow: tokens.shadow4,
             border: `1px solid ${tokens.colorNeutralStroke1}`,
+            "--add-btn-opacity": "1",
         },
     },
     today: {
@@ -81,7 +83,6 @@ export const useDayCardStyles = makeStyles({
     },
     addButton: {
         marginTop: "auto",
-        paddingTop: "6px",
         background: "none",
         border: "none",
         cursor: "pointer",
@@ -89,8 +90,13 @@ export const useDayCardStyles = makeStyles({
         fontSize: "11px",
         textAlign: "left",
         padding: "4px 2px",
+        opacity: "var(--add-btn-opacity, 0)" as unknown as number,
+        transition: "opacity 0.15s, color 0.15s",
         ":hover": {
             color: tokens.colorNeutralForeground1,
         },
+    },
+    addButtonVisible: {
+        opacity: 1,
     },
 });

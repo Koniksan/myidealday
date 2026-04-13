@@ -1,6 +1,7 @@
 const path = require("path");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const Dotenv = require("dotenv-webpack");
+require("dotenv").config();
 
 module.exports = (env, argv) => {
   const isProd = argv.mode === "production";
@@ -48,7 +49,10 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "src/index.html"),
       }),
-      new Dotenv({ safe: true, allowEmptyValues: false }),
+      new webpack.DefinePlugin({
+        "process.env.SUPABASE_URL": JSON.stringify(process.env.SUPABASE_URL),
+        "process.env.SUPABASE_ANON_KEY": JSON.stringify(process.env.SUPABASE_ANON_KEY),
+      }),
     ],
 
     devtool: isProd ? "source-map" : "eval-cheap-module-source-map",
