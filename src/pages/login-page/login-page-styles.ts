@@ -1,4 +1,5 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
+import { breakpoints } from "../../styles/breakpoints";
 
 export const useLoginPageStyles = makeStyles({
     subtitle: {
@@ -17,6 +18,11 @@ export const useLoginPageStyles = makeStyles({
             "0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.06)",
         padding: "34px",
         boxSizing: "border-box",
+        [breakpoints.mobile]: {
+            padding: "28px 20px",
+            borderRadius: "14px",
+            width: "calc(100% - 32px)",
+        },
     },
     form: {
         display: "flex",
@@ -26,7 +32,7 @@ export const useLoginPageStyles = makeStyles({
     input: {
         padding: '8px 5px',
         width: "100%",
-        fontSize: "14px",
+        fontSize: "16px",
         boxSizing: "border-box",
         '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus': {
             WebkitBoxShadow: `0 0 0px 1000px ${tokens.colorNeutralBackground1} inset`,
@@ -62,6 +68,11 @@ export const useLoginPageStyles = makeStyles({
         width: "fit-content",
         alignSelf: 'center',
         padding: "10px 60px",
+        minHeight: "44px",
+        [breakpoints.mobile]: {
+            width: "100%",
+            padding: "10px",
+        },
         background: tokens.colorPaletteGreenBackground3,
         border: "none",
         borderRadius: "8px",

@@ -27,7 +27,7 @@ module.exports = (env, argv) => {
             loader: "babel-loader",
             options: {
               presets: [
-                ["@babel/preset-env", { targets: "defaults" }],
+                ["@babel/preset-env", { targets: "defaults", modules: false }],
                 ["@babel/preset-react", { runtime: "automatic" }],
                 "@babel/preset-typescript",
               ],

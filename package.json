@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "My Ideal Day",
     "main": "index.tsx",
+    "sideEffects": ["*.css"],
     "scripts": {
         "start": "webpack serve --mode development",
         "build:dev": "webpack --mode development",
