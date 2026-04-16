@@ -26,6 +26,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const toggleTheme = () => setIsDark(prev => !prev);
     const theme: Theme = isDark ? webDarkTheme : webLightTheme;
 
+    useEffect(() => {
+        document.body.style.backgroundColor = theme.colorNeutralBackground1;
+    }, [theme]);
+
     return (
         <ThemeContext.Provider value={{ isDark, toggleTheme }}>
             <FluentProvider theme={theme}>
