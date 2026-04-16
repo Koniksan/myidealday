@@ -11,6 +11,7 @@ export const useDayCardListStyles = makeStyles({
         display: "flex",
         flexWrap: "wrap",
         gap: "12px",
+        justifyContent: "center",
     },
     dialogInputRow: {
         display: "flex",

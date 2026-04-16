@@ -111,7 +111,7 @@ export const LoginPage: React.FC = () => {
 
                 <Text className={styles.register}>
                     {"Don't have an account? "}
-                    <Link href="#" onClick={(e) => e.preventDefault()}>
+                    <Link onClick={() => navigate("/signup")}>
                         Sign up
                     </Link>
                 </Text>

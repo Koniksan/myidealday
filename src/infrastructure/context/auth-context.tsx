@@ -4,12 +4,14 @@ import { supabase } from "../storages/supabase-client";
 interface AuthContextValue {
     isLoggedIn: boolean;
     login: (email: string, password: string) => Promise<string | null>;
+    signUp: (email: string, password: string) => Promise<string | null>;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
     isLoggedIn: false,
     login: async () => null,
+    signUp: async () => null,
     logout: () => {},
 });
 
@@ -36,12 +38,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return null;
     };
 
+    const signUp = async (email: string, password: string): Promise<string | null> => {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) return error.message;
+        return null;
+    };
+
     const logout = () => {
         supabase.auth.signOut();
     };
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+        <AuthContext.Provider value={{ isLoggedIn, login, signUp, logout }}>
             {children}
         </AuthContext.Provider>
     );

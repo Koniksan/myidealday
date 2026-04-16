@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { LoginPage, UserPage } from "./pages";
+import { LoginPage, SignUpPage, UserPage } from "./pages";
 import { ThemeProvider } from "./infrastructure/context/theme-context";
 import { AuthProvider } from "./infrastructure/context/auth-context";
 
@@ -14,6 +14,7 @@ export const App = () => {
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<LoginPage />} />
+                        <Route path="/signup" element={<SignUpPage />} />
                         <Route path="/user" element={<UserPage />} />
                     </Routes>
                 </BrowserRouter>
