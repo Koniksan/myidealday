@@ -6,8 +6,7 @@ export const useDayCardStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
-        width: "180px",
-        flexShrink: 0,
+        width: "100%",
         minHeight: "200px",
         borderRadius: "10px",
         background: tokens.colorNeutralBackground2,
@@ -23,6 +22,7 @@ export const useDayCardStyles = makeStyles({
         },
         [breakpoints.mobile]: {
             width: "82vw",
+            flexShrink: 0,
             minHeight: "340px",
             scrollSnapAlign: "center",
         },

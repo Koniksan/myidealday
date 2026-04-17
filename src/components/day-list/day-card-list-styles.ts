@@ -12,11 +12,11 @@ export const useDayCardListStyles = makeStyles({
         },
     },
     grid: {
-        display: "flex",
-        flexWrap: "wrap",
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
         gap: "12px",
-        justifyContent: "center",
         [breakpoints.mobile]: {
+            display: "flex",
             flexWrap: "nowrap",
             overflowX: "auto",
             scrollSnapType: "x mandatory",
