@@ -27,38 +27,4 @@ export const useDayCardListStyles = makeStyles({
             "::-webkit-scrollbar": { display: "none" },
         },
     },
-    dialogSurface: {
-        [breakpoints.mobile]: {
-            width: "calc(100% - 32px)",
-            maxWidth: "none",
-            margin: "0 16px",
-            padding: "20px 16px 24px",
-            boxSizing: "border-box",
-        },
-    },
-    dialogInputRow: {
-        display: "flex",
-        gap: "8px",
-        alignItems: "center",
-        marginBottom: "12px",
-    },
-    dialogInput: {
-        flex: 1,
-        fontSize: "16px",
-    },
-    dialogActions: {
-        [breakpoints.mobile]: {
-            display: "flex",
-            flexDirection: "column-reverse",
-            gap: "8px",
-            "& > button": {
-                width: "100%",
-                justifyContent: "center",
-            },
-        },
-    },
-    tagGroup: {
-        flexWrap: "wrap",
-        gap: "6px",
-    },
 });
