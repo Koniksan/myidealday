@@ -104,7 +104,7 @@ export const DayCardList: React.FC = () => {
             </div>
 
             <Dialog open={dialogOpen} onOpenChange={(_, d) => !d.open && cancelDialog()}>
-                <DialogSurface>
+                <DialogSurface className={styles.dialogSurface}>
                     <DialogBody>
                         <DialogTitle>{isEditMode ? "Edit plan" : "Add plan to all days"}</DialogTitle>
                         <DialogContent>
@@ -141,7 +141,7 @@ export const DayCardList: React.FC = () => {
                             )}
                         </DialogContent>
 
-                        <DialogActions>
+                        <DialogActions className={styles.dialogActions}>
                             <Button appearance="secondary" onClick={cancelDialog}>Cancel</Button>
                             <Button
                                 appearance="primary"
