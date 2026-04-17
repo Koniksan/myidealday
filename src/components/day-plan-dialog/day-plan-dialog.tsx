@@ -37,6 +37,21 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = ({
     const [originalLabels] = useState<string[]>(planLabels);
     const [dialogItems, setDialogItems] = useState<string[]>(planLabels);
     const [draft, setDraft] = useState("");
+    const [confirmDiscard, setConfirmDiscard] = useState(false);
+
+    const hasChanges = isEditMode
+        ? JSON.stringify([...dialogItems].sort()) !== JSON.stringify([...originalLabels].sort()) || draft.trim().length > 0
+        : dialogItems.length > 0 || draft.trim().length > 0;
+
+    const handleOpenChange = (_: unknown, d: { open: boolean }) => {
+        if (!d.open) {
+            if (hasChanges) {
+                setConfirmDiscard(true);
+            } else {
+                onClose();
+            }
+        }
+    };
 
     const addItem = () => {
         const label = draft.trim();
@@ -63,56 +78,73 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = ({
     };
 
     return (
-        <Dialog open={open} onOpenChange={(_, d) => !d.open && onClose()}>
-            <DialogSurface className={styles.surface}>
-                <DialogBody>
-                    <DialogTitle>{isEditMode ? "Edit plan" : "Add plan to all days"}</DialogTitle>
-                    <DialogContent>
-                        <div className={styles.inputRow}>
-                            <Input
-                                className={styles.input}
-                                placeholder="Task name..."
-                                value={draft}
-                                onChange={(_, d) => setDraft(d.value)}
-                                onKeyDown={e => { if (e.key === "Enter") addItem(); }}
-                            />
+        <>
+            <Dialog open={open} onOpenChange={handleOpenChange}>
+                <DialogSurface className={styles.surface}>
+                    <DialogBody>
+                        <DialogTitle>{isEditMode ? "Edit plan" : "Add plan to all days"}</DialogTitle>
+                        <DialogContent>
+                            <div className={styles.inputRow}>
+                                <Input
+                                    className={styles.input}
+                                    placeholder="Task name..."
+                                    value={draft}
+                                    onChange={(_, d) => setDraft(d.value)}
+                                    onKeyDown={e => { if (e.key === "Enter") addItem(); }}
+                                />
+                                <Button
+                                    appearance="subtle"
+                                    icon={<AddRegular />}
+                                    onClick={addItem}
+                                    disabled={!draft.trim()}
+                                />
+                            </div>
+
+                            {dialogItems.length > 0 && (
+                                <TagGroup className={styles.tagGroup}>
+                                    {dialogItems.map((label, i) => (
+                                        <Tag
+                                            key={i}
+                                            dismissible
+                                            dismissIcon={<DismissRegular />}
+                                            value={label}
+                                            onClick={() => removeItem(i)}
+                                        >
+                                            {label}
+                                        </Tag>
+                                    ))}
+                                </TagGroup>
+                            )}
+                        </DialogContent>
+
+                        <DialogActions className={styles.actions}>
+                            <Button appearance="secondary" onClick={() => hasChanges ? setConfirmDiscard(true) : onClose()}>Cancel</Button>
                             <Button
-                                appearance="subtle"
-                                icon={<AddRegular />}
-                                onClick={addItem}
-                                disabled={!draft.trim()}
-                            />
-                        </div>
+                                appearance="primary"
+                                onClick={apply}
+                                disabled={dialogItems.length === 0}
+                            >
+                                {isEditMode ? "Save changes" : "Add to all days"}
+                            </Button>
+                        </DialogActions>
+                    </DialogBody>
+                </DialogSurface>
+            </Dialog>
 
-                        {dialogItems.length > 0 && (
-                            <TagGroup className={styles.tagGroup}>
-                                {dialogItems.map((label, i) => (
-                                    <Tag
-                                        key={i}
-                                        dismissible
-                                        dismissIcon={<DismissRegular />}
-                                        value={label}
-                                        onClick={() => removeItem(i)}
-                                    >
-                                        {label}
-                                    </Tag>
-                                ))}
-                            </TagGroup>
-                        )}
-                    </DialogContent>
-
-                    <DialogActions className={styles.actions}>
-                        <Button appearance="secondary" onClick={onClose}>Cancel</Button>
-                        <Button
-                            appearance="primary"
-                            onClick={apply}
-                            disabled={dialogItems.length === 0}
-                        >
-                            {isEditMode ? "Save changes" : "Add to all days"}
-                        </Button>
-                    </DialogActions>
-                </DialogBody>
-            </DialogSurface>
-        </Dialog>
+            <Dialog open={confirmDiscard} onOpenChange={(_, d) => !d.open && setConfirmDiscard(false)}>
+                <DialogSurface className={styles.confirmSurface}>
+                    <DialogBody>
+                        <DialogTitle>Discard changes?</DialogTitle>
+                        <DialogContent>
+                            You have unsaved changes. Are you sure you want to discard them?
+                        </DialogContent>
+                        <DialogActions className={styles.actions}>
+                            <Button appearance="secondary" onClick={() => setConfirmDiscard(false)}>Keep editing</Button>
+                            <Button appearance="primary" onClick={onClose}>Discard</Button>
+                        </DialogActions>
+                    </DialogBody>
+                </DialogSurface>
+            </Dialog>
+        </>
     );
 };
