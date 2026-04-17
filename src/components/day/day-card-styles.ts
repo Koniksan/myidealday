@@ -1,4 +1,5 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
+import { breakpoints } from "../../styles/breakpoints";
 
 export const useDayCardStyles = makeStyles({
     card: {
@@ -19,6 +20,11 @@ export const useDayCardStyles = makeStyles({
             boxShadow: tokens.shadow4,
             border: `1px solid ${tokens.colorNeutralStroke1}`,
             "--add-btn-opacity": "1",
+        },
+        [breakpoints.mobile]: {
+            width: "82vw",
+            minHeight: "340px",
+            scrollSnapAlign: "center",
         },
     },
     today: {

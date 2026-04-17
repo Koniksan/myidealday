@@ -19,7 +19,7 @@ import { useDayCardList } from "./useDayCardList";
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
-    const { days, monthName, year, planLabels, addPlanToAllDays, editPlan } = useDayCardList();
+    const { days, monthName, year, planLabels, gridRef, addPlanToAllDays, editPlan } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -88,7 +88,7 @@ export const DayCardList: React.FC = () => {
                 </Button>
             </div>
 
-            <div className={styles.grid}>
+            <div className={styles.grid} ref={gridRef}>
                 {days.map(({ year, month, day, shortName, isToday, isWeekend, initialTasks }) => (
                     <DayCard
                         key={day}

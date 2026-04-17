@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, RefObject } from "react";
 import { DayCardProps } from "../day";
 import {
     loadTasksForMonth,
@@ -12,6 +12,7 @@ interface UseDayCardListResult {
     monthName: string;
     year: number;
     planLabels: string[];
+    gridRef: RefObject<HTMLDivElement | null>;
     addPlanToAllDays: (labels: string[]) => Promise<void>;
     editPlan: (labelsToAdd: string[], labelsToRemove: string[]) => Promise<void>;
 }
@@ -24,6 +25,7 @@ export const useDayCardList = (): UseDayCardListResult => {
     const today = now.getDate();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+    const gridRef = useRef<HTMLDivElement>(null);
     const [daysByDate, setDaysByDate] = useState<Record<string, StoredDay>>({});
 
     useEffect(() => {
@@ -97,5 +99,13 @@ export const useDayCardList = (): UseDayCardListResult => {
         }
     };
 
-    return { days, monthName, year, planLabels, addPlanToAllDays, editPlan };
+    useEffect(() => {
+        if (window.innerWidth > 480 || !gridRef.current) return;
+        const todayIndex = days.findIndex(d => d.isToday);
+        if (todayIndex === -1) return;
+        const card = gridRef.current.children[todayIndex] as HTMLElement;
+        card?.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" });
+    }, []);
+
+    return { days, monthName, year, planLabels, gridRef, addPlanToAllDays, editPlan };
 };
