@@ -76,7 +76,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 {tasks.map(({ label, checked }, i) => (
                     <Checkbox
                         key={i}
-                        className={styles.checkboxItem}
+                        className={mergeClasses(styles.checkboxItem, isToday && styles.checkboxItemToday)}
                         label={label}
                         checked={checked}
                         onChange={() => toggle(i)}
@@ -96,7 +96,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     />
                 )}
 
-                <button className={mergeClasses(styles.addButton, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
+                <button className={mergeClasses(styles.addButton, isToday && styles.addButtonToday, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
                     + add task
                 </button>
             </div>

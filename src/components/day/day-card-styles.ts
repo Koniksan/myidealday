@@ -84,6 +84,14 @@ export const useDayCardStyles = makeStyles({
     checkboxItem: {
         fontSize: "12px",
     },
+    checkboxItemToday: {
+        "& .fui-Checkbox__label": {
+            color: tokens.colorNeutralForegroundOnBrand,
+        },
+        "& .fui-Checkbox__indicator": {
+            color: tokens.colorNeutralForegroundOnBrand,
+        },
+    },
     addInput: {
         width: "100%",
     },
@@ -100,6 +108,12 @@ export const useDayCardStyles = makeStyles({
         transition: "opacity 0.15s, color 0.15s",
         ":hover": {
             color: tokens.colorNeutralForeground1,
+        },
+    },
+    addButtonToday: {
+        color: tokens.colorNeutralForegroundOnBrand,
+        ":hover": {
+            color: tokens.colorNeutralForegroundOnBrand,
         },
     },
     addButtonVisible: {
