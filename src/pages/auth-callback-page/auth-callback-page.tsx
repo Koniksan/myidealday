@@ -17,14 +17,37 @@ export const AuthCallbackPage: React.FC = () => {
                     if (error) setError(error.message);
                     else navigate("/user", { replace: true });
                 });
-        } else {
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-                if (event === "SIGNED_IN" && session) {
-                    subscription.unsubscribe();
-                    navigate("/user", { replace: true });
-                }
-            });
+            return;
         }
+
+        const hash = new URLSearchParams(window.location.hash.slice(1));
+        const accessToken = hash.get("access_token");
+        const refreshToken = hash.get("refresh_token");
+
+        if (accessToken && refreshToken) {
+            supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
+                .then(({ error }) => {
+                    if (error) setError(error.message);
+                    else navigate("/user", { replace: true });
+                });
+            return;
+        }
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if ((event === "SIGNED_IN" || event === "USER_UPDATED") && session) {
+                subscription.unsubscribe();
+                navigate("/user", { replace: true });
+            }
+        });
+
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                subscription.unsubscribe();
+                navigate("/user", { replace: true });
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
     return (
