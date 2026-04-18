@@ -24,7 +24,6 @@ export const AuthCallbackPage: React.FC = () => {
         const accessToken = hash.get("access_token");
         const refreshToken = hash.get("refresh_token");
 
-        debugger;
         if (accessToken && refreshToken) {
             supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
                 .then(({ error }) => {

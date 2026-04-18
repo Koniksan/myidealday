@@ -19,7 +19,6 @@ export const DayCardList: React.FC = () => {
     };
 
     const hasExistingPlan = planLabels.length > 0;
-
     return (
         <>
             <div className={styles.header}>
