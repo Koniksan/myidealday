@@ -12,6 +12,7 @@ interface UseDayCardListResult {
     monthName: string;
     year: number;
     planLabels: string[];
+    loading: boolean;
     gridRef: RefObject<HTMLDivElement | null>;
     addPlanToAllDays: (labels: string[]) => Promise<void>;
     editPlan: (labelsToAdd: string[], labelsToRemove: string[]) => Promise<void>;
@@ -27,9 +28,14 @@ export const useDayCardList = (): UseDayCardListResult => {
 
     const gridRef = useRef<HTMLDivElement>(null);
     const [daysByDate, setDaysByDate] = useState<Record<string, StoredDay>>({});
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        loadTasksForMonth(year, month).then(setDaysByDate).catch(console.error);
+        setLoading(true);
+        loadTasksForMonth(year, month)
+            .then(setDaysByDate)
+            .catch(console.error)
+            .finally(() => setLoading(false));
     }, [year, month]);
 
     const toDateString = (day: number) =>
@@ -107,5 +113,5 @@ export const useDayCardList = (): UseDayCardListResult => {
         card?.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" });
     }, []);
 
-    return { days, monthName, year, planLabels, gridRef, addPlanToAllDays, editPlan };
+    return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan };
 };

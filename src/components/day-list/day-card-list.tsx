@@ -1,14 +1,14 @@
 import { Button, Title2 } from "@fluentui/react-components";
 import { AddRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
-import { DayCard } from "../day";
+import { DayCard, DayCardShimmer } from "../day";
 import { useDayCardListStyles } from "./day-card-list-styles";
 import { useDayCardList } from "./useDayCardList";
 import { DayPlanDialog } from "../day-plan-dialog";
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
-    const { days, monthName, year, planLabels, gridRef, addPlanToAllDays, editPlan } = useDayCardList();
+    const { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
@@ -33,18 +33,21 @@ export const DayCardList: React.FC = () => {
             </div>
 
             <div className={styles.grid} ref={gridRef}>
-                {days.map(({ year, month, day, shortName, isToday, isWeekend, initialTasks }) => (
-                    <DayCard
-                        key={day}
-                        year={year}
-                        month={month}
-                        day={day}
-                        shortName={shortName}
-                        isToday={isToday}
-                        isWeekend={isWeekend}
-                        initialTasks={initialTasks}
-                    />
-                ))}
+                {loading
+                    ? Array.from({ length: 30 }, (_, i) => <DayCardShimmer key={i} />)
+                    : days.map(({ year, month, day, shortName, isToday, isWeekend, initialTasks }) => (
+                        <DayCard
+                            key={day}
+                            year={year}
+                            month={month}
+                            day={day}
+                            shortName={shortName}
+                            isToday={isToday}
+                            isWeekend={isWeekend}
+                            initialTasks={initialTasks}
+                        />
+                    ))
+                }
             </div>
 
             {dialogOpen && (
