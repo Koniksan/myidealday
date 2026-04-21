@@ -8,7 +8,6 @@ export interface StoredTask {
 }
 
 export interface StoredDay {
-    id?: string;
     date: string;
     tasks: StoredTask[];
 }
@@ -21,15 +20,17 @@ export const loadTasksForMonth = async (year: number, month: number): Promise<Re
     const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
 
     const { data, error } = await supabase
-        .from("days")
-        .select("id, date, tasks(id, label, checked, position)")
+        .from("tasks")
+        .select("id, date, label, checked, position")
         .gte("date", from)
-        .lte("date", to);
+        .lte("date", to)
+        .order("position");
 
     if (error) throw error;
 
-    return (data ?? []).reduce<Record<string, StoredDay>>((acc, { id, date, tasks }) => {
-        acc[date] = { id, date, tasks: (tasks as StoredTask[]).sort((a, b) => a.position - b.position) };
+    return (data ?? []).reduce<Record<string, StoredDay>>((acc, { date, ...task }) => {
+        if (!acc[date]) acc[date] = { date, tasks: [] };
+        acc[date].tasks.push(task as StoredTask);
         return acc;
     }, {});
 };
@@ -41,31 +42,20 @@ export const bulkSaveTasksForMonth = async (
     positionOffset = 0,
 ): Promise<Record<string, StoredDay>> => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const dates = Array.from({ length: daysInMonth }, (_, i) => toDateString(year, month, i + 1));
-
-    const { data: dayRows, error: dayError } = await supabase
-        .from("days")
-        .upsert(dates.map(date => ({ date })), { onConflict: "date" })
-        .select("id, date");
-
-    if (dayError) throw dayError;
-
-    const taskRows = (dayRows ?? []).flatMap(({ id: day_id }) =>
-        labels.map((label, idx) => ({ day_id, label, checked: false, position: positionOffset + idx }))
+    const taskRows = Array.from({ length: daysInMonth }, (_, i) => toDateString(year, month, i + 1)).flatMap(date =>
+        labels.map((label, idx) => ({ date, label, checked: false, position: positionOffset + idx }))
     );
 
-    const { data: taskData, error: taskError } = await supabase
+    const { data, error } = await supabase
         .from("tasks")
         .insert(taskRows)
-        .select("id, label, checked, position, day_id");
+        .select("id, date, label, checked, position");
 
-    if (taskError) throw taskError;
+    if (error) throw error;
 
-    const dayIdToRow = Object.fromEntries((dayRows ?? []).map(row => [row.id, row]));
-    return (taskData ?? []).reduce<Record<string, StoredDay>>((acc, { day_id, ...task }) => {
-        const { id, date } = dayIdToRow[day_id];
-        if (!acc[date]) acc[date] = { id, date, tasks: [] };
-        acc[date].tasks.push(task);
+    return (data ?? []).reduce<Record<string, StoredDay>>((acc, { date, ...task }) => {
+        if (!acc[date]) acc[date] = { date, tasks: [] };
+        acc[date].tasks.push(task as StoredTask);
         return acc;
     }, {});
 };
@@ -78,17 +68,9 @@ export const saveTask = async (
 ): Promise<StoredTask> => {
     const date = toDateString(year, month, day);
 
-    const { data: dayRow, error: dayError } = await supabase
-        .from("days")
-        .upsert({ date }, { onConflict: "date" })
-        .select("id")
-        .single();
-
-    if (dayError) throw dayError;
-
     const { data, error } = await supabase
         .from("tasks")
-        .insert({ day_id: dayRow.id, ...task })
+        .insert({ date, ...task })
         .select("id, label, checked, position")
         .single();
 
@@ -110,17 +92,12 @@ export const deleteTasksByLabelForMonth = async (year: number, month: number, la
     const from = toDateString(year, month, 1);
     const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
 
-    const { data: dayRows, error: dayError } = await supabase
-        .from("days")
-        .select("id")
+    const { error } = await supabase
+        .from("tasks")
+        .delete()
         .gte("date", from)
-        .lte("date", to);
+        .lte("date", to)
+        .eq("label", label);
 
-    if (dayError) throw dayError;
-
-    const dayIds = (dayRows ?? []).map(d => d.id);
-    if (dayIds.length === 0) return;
-
-    const { error } = await supabase.from("tasks").delete().in("day_id", dayIds).eq("label", label);
     if (error) throw error;
 };

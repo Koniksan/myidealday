@@ -2,7 +2,7 @@
 
 create table if not exists tasks (
     id         uuid        primary key default gen_random_uuid(),
-    user_id    uuid        references auth.users(id) on delete cascade,
+    user_id    uuid        references auth.users(id) on delete cascade not null default auth.uid(),
     date       date        not null,
     label      text        not null,
     checked    boolean     not null default false,
