@@ -62,7 +62,7 @@ export const useDayCardList = (): UseDayCardListResult => {
     });
 
     const addPlanToAllDays = async (labels: string[]) => {
-        const newByDate = await bulkSaveTasksForMonth(year, month, labels);
+        const newByDate = await bulkSaveTasksForMonth(year, month, labels, 0, today);
         setDaysByDate(prev => {
             const updated = { ...prev };
             for (const [date, newDay] of Object.entries(newByDate)) {
@@ -77,20 +77,22 @@ export const useDayCardList = (): UseDayCardListResult => {
     };
 
     const editPlan = async (labelsToAdd: string[], labelsToRemove: string[]) => {
-        await Promise.all(labelsToRemove.map(label => deleteTasksByLabelForMonth(year, month, label)));
+        await Promise.all(labelsToRemove.map(label => deleteTasksByLabelForMonth(year, month, label, today)));
 
         if (labelsToRemove.length > 0) {
             setDaysByDate(prev => {
                 const updated = { ...prev };
                 for (const date of Object.keys(updated)) {
-                    updated[date] = { ...updated[date], tasks: updated[date].tasks.filter(t => !labelsToRemove.includes(t.label)) };
+                    if (date >= toDateString(today)) {
+                        updated[date] = { ...updated[date], tasks: updated[date].tasks.filter(t => !labelsToRemove.includes(t.label)) };
+                    }
                 }
                 return updated;
             });
         }
 
         if (labelsToAdd.length > 0) {
-            const newByDate = await bulkSaveTasksForMonth(year, month, labelsToAdd, planLabels.length);
+            const newByDate = await bulkSaveTasksForMonth(year, month, labelsToAdd, planLabels.length, today);
             setDaysByDate(prev => {
                 const updated = { ...prev };
                 for (const [date, newDay] of Object.entries(newByDate)) {

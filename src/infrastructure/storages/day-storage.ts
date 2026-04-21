@@ -40,11 +40,13 @@ export const bulkSaveTasksForMonth = async (
     month: number,
     labels: string[],
     positionOffset = 0,
+    fromDay = 1,
 ): Promise<Record<string, StoredDay>> => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const taskRows = Array.from({ length: daysInMonth }, (_, i) => toDateString(year, month, i + 1)).flatMap(date =>
-        labels.map((label, idx) => ({ date, label, checked: false, position: positionOffset + idx }))
-    );
+    const taskRows = Array.from({ length: daysInMonth }, (_, i) => i + 1)
+        .filter(d => d >= fromDay)
+        .map(d => toDateString(year, month, d))
+        .flatMap(date => labels.map((label, idx) => ({ date, label, checked: false, position: positionOffset + idx })));
 
     const { data, error } = await supabase
         .from("tasks")
@@ -88,8 +90,8 @@ export const deleteTask = async (id: string): Promise<void> => {
     if (error) throw error;
 };
 
-export const deleteTasksByLabelForMonth = async (year: number, month: number, label: string): Promise<void> => {
-    const from = toDateString(year, month, 1);
+export const deleteTasksByLabelForMonth = async (year: number, month: number, label: string, fromDay = 1): Promise<void> => {
+    const from = toDateString(year, month, fromDay);
     const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
 
     const { error } = await supabase
