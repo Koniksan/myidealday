@@ -8,18 +8,21 @@ import { useUserLogoStyles } from "./user-logo-styles";
 export const UserLogo: React.FC = () => {
     const styles = useUserLogoStyles();
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
 
     const handleLogout = () => {
         logout();
         navigate("/");
     };
 
+    const displayName = user?.user_metadata?.full_name ?? user?.email ?? undefined;
+    const imageUrl = user?.user_metadata?.avatar_url ?? undefined;
+
     return (
         <Menu>
             <MenuTrigger disableButtonEnhancement>
                 <button className={styles.avatarButton} aria-label="User menu">
-                    <Avatar name="koniksan" color="brand" size={32} />
+                    <Avatar name={displayName} image={imageUrl ? { src: imageUrl } : undefined} color="colorful" size={32} />
                 </button>
             </MenuTrigger>
             <MenuPopover>

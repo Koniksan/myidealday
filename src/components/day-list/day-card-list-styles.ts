@@ -11,6 +11,11 @@ export const useDayCardListStyles = makeStyles({
             padding: "0 20px",
         },
     },
+    actions: {
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+    },
     grid: {
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",

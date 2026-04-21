@@ -1,5 +1,5 @@
-import { Button, Title2 } from "@fluentui/react-components";
-import { AddRegular, EditRegular } from "@fluentui/react-icons";
+import { Button, Title2, Tooltip } from "@fluentui/react-components";
+import { AddRegular, CalendarTodayRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { DayCard, DayCardShimmer } from "../day";
 import { useDayCardListStyles } from "./day-card-list-styles";
@@ -23,13 +23,22 @@ export const DayCardList: React.FC = () => {
         <>
             <div className={styles.header}>
                 <Title2 as="h1">{monthName} {year}</Title2>
-                <Button
-                    appearance="primary"
-                    icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}
-                    onClick={() => openDialog(hasExistingPlan ? "edit" : "add")}
-                >
-                    {hasExistingPlan ? "Edit plan" : "Add plan"}
-                </Button>
+                <div className={styles.actions}>
+                    <Tooltip content="Scroll to today" relationship="label">
+                        <Button
+                            appearance="subtle"
+                            icon={<CalendarTodayRegular />}
+                            onClick={() => document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                        />
+                    </Tooltip>
+                    <Button
+                        appearance="primary"
+                        icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}
+                        onClick={() => openDialog(hasExistingPlan ? "edit" : "add")}
+                    >
+                        {hasExistingPlan ? "Edit plan" : "Add plan"}
+                    </Button>
+                </div>
             </div>
 
             <div className={styles.grid} ref={gridRef}>
