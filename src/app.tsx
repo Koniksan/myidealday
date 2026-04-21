@@ -4,10 +4,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { LoginPage, SignUpPage, UserPage, AuthCallbackPage, NotFoundPage } from "./pages";
 import { ThemeProvider } from "./infrastructure/context/theme-context";
 import { AuthProvider } from "./infrastructure/context/auth-context";
+import { AppUpdateDialog } from "./components/app-update-dialog/app-update-dialog";
+import { useAppUpdateCheck } from "./hooks/useAppUpdateCheck";
 
 import "./reset.css";
 
 export const App = () => {
+    const updateAvailable = useAppUpdateCheck();
+
     return (
         <AuthProvider>
             <ThemeProvider>
@@ -19,6 +23,7 @@ export const App = () => {
                         <Route path="/auth/callback" element={<AuthCallbackPage />} />
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
+                    <AppUpdateDialog open={updateAvailable} />
                 </BrowserRouter>
             </ThemeProvider>
         </AuthProvider>
