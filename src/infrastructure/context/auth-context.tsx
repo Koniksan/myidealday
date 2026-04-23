@@ -4,6 +4,7 @@ import { supabase } from "../storages/supabase-client";
 
 interface AuthContextValue {
     isLoggedIn: boolean;
+    isLoading: boolean;
     user: User | null;
     login: (email: string, password: string) => Promise<string | null>;
     signUp: (email: string, password: string) => Promise<string | null>;
@@ -12,6 +13,7 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue>({
     isLoggedIn: false,
+    isLoading: true,
     user: null,
     login: async () => null,
     signUp: async () => null,
@@ -22,12 +24,14 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data }) => {
             setIsLoggedIn(!!data.session);
             setUser(data.session?.user ?? null);
+            setIsLoading(false);
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -55,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, user, login, signUp, logout }}>
+        <AuthContext.Provider value={{ isLoggedIn, isLoading, user, login, signUp, logout }}>
             {children}
         </AuthContext.Provider>
     );

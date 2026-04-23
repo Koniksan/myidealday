@@ -3,22 +3,8 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 require("dotenv").config();
 
-class VersionJsonPlugin {
-  constructor(hash) { this.hash = hash; }
-  apply(compiler) {
-    compiler.hooks.emit.tap("VersionJsonPlugin", compilation => {
-      const content = JSON.stringify({ hash: this.hash });
-      compilation.assets["version.json"] = {
-        source: () => content,
-        size: () => content.length,
-      };
-    });
-  }
-}
-
 module.exports = (env, argv) => {
   const isProd = argv.mode === "production";
-  const buildHash = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
   return {
     entry: path.resolve(__dirname, "src/app.tsx"),
@@ -67,9 +53,7 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         "process.env.SUPABASE_URL": JSON.stringify(process.env.SUPABASE_URL),
         "process.env.SUPABASE_ANON_KEY": JSON.stringify(process.env.SUPABASE_ANON_KEY),
-        __BUILD_HASH__: JSON.stringify(buildHash),
       }),
-      new VersionJsonPlugin(buildHash),
     ],
 
     devtool: isProd ? "source-map" : "eval-cheap-module-source-map",
