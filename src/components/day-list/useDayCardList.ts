@@ -43,8 +43,21 @@ export const useDayCardList = (): UseDayCardListResult => {
         `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
     const planLabels = useMemo(() => {
-        const firstDay = Object.values(daysByDate).find(d => d.tasks.length > 0);
-        return firstDay ? firstDay.tasks.map(t => t.label) : [];
+        const todayStr = toDateString(today);
+        const activeDays = Object.values(daysByDate)
+            .filter(d => d.date >= todayStr && d.tasks.length > 0)
+            .sort((a, b) => a.date.localeCompare(b.date));
+
+        if (activeDays.length === 0) return [];
+
+        const universalLabels = new Set(
+            [...new Set(activeDays.flatMap(d => d.tasks.map(t => t.label)))]
+                .filter(label => activeDays.every(d => d.tasks.some(t => t.label === label)))
+        );
+
+        return activeDays[0].tasks
+            .filter(t => universalLabels.has(t.label))
+            .map(t => t.label);
     }, [daysByDate]);
 
     const days: DayCardProps[] = Array.from({ length: daysInMonth }, (_, i) => {
