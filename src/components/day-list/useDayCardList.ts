@@ -124,12 +124,9 @@ export const useDayCardList = (): UseDayCardListResult => {
     };
 
     useEffect(() => {
-        if (window.innerWidth > 480 || !gridRef.current) return;
-        const todayIndex = days.findIndex(d => d.isToday);
-        if (todayIndex === -1) return;
-        const card = gridRef.current.children[todayIndex] as HTMLElement;
-        card?.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" });
-    }, []);
+        if (loading) return;
+        document.querySelector("[data-today]")?.scrollIntoView({ behavior: "instant", block: "center", inline: "center" });
+    }, [loading]);
 
     return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan };
 };
