@@ -90,6 +90,22 @@ export const deleteTask = async (id: string): Promise<void> => {
     if (error) throw error;
 };
 
+export const reorderTasksByLabelsForMonth = async (
+    year: number,
+    month: number,
+    orderedLabels: string[],
+    fromDay = 1,
+): Promise<void> => {
+    const from = toDateString(year, month, fromDay);
+    const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
+
+    await Promise.all(
+        orderedLabels.map((label, position) =>
+            supabase.from("tasks").update({ position }).eq("label", label).gte("date", from).lte("date", to)
+        )
+    );
+};
+
 export const deleteTasksByLabelForMonth = async (year: number, month: number, label: string, fromDay = 1): Promise<void> => {
     const from = toDateString(year, month, fromDay);
     const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());

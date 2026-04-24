@@ -1,4 +1,4 @@
-import { makeStyles } from "@fluentui/react-components";
+import { makeStyles, tokens } from "@fluentui/react-components";
 import { breakpoints } from "../../styles/breakpoints";
 
 export const useDayPlanDialogStyles = makeStyles({
@@ -40,8 +40,29 @@ export const useDayPlanDialogStyles = makeStyles({
             boxSizing: "border-box",
         },
     },
-    tagGroup: {
-        flexWrap: "wrap",
-        gap: "6px",
+    list: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px",
+    },
+    listItem: {
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "6px 8px",
+        borderRadius: "6px",
+        background: tokens.colorNeutralBackground3,
+        cursor: "grab",
+        ":active": { cursor: "grabbing" },
+    },
+    dragHandle: {
+        display: "flex",
+        alignItems: "center",
+        color: "var(--colorNeutralForeground3)",
+        flexShrink: 0,
+    },
+    listItemLabel: {
+        flex: 1,
+        fontSize: "14px",
     },
 });

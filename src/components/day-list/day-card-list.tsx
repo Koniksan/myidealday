@@ -1,4 +1,4 @@
-import { Button, Title2, Tooltip } from "@fluentui/react-components";
+import { Button, Title2 } from "@fluentui/react-components";
 import { AddRegular, CalendarTodayRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { DayCard, DayCardShimmer } from "../day";
@@ -24,13 +24,13 @@ export const DayCardList: React.FC = () => {
             <div className={styles.header}>
                 <Title2 as="h1">{monthName} {year}</Title2>
                 <div className={styles.actions}>
-                    <Tooltip content="Scroll to today" relationship="label">
                         <Button
-                            appearance="subtle"
+                            appearance="secondary"
                             icon={<CalendarTodayRegular />}
                             onClick={() => document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                        />
-                    </Tooltip>
+                        >
+                            Today
+                        </Button>
                     <Button
                         appearance="primary"
                         icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}

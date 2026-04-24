@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
                     <Button
                         appearance="subtle"
                         icon={isDark ? <WeatherSunnyRegular /> : <WeatherMoonRegular />}
-                        onClick={toggleTheme}
+                        onClick={(e) => { (e.currentTarget as HTMLElement).blur(); toggleTheme(); }}
                     />
                 </Tooltip>
                 {isLoggedIn && <UserLogo />}

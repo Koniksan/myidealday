@@ -4,6 +4,7 @@ import {
     loadTasksForMonth,
     bulkSaveTasksForMonth,
     deleteTasksByLabelForMonth,
+    reorderTasksByLabelsForMonth,
     StoredDay,
 } from "../../infrastructure/storages/day-storage";
 
@@ -15,7 +16,7 @@ interface UseDayCardListResult {
     loading: boolean;
     gridRef: RefObject<HTMLDivElement | null>;
     addPlanToAllDays: (labels: string[]) => Promise<void>;
-    editPlan: (labelsToAdd: string[], labelsToRemove: string[]) => Promise<void>;
+    editPlan: (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => Promise<void>;
 }
 
 export const useDayCardList = (): UseDayCardListResult => {
@@ -76,7 +77,7 @@ export const useDayCardList = (): UseDayCardListResult => {
         });
     };
 
-    const editPlan = async (labelsToAdd: string[], labelsToRemove: string[]) => {
+    const editPlan = async (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => {
         await Promise.all(labelsToRemove.map(label => deleteTasksByLabelForMonth(year, month, label, today)));
 
         if (labelsToRemove.length > 0) {
@@ -105,6 +106,21 @@ export const useDayCardList = (): UseDayCardListResult => {
                 return updated;
             });
         }
+
+        await reorderTasksByLabelsForMonth(year, month, orderedLabels, today);
+        setDaysByDate(prev => {
+            const updated = { ...prev };
+            for (const date of Object.keys(updated)) {
+                if (date >= toDateString(today)) {
+                    const reordered = orderedLabels
+                        .map(label => updated[date].tasks.find(t => t.label === label))
+                        .filter((t): t is NonNullable<typeof t> => t !== undefined);
+                    const rest = updated[date].tasks.filter(t => !orderedLabels.includes(t.label));
+                    updated[date] = { ...updated[date], tasks: [...reordered, ...rest] };
+                }
+            }
+            return updated;
+        });
     };
 
     useEffect(() => {
