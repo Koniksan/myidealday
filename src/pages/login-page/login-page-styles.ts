@@ -1,5 +1,5 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
-import { breakpoints } from "../../styles/breakpoints";
+import { breakpoints } from "../../components/common/styles/breakpoints";
 
 export const useLoginPageStyles = makeStyles({
     subtitle: {

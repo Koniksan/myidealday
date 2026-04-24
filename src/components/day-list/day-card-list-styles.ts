@@ -1,5 +1,5 @@
 import { makeStyles } from "@fluentui/react-components";
-import { breakpoints } from "../../styles/breakpoints";
+import { breakpoints } from "../common/styles/breakpoints";
 
 export const useDayCardListStyles = makeStyles({
     header: {

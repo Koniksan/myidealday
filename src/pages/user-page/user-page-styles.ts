@@ -1,5 +1,5 @@
 import { makeStyles } from "@fluentui/react-components";
-import { breakpoints } from "../../styles/breakpoints";
+import { breakpoints } from "../../components/common/styles/breakpoints";
 
 export const useUserPageStyles = makeStyles({
     root: {

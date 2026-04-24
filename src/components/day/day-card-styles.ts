@@ -1,5 +1,5 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
-import { breakpoints } from "../../styles/breakpoints";
+import { breakpoints } from "../common/styles/breakpoints";
 
 export const useDayCardStyles = makeStyles({
     card: {

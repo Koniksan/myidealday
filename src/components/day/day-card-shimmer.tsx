@@ -1,7 +1,7 @@
 import { Skeleton, SkeletonItem } from "@fluentui/react-components";
 import { makeStyles, tokens } from "@fluentui/react-components";
 import React from "react";
-import { breakpoints } from "../../styles/breakpoints";
+import { breakpoints } from "../common/styles/breakpoints";
 
 const useStyles = makeStyles({
     card: {

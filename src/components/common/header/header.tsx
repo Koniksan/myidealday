@@ -1,9 +1,10 @@
-import { Button, Text, Tooltip } from "@fluentui/react-components";
+import { Button, Text } from "@fluentui/react-components";
+import { DesktopTooltip } from "..";
 import { WeatherMoonRegular, WeatherSunnyRegular } from "@fluentui/react-icons";
 import React from "react";
-import { useTheme } from "../../infrastructure/context/theme-context";
-import { useAuth } from "../../infrastructure/context/auth-context";
-import { UserLogo } from "../user-logo";
+import { useTheme } from "../../../infrastructure/context/theme-context";
+import { useAuth } from "../../../infrastructure/context/auth-context";
+import { UserLogo } from "../../user-logo";
 import { useHeaderStyles } from "./header-styles";
 import { Logo } from "./logo";
 
@@ -20,13 +21,13 @@ export const Header: React.FC = () => {
             </div>
 
             <div className={styles.actions}>
-                <Tooltip content={isDark ? "Switch to light mode" : "Switch to dark mode"} relationship="label">
+                <DesktopTooltip content={isDark ? "Switch to light mode" : "Switch to dark mode"} relationship="label">
                     <Button
                         appearance="subtle"
                         icon={isDark ? <WeatherSunnyRegular /> : <WeatherMoonRegular />}
                         onClick={(e) => { (e.currentTarget as HTMLElement).blur(); toggleTheme(); }}
                     />
-                </Tooltip>
+                </DesktopTooltip>
                 {isLoggedIn && <UserLogo />}
             </div>
         </header>
