@@ -6,6 +6,7 @@ interface UseDayPlanDialogProps {
     onClose: () => void;
     addPlanToAllDays: (labels: string[]) => Promise<void>;
     editPlan: (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => Promise<void>;
+    resetPlan: () => Promise<void>;
 }
 
 export const useDayPlanDialog = ({
@@ -14,6 +15,7 @@ export const useDayPlanDialog = ({
     onClose,
     addPlanToAllDays,
     editPlan,
+    resetPlan,
 }: UseDayPlanDialogProps) => {
     const isEditMode = mode === "edit";
 
@@ -21,6 +23,7 @@ export const useDayPlanDialog = ({
     const [items, setItems] = useState<string[]>(planLabels);
     const [draft, setDraft] = useState("");
     const [confirmDiscard, setConfirmDiscard] = useState(false);
+    const [confirmReset, setConfirmReset] = useState(false);
     const dragIndex = useRef<number | null>(null);
 
     const hasChanges = isEditMode
@@ -72,6 +75,12 @@ export const useDayPlanDialog = ({
         onClose();
     };
 
+    const reset = () => {
+        resetPlan().catch(console.error);
+        setConfirmReset(false);
+        onClose();
+    };
+
     return {
         isEditMode,
         items,
@@ -80,6 +89,8 @@ export const useDayPlanDialog = ({
         hasChanges,
         confirmDiscard,
         setConfirmDiscard,
+        confirmReset,
+        setConfirmReset,
         handleOpenChange,
         addItem,
         removeItem,
@@ -87,5 +98,6 @@ export const useDayPlanDialog = ({
         handleDragOver,
         handleDragEnd,
         apply,
+        reset,
     };
 };

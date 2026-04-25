@@ -22,6 +22,10 @@ export const useDayPlanDialogStyles = makeStyles({
         fontSize: "16px",
     },
     actions: {
+        "& > button": {
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+        },
         [breakpoints.mobile]: {
             display: "flex",
             flexDirection: "column-reverse",
@@ -29,7 +33,20 @@ export const useDayPlanDialogStyles = makeStyles({
             "& > button": {
                 width: "100%",
                 justifyContent: "center",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
             },
+        },
+    },
+    resetButton: {
+        color: tokens.colorPaletteRedForeground1,
+        marginRight: "auto",
+        ":hover": {
+            color: tokens.colorPaletteRedForeground1,
+            background: tokens.colorPaletteRedBackground1,
+        },
+        [breakpoints.mobile]: {
+            marginRight: 0,
         },
     },
     confirmSurface: {

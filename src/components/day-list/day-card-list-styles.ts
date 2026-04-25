@@ -15,6 +15,11 @@ export const useDayCardListStyles = makeStyles({
         display: "flex",
         alignItems: "center",
         gap: "8px",
+        flexShrink: 0,
+        "& > button": {
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+        },
     },
     grid: {
         display: "grid",

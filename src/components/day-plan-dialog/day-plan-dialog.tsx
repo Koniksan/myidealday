@@ -8,7 +8,7 @@ import {
     DialogTitle,
     Input,
 } from "@fluentui/react-components";
-import { AddRegular, ArrowSortFilled, DismissRegular } from "@fluentui/react-icons";
+import { AddRegular, ArrowSortFilled, DeleteRegular, DismissRegular } from "@fluentui/react-icons";
 import React from "react";
 import { useDayPlanDialogStyles } from "./day-plan-dialog-styles";
 import { useDayPlanDialog } from "./useDayPlanDialog";
@@ -20,6 +20,7 @@ interface DayPlanDialogProps {
     onClose: () => void;
     addPlanToAllDays: (labels: string[]) => Promise<void>;
     editPlan: (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => Promise<void>;
+    resetPlan: () => Promise<void>;
 }
 
 export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
@@ -32,6 +33,8 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
         hasChanges,
         confirmDiscard,
         setConfirmDiscard,
+        confirmReset,
+        setConfirmReset,
         handleOpenChange,
         addItem,
         removeItem,
@@ -39,6 +42,7 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
         handleDragOver,
         handleDragEnd,
         apply,
+        reset,
     } = useDayPlanDialog(props);
 
     return (
@@ -90,6 +94,16 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
                         </DialogContent>
 
                         <DialogActions className={styles.actions}>
+                            {isEditMode && (
+                                <Button
+                                    className={styles.resetButton}
+                                    appearance="subtle"
+                                    icon={<DeleteRegular />}
+                                    onClick={() => setConfirmReset(true)}
+                                >
+                                    Reset all tasks
+                                </Button>
+                            )}
                             <Button appearance="secondary" onClick={() => hasChanges ? setConfirmDiscard(true) : props.onClose()}>Cancel</Button>
                             <Button appearance="primary" onClick={apply} disabled={items.length === 0}>
                                 {isEditMode ? "Save changes" : "Add to all days"}
@@ -109,6 +123,21 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
                         <DialogActions className={styles.actions}>
                             <Button appearance="secondary" onClick={() => setConfirmDiscard(false)}>Keep editing</Button>
                             <Button appearance="primary" onClick={props.onClose}>Discard</Button>
+                        </DialogActions>
+                    </DialogBody>
+                </DialogSurface>
+            </Dialog>
+
+            <Dialog open={confirmReset} onOpenChange={(_, d) => !d.open && setConfirmReset(false)}>
+                <DialogSurface className={styles.confirmSurface}>
+                    <DialogBody>
+                        <DialogTitle>Reset all tasks?</DialogTitle>
+                        <DialogContent>
+                            This will permanently delete every task from today onwards. This cannot be undone.
+                        </DialogContent>
+                        <DialogActions className={styles.actions}>
+                            <Button appearance="secondary" onClick={() => setConfirmReset(false)}>Cancel</Button>
+                            <Button appearance="primary" onClick={reset}>Reset</Button>
                         </DialogActions>
                     </DialogBody>
                 </DialogSurface>

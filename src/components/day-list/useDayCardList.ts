@@ -4,6 +4,7 @@ import {
     loadTasksForMonth,
     bulkSaveTasksForMonth,
     deleteTasksByLabelForMonth,
+    deleteAllTasksFromDate,
     reorderTasksByLabelsForMonth,
     StoredDay,
 } from "../../infrastructure/storages/day-storage";
@@ -17,6 +18,7 @@ interface UseDayCardListResult {
     gridRef: RefObject<HTMLDivElement | null>;
     addPlanToAllDays: (labels: string[]) => Promise<void>;
     editPlan: (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => Promise<void>;
+    resetPlan: () => Promise<void>;
 }
 
 export const useDayCardList = (): UseDayCardListResult => {
@@ -136,10 +138,24 @@ export const useDayCardList = (): UseDayCardListResult => {
         });
     };
 
+    const resetPlan = async () => {
+        const todayStr = toDateString(today);
+        await deleteAllTasksFromDate(todayStr);
+        setDaysByDate(prev => {
+            const updated = { ...prev };
+            for (const date of Object.keys(updated)) {
+                if (date >= todayStr) {
+                    updated[date] = { ...updated[date], tasks: [] };
+                }
+            }
+            return updated;
+        });
+    };
+
     useEffect(() => {
         if (loading) return;
         document.querySelector("[data-today]")?.scrollIntoView({ behavior: "instant", block: "center", inline: "center" });
     }, [loading]);
 
-    return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan };
+    return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan };
 };

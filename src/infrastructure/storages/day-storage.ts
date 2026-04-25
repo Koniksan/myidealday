@@ -119,3 +119,12 @@ export const deleteTasksByLabelForMonth = async (year: number, month: number, la
 
     if (error) throw error;
 };
+
+export const deleteAllTasksFromDate = async (fromDate: string): Promise<void> => {
+    const { error } = await supabase
+        .from("tasks")
+        .delete()
+        .gte("date", fromDate);
+
+    if (error) throw error;
+};
