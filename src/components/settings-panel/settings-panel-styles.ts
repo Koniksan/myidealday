@@ -45,9 +45,8 @@ export const useSettingsPanelStyles = makeStyles({
         gap: "8px",
         justifyContent: "flex-end",
         [breakpoints.mobile]: {
-            flexDirection: "column-reverse",
             "& > button": {
-                width: "100%",
+                flex: 1,
                 justifyContent: "center",
             },
         },

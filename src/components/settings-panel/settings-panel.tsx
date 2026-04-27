@@ -42,7 +42,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) =
             open={open}
             onOpenChange={(_, d) => !d.open && cancel()}
             position={isMobile ? "bottom" : "end"}
-            size="small"
+            size={isMobile ? "full" : "small"}
         >
             <DrawerHeader>
                 <DrawerHeaderTitle
