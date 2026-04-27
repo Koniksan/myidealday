@@ -100,17 +100,15 @@ export const DayCardList: React.FC = () => {
                 }
             </div>
 
-            {dialogOpen && (
-                <DayPlanDialog
-                    open={dialogOpen}
-                    mode={dialogMode}
-                    planLabels={planLabels}
-                    onClose={() => setDialogOpen(false)}
-                    addPlanToAllDays={addPlanToAllDays}
-                    editPlan={editPlan}
-                    resetPlan={resetPlan}
-                />
-            )}
+            <DayPlanDialog
+                open={dialogOpen}
+                mode={dialogMode}
+                planLabels={planLabels}
+                onClose={() => setDialogOpen(false)}
+                addPlanToAllDays={addPlanToAllDays}
+                editPlan={editPlan}
+                resetPlan={resetPlan}
+            />
         </>
     );
 };

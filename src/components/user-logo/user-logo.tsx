@@ -39,9 +39,7 @@ export const UserLogo: React.FC = () => {
                     </MenuList>
                 </MenuPopover>
             </Menu>
-            {settingsOpen && (
-                <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-            )}
+            <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
         </>
     );
 };

@@ -2,51 +2,36 @@ import { makeStyles, tokens } from "@fluentui/react-components";
 import { breakpoints } from "../common/styles/breakpoints";
 
 export const useDayPlanDialogStyles = makeStyles({
-    surface: {
-        [breakpoints.mobile]: {
-            width: "calc(100% - 32px)",
-            maxWidth: "none",
-            margin: "auto 16px 25vh",
-            padding: "20px 16px 24px",
-            boxSizing: "border-box",
-        },
+    body: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "12px",
+        paddingTop: "8px",
+        paddingBottom: "8px",
     },
     inputRow: {
         display: "flex",
         gap: "8px",
         alignItems: "center",
-        marginBottom: "12px",
     },
     input: {
         flex: 1,
         fontSize: "16px",
     },
-    actions: {
+    footer: {
+        gap: "8px",
+        justifyContent: "flex-end",
         "& > button": {
             whiteSpace: "nowrap",
             flexShrink: 0,
         },
-        [breakpoints.mobile]: {
-            display: "flex",
-            flexDirection: "column-reverse",
-            gap: "8px",
-            "& > button": {
-                width: "100%",
-                justifyContent: "center",
-                whiteSpace: "nowrap",
-                flexShrink: 0,
-            },
-        },
     },
     resetButton: {
-        color: tokens.colorPaletteRedForeground1,
         marginRight: "auto",
+        color: tokens.colorPaletteRedForeground1,
         ":hover": {
             color: tokens.colorPaletteRedForeground1,
             background: tokens.colorPaletteRedBackground1,
-        },
-        [breakpoints.mobile]: {
-            marginRight: 0,
         },
     },
     confirmSurface: {
@@ -55,6 +40,12 @@ export const useDayPlanDialogStyles = makeStyles({
             maxWidth: "none",
             margin: "auto 32px 25vh",
             boxSizing: "border-box",
+        },
+    },
+    confirmActions: {
+        "& > button": {
+            whiteSpace: "nowrap",
+            flexShrink: 0,
         },
     },
     list: {

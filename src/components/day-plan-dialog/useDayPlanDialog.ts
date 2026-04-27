@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface UseDayPlanDialogProps {
+    open: boolean;
     mode: "add" | "edit";
     planLabels: string[];
     onClose: () => void;
@@ -10,6 +11,7 @@ interface UseDayPlanDialogProps {
 }
 
 export const useDayPlanDialog = ({
+    open,
     mode,
     planLabels,
     onClose,
@@ -19,15 +21,24 @@ export const useDayPlanDialog = ({
 }: UseDayPlanDialogProps) => {
     const isEditMode = mode === "edit";
 
-    const [originalLabels] = useState<string[]>(planLabels);
+    const originalLabels = useRef<string[]>(planLabels);
     const [items, setItems] = useState<string[]>(planLabels);
     const [draft, setDraft] = useState("");
     const [confirmDiscard, setConfirmDiscard] = useState(false);
     const [confirmReset, setConfirmReset] = useState(false);
     const dragIndex = useRef<number | null>(null);
 
+    useEffect(() => {
+        if (!open) return;
+        originalLabels.current = planLabels;
+        setItems(planLabels);
+        setDraft("");
+        setConfirmDiscard(false);
+        setConfirmReset(false);
+    }, [open]);
+
     const hasChanges = isEditMode
-        ? JSON.stringify(items) !== JSON.stringify(originalLabels) || draft.trim().length > 0
+        ? JSON.stringify(items) !== JSON.stringify(originalLabels.current) || draft.trim().length > 0
         : items.length > 0 || draft.trim().length > 0;
 
     const handleOpenChange = (_: unknown, d: { open: boolean }) => {
@@ -66,8 +77,8 @@ export const useDayPlanDialog = ({
 
     const apply = () => {
         if (isEditMode) {
-            const labelsToRemove = originalLabels.filter(l => !items.includes(l));
-            const labelsToAdd = items.filter(l => !originalLabels.includes(l));
+            const labelsToRemove = originalLabels.current.filter(l => !items.includes(l));
+            const labelsToAdd = items.filter(l => !originalLabels.current.includes(l));
             editPlan(labelsToAdd, labelsToRemove, items).catch(console.error);
         } else {
             if (items.length > 0) addPlanToAllDays(items).catch(console.error);

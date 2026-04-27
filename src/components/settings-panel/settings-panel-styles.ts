@@ -1,5 +1,4 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
-import { breakpoints } from "../common/styles/breakpoints";
 
 export const useSettingsPanelStyles = makeStyles({
     body: {
@@ -44,11 +43,5 @@ export const useSettingsPanelStyles = makeStyles({
     footer: {
         gap: "8px",
         justifyContent: "flex-end",
-        [breakpoints.mobile]: {
-            "& > button": {
-                flex: 1,
-                justifyContent: "center",
-            },
-        },
     },
 });

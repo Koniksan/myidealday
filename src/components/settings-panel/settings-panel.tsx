@@ -20,7 +20,6 @@ interface SettingsPanelProps {
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
     const styles = useSettingsPanelStyles();
-    const [isMobile] = useState(() => window.matchMedia("(max-width: 480px)").matches);
     const {
         displayName,
         setDisplayName,
@@ -41,8 +40,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) =
         <OverlayDrawer
             open={open}
             onOpenChange={(_, d) => !d.open && cancel()}
-            position={isMobile ? "bottom" : "end"}
-            size={isMobile ? "full" : "small"}
+            position="end"
+            size="small"
         >
             <DrawerHeader>
                 <DrawerHeaderTitle
