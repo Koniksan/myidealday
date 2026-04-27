@@ -31,7 +31,6 @@ interface DayPlanDialogProps {
 
 export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
     const styles = useDayPlanDialogStyles();
-    const [isMobile] = useState(() => window.matchMedia("(max-width: 480px)").matches);
     const {
         isEditMode,
         items,
@@ -57,8 +56,8 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
             <OverlayDrawer
                 open={props.open}
                 onOpenChange={handleOpenChange}
-                position={isMobile ? "bottom" : "end"}
-                size={isMobile ? "full" : "small"}
+                position="end"
+                size="small"
             >
                 <DrawerHeader>
                     <DrawerHeaderTitle
