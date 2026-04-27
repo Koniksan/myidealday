@@ -61,7 +61,13 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             {...(isToday ? { "data-today": "true" } : {})}
         >
             <div className={styles.progressTrack}>
-                <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+                <div
+                    className={styles.progressFill}
+                    style={{
+                        width: `${progress}%`,
+                        backgroundSize: progress > 0 ? `${(10000 / progress).toFixed(1)}% 100%` : undefined,
+                    }}
+                />
             </div>
 
             <div className={styles.header}>
