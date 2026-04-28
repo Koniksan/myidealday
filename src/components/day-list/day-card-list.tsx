@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DayCard, DayCardShimmer } from "../day";
 import { useDayCardListStyles } from "./day-card-list-styles";
 import { useDayCardList } from "./useDayCardList";
-import { DayPlanDialog } from "../day-plan-dialog";
+import { DayPlanPanel } from "../day-plan-panel";
 import { useHeaderActions } from "../../infrastructure/context/header-actions-context";
 
 export const DayCardList: React.FC = () => {
@@ -100,7 +100,7 @@ export const DayCardList: React.FC = () => {
                 }
             </div>
 
-            <DayPlanDialog
+            <DayPlanPanel
                 open={dialogOpen}
                 mode={dialogMode}
                 planLabels={planLabels}

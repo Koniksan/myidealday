@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-interface UseDayPlanDialogProps {
+interface UseDayPlanPanelProps {
     open: boolean;
     mode: "add" | "edit";
     planLabels: string[];
@@ -10,7 +10,7 @@ interface UseDayPlanDialogProps {
     resetPlan: () => Promise<void>;
 }
 
-export const useDayPlanDialog = ({
+export const useDayPlanPanel = ({
     open,
     mode,
     planLabels,
@@ -18,7 +18,7 @@ export const useDayPlanDialog = ({
     addPlanToAllDays,
     editPlan,
     resetPlan,
-}: UseDayPlanDialogProps) => {
+}: UseDayPlanPanelProps) => {
     const isEditMode = mode === "edit";
 
     const originalLabels = useRef<string[]>(planLabels);
@@ -26,6 +26,7 @@ export const useDayPlanDialog = ({
     const [draft, setDraft] = useState("");
     const [confirmDiscard, setConfirmDiscard] = useState(false);
     const [confirmReset, setConfirmReset] = useState(false);
+    const [saving, setSaving] = useState(false);
     const dragIndex = useRef<number | null>(null);
 
     useEffect(() => {
@@ -75,15 +76,23 @@ export const useDayPlanDialog = ({
 
     const handleDragEnd = () => { dragIndex.current = null; };
 
-    const apply = () => {
-        if (isEditMode) {
-            const labelsToRemove = originalLabels.current.filter(l => !items.includes(l));
-            const labelsToAdd = items.filter(l => !originalLabels.current.includes(l));
-            editPlan(labelsToAdd, labelsToRemove, items).catch(console.error);
-        } else {
-            if (items.length > 0) addPlanToAllDays(items).catch(console.error);
+    const apply = async () => {
+        if (saving) return;
+        setSaving(true);
+        try {
+            if (isEditMode) {
+                const labelsToRemove = originalLabels.current.filter(l => !items.includes(l));
+                const labelsToAdd = items.filter(l => !originalLabels.current.includes(l));
+                await editPlan(labelsToAdd, labelsToRemove, items);
+            } else {
+                if (items.length > 0) await addPlanToAllDays(items);
+            }
+            onClose();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setSaving(false);
         }
-        onClose();
     };
 
     const reset = () => {
@@ -98,6 +107,7 @@ export const useDayPlanDialog = ({
         draft,
         setDraft,
         hasChanges,
+        saving,
         confirmDiscard,
         setConfirmDiscard,
         confirmReset,

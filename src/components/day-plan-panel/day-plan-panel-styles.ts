@@ -1,7 +1,7 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
 import { breakpoints } from "../common/styles/breakpoints";
 
-export const useDayPlanDialogStyles = makeStyles({
+export const useDayPlanPanelStyles = makeStyles({
     body: {
         display: "flex",
         flexDirection: "column",

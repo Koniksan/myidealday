@@ -12,14 +12,15 @@ import {
     DrawerHeaderTitle,
     Input,
     OverlayDrawer,
+    Spinner,
 } from "@fluentui/react-components";
 import { AddRegular, ArrowSortFilled, DeleteRegular, DismissRegular } from "@fluentui/react-icons";
-import React, { useState } from "react";
+import React from "react";
 import { DesktopTooltip } from "../common";
-import { useDayPlanDialogStyles } from "./day-plan-dialog-styles";
-import { useDayPlanDialog } from "./useDayPlanDialog";
+import { useDayPlanPanelStyles } from "./day-plan-panel-styles";
+import { useDayPlanPanel } from "./useDayPlanPanel";
 
-interface DayPlanDialogProps {
+interface DayPlanPanelProps {
     open: boolean;
     mode: "add" | "edit";
     planLabels: string[];
@@ -29,14 +30,15 @@ interface DayPlanDialogProps {
     resetPlan: () => Promise<void>;
 }
 
-export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
-    const styles = useDayPlanDialogStyles();
+export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
+    const styles = useDayPlanPanelStyles();
     const {
         isEditMode,
         items,
         draft,
         setDraft,
         hasChanges,
+        saving,
         confirmDiscard,
         setConfirmDiscard,
         confirmReset,
@@ -49,7 +51,7 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
         handleDragEnd,
         apply,
         reset,
-    } = useDayPlanDialog(props);
+    } = useDayPlanPanel(props);
 
     return (
         <>
@@ -130,7 +132,12 @@ export const DayPlanDialog: React.FC<DayPlanDialogProps> = (props) => {
                         </DesktopTooltip>
                     )}
                     <Button appearance="secondary" onClick={() => hasChanges ? setConfirmDiscard(true) : props.onClose()}>Cancel</Button>
-                    <Button appearance="primary" onClick={apply} disabled={items.length === 0}>
+                    <Button
+                        appearance="primary"
+                        onClick={apply}
+                        disabled={items.length === 0 || saving}
+                        icon={saving ? <Spinner size="tiny" /> : undefined}
+                    >
                         {isEditMode ? "Save changes" : "Add to all days"}
                     </Button>
                 </DrawerFooter>
