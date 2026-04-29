@@ -1,5 +1,5 @@
 import { Button, Title2 } from "@fluentui/react-components";
-import { AddRegular, CalendarTodayRegular, EditRegular } from "@fluentui/react-icons";
+import { AddRegular, CalendarTodayRegular, ChevronLeftRegular, ChevronRightRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { DayCard, DayCardShimmer } from "../day";
 import { useDayCardListStyles } from "./day-card-list-styles";
@@ -9,7 +9,7 @@ import { useHeaderActions } from "../../infrastructure/context/header-actions-co
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
-    const { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan } = useDayCardList();
+    const { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
@@ -63,7 +63,11 @@ export const DayCardList: React.FC = () => {
     return (
         <>
             <div className={styles.header}>
-                <Title2 as="h1">{monthName} {year}</Title2>
+                <div className={styles.monthNav}>
+                    <Button appearance="subtle" icon={<ChevronLeftRegular />} onClick={prevMonth} />
+                    <Title2 as="h1">{monthName} {year}</Title2>
+                    <Button appearance="subtle" icon={<ChevronRightRegular />} onClick={nextMonth} />
+                </div>
                 <div className={styles.actions} ref={actionsRef}>
                         <Button
                             appearance="secondary"

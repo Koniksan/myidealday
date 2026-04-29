@@ -19,15 +19,37 @@ interface UseDayCardListResult {
     addPlanToAllDays: (labels: string[]) => Promise<void>;
     editPlan: (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => Promise<void>;
     resetPlan: () => Promise<void>;
+    prevMonth: () => void;
+    nextMonth: () => void;
 }
 
 export const useDayCardList = (): UseDayCardListResult => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const monthName = now.toLocaleString("default", { month: "long" });
-    const today = now.getDate();
+    const realToday = new Date();
+    const todayYear = realToday.getFullYear();
+    const todayMonth = realToday.getMonth();
+    const today = realToday.getDate();
+
+    const [selectedDate, setSelectedDate] = useState<Date>(() => {
+        const d = new Date();
+        d.setDate(1);
+        return d;
+    });
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const monthName = selectedDate.toLocaleString("default", { month: "long" });
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const prevMonth = () => setSelectedDate(d => {
+        const next = new Date(d);
+        next.setMonth(next.getMonth() - 1);
+        return next;
+    });
+
+    const nextMonth = () => setSelectedDate(d => {
+        const next = new Date(d);
+        next.setMonth(next.getMonth() + 1);
+        return next;
+    });
 
     const gridRef = useRef<HTMLDivElement>(null);
     const [daysByDate, setDaysByDate] = useState<Record<string, StoredDay>>({});
@@ -71,7 +93,7 @@ export const useDayCardList = (): UseDayCardListResult => {
             month,
             day,
             shortName: date.toLocaleString("default", { weekday: "short" }),
-            isToday: day === today,
+            isToday: year === todayYear && month === todayMonth && day === today,
             isWeekend: dow === 0 || dow === 6,
             initialTasks: daysByDate[toDateString(day)]?.tasks ?? [],
         };
@@ -157,5 +179,5 @@ export const useDayCardList = (): UseDayCardListResult => {
         document.querySelector("[data-today]")?.scrollIntoView({ behavior: "instant", block: "center", inline: "center" });
     }, [loading]);
 
-    return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan };
+    return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth };
 };

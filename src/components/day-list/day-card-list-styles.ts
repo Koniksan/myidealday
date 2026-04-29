@@ -11,6 +11,11 @@ export const useDayCardListStyles = makeStyles({
             padding: "0 20px",
         },
     },
+    monthNav: {
+        display: "flex",
+        alignItems: "center",
+        gap: "4px",
+    },
     actions: {
         display: "flex",
         alignItems: "center",
