@@ -19,6 +19,9 @@ export const useDayCardListStyles = makeStyles({
         pointerEvents: "none",
         marginBottom: "16px",
     },
+    monthNavAction: {
+        borderRadius: tokens.borderRadiusCircular,
+    },
     monthNavPill: {
         display: "flex",
         alignItems: "center",

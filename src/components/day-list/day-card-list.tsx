@@ -83,9 +83,9 @@ export const DayCardList: React.FC = () => {
 
             <div className={styles.monthNav}>
                 <div className={styles.monthNavPill}>
-                    <Button appearance="subtle" icon={<ChevronLeftRegular />} onClick={prevMonth} />
+                    <Button className={styles.monthNavAction} appearance="subtle" icon={<ChevronLeftRegular />} onClick={prevMonth} />
                     <Text weight="semibold" size={400}>{monthName} {year}</Text>
-                    <Button appearance="subtle" icon={<ChevronRightRegular />} onClick={nextMonth} />
+                    <Button className={styles.monthNavAction} appearance="subtle" icon={<ChevronRightRegular />} onClick={nextMonth} />
                 </div>
             </div>
 
