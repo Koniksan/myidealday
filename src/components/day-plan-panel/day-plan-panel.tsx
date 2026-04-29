@@ -135,7 +135,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                     <Button
                         appearance="primary"
                         onClick={apply}
-                        disabled={items.length === 0 || saving}
+                        disabled={!hasChanges || saving}
                         icon={saving ? <Spinner size="tiny" /> : undefined}
                     >
                         {isEditMode ? "Save changes" : "Add to all days"}

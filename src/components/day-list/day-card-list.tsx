@@ -9,7 +9,7 @@ import { useHeaderActions } from "../../infrastructure/context/header-actions-co
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
-    const { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth } = useDayCardList();
+    const { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
@@ -47,7 +47,7 @@ export const DayCardList: React.FC = () => {
                 label: "Today",
                 icon: <CalendarTodayRegular />,
                 appearance: "secondary",
-                onClick: () => document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center" }),
+                onClick: goToToday,
             },
             {
                 id: "edit-plan",
@@ -67,7 +67,7 @@ export const DayCardList: React.FC = () => {
                     <Button
                         appearance="secondary"
                         icon={<CalendarTodayRegular />}
-                        onClick={() => document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                        onClick={goToToday}
                     >
                         Today
                     </Button>

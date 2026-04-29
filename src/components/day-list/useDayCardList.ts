@@ -21,6 +21,7 @@ interface UseDayCardListResult {
     resetPlan: () => Promise<void>;
     prevMonth: () => void;
     nextMonth: () => void;
+    goToToday: () => void;
 }
 
 export const useDayCardList = (): UseDayCardListResult => {
@@ -50,6 +51,17 @@ export const useDayCardList = (): UseDayCardListResult => {
         next.setMonth(next.getMonth() + 1);
         return next;
     });
+
+    const goToToday = () => {
+        if (year === todayYear && month === todayMonth) {
+            document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        } else {
+            setSelectedDate(new Date(todayYear, todayMonth, 1));
+        }
+    };
+
+    const isFutureMonth = year > todayYear || (year === todayYear && month > todayMonth);
+    const fromDay = isFutureMonth ? 1 : today;
 
     const gridRef = useRef<HTMLDivElement>(null);
     const [daysByDate, setDaysByDate] = useState<Record<string, StoredDay>>({});
@@ -100,7 +112,7 @@ export const useDayCardList = (): UseDayCardListResult => {
     });
 
     const addPlanToAllDays = async (labels: string[]) => {
-        const newByDate = await bulkSaveTasksForMonth(year, month, labels, 0, today);
+        const newByDate = await bulkSaveTasksForMonth(year, month, labels, 0, fromDay);
         setDaysByDate(prev => {
             const updated = { ...prev };
             for (const [date, newDay] of Object.entries(newByDate)) {
@@ -115,13 +127,13 @@ export const useDayCardList = (): UseDayCardListResult => {
     };
 
     const editPlan = async (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => {
-        await Promise.all(labelsToRemove.map(label => deleteTasksByLabelForMonth(year, month, label, today)));
+        await Promise.all(labelsToRemove.map(label => deleteTasksByLabelForMonth(year, month, label, fromDay)));
 
         if (labelsToRemove.length > 0) {
             setDaysByDate(prev => {
                 const updated = { ...prev };
                 for (const date of Object.keys(updated)) {
-                    if (date >= toDateString(today)) {
+                    if (date >= toDateString(fromDay)) {
                         updated[date] = { ...updated[date], tasks: updated[date].tasks.filter(t => !labelsToRemove.includes(t.label)) };
                     }
                 }
@@ -130,7 +142,7 @@ export const useDayCardList = (): UseDayCardListResult => {
         }
 
         if (labelsToAdd.length > 0) {
-            const newByDate = await bulkSaveTasksForMonth(year, month, labelsToAdd, planLabels.length, today);
+            const newByDate = await bulkSaveTasksForMonth(year, month, labelsToAdd, planLabels.length, fromDay);
             setDaysByDate(prev => {
                 const updated = { ...prev };
                 for (const [date, newDay] of Object.entries(newByDate)) {
@@ -144,11 +156,11 @@ export const useDayCardList = (): UseDayCardListResult => {
             });
         }
 
-        await reorderTasksByLabelsForMonth(year, month, orderedLabels, today);
+        await reorderTasksByLabelsForMonth(year, month, orderedLabels, fromDay);
         setDaysByDate(prev => {
             const updated = { ...prev };
             for (const date of Object.keys(updated)) {
-                if (date >= toDateString(today)) {
+                if (date >= toDateString(fromDay)) {
                     const reordered = orderedLabels
                         .map(label => updated[date].tasks.find(t => t.label === label))
                         .filter((t): t is NonNullable<typeof t> => t !== undefined);
@@ -161,12 +173,12 @@ export const useDayCardList = (): UseDayCardListResult => {
     };
 
     const resetPlan = async () => {
-        const todayStr = toDateString(today);
-        await deleteAllTasksFromDate(todayStr);
+        const fromStr = toDateString(fromDay);
+        await deleteAllTasksFromDate(fromStr);
         setDaysByDate(prev => {
             const updated = { ...prev };
             for (const date of Object.keys(updated)) {
-                if (date >= todayStr) {
+                if (date >= fromStr) {
                     updated[date] = { ...updated[date], tasks: [] };
                 }
             }
@@ -183,5 +195,5 @@ export const useDayCardList = (): UseDayCardListResult => {
         }
     }, [loading]);
 
-    return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth };
+    return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday };
 };
