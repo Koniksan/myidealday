@@ -46,7 +46,13 @@ export const useDayCardStyles = makeStyles({
     },
     progressFill: {
         height: "100%",
-        background: "linear-gradient(to right, #c50f1f, #f7c948, #107c10)",
+        background: `linear-gradient(
+            to right,
+            ${tokens.colorPaletteDarkOrangeBackground3} 0%,
+            ${tokens.colorPaletteDarkOrangeBackground3} 20%,
+            ${tokens.colorPaletteYellowBackground3} 25%,
+            ${tokens.colorPaletteLightGreenBorder2} 65%,
+            ${tokens.colorPaletteLightGreenBackground3} 100%)`,
         backgroundRepeat: "no-repeat",
         transition: "width 0.3s ease",
     },
