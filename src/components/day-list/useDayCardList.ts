@@ -176,7 +176,11 @@ export const useDayCardList = (): UseDayCardListResult => {
 
     useEffect(() => {
         if (loading) return;
-        document.querySelector("[data-today]")?.scrollIntoView({ behavior: "instant", block: "center", inline: "center" });
+        if (year === todayYear && month === todayMonth) {
+            document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
     }, [loading]);
 
     return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth };

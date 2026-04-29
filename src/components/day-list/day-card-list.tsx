@@ -1,4 +1,4 @@
-import { Button, Title2 } from "@fluentui/react-components";
+import { Button, Text, Title2 } from "@fluentui/react-components";
 import { AddRegular, CalendarTodayRegular, ChevronLeftRegular, ChevronRightRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { DayCard, DayCardShimmer } from "../day";
@@ -63,19 +63,14 @@ export const DayCardList: React.FC = () => {
     return (
         <>
             <div className={styles.header}>
-                <div className={styles.monthNav}>
-                    <Button appearance="subtle" icon={<ChevronLeftRegular />} onClick={prevMonth} />
-                    <Title2 as="h1">{monthName} {year}</Title2>
-                    <Button appearance="subtle" icon={<ChevronRightRegular />} onClick={nextMonth} />
-                </div>
                 <div className={styles.actions} ref={actionsRef}>
-                        <Button
-                            appearance="secondary"
-                            icon={<CalendarTodayRegular />}
-                            onClick={() => document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                        >
-                            Today
-                        </Button>
+                    <Button
+                        appearance="secondary"
+                        icon={<CalendarTodayRegular />}
+                        onClick={() => document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                    >
+                        Today
+                    </Button>
                     <Button
                         appearance="primary"
                         icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}
@@ -83,6 +78,14 @@ export const DayCardList: React.FC = () => {
                     >
                         {hasExistingPlan ? "Edit plan" : "Add plan"}
                     </Button>
+                </div>
+            </div>
+
+            <div className={styles.monthNav}>
+                <div className={styles.monthNavPill}>
+                    <Button appearance="subtle" icon={<ChevronLeftRegular />} onClick={prevMonth} />
+                    <Text weight="semibold" size={400}>{monthName} {year}</Text>
+                    <Button appearance="subtle" icon={<ChevronRightRegular />} onClick={nextMonth} />
                 </div>
             </div>
 

@@ -19,6 +19,11 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
     const [adding, setAdding] = useState(false);
     const [draft, setDraft] = useState("");
 
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    const isReadOnly = new Date(year, month, day) < yesterday;
+
     useEffect(() => {
         setTasks(initialTasks);
     }, [initialTasks]);
@@ -86,11 +91,12 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                         className={mergeClasses(styles.checkboxItem, isToday && styles.checkboxItemToday)}
                         label={label}
                         checked={checked}
+                        disabled={isReadOnly}
                         onChange={() => toggle(i)}
                     />
                 ))}
 
-                {adding && (
+                {!isReadOnly && adding && (
                     <Input
                         autoFocus
                         size="small"
@@ -103,9 +109,11 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     />
                 )}
 
-                <button className={mergeClasses(styles.addButton, isToday && styles.addButtonToday, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
-                    + add task
-                </button>
+                {!isReadOnly && (
+                    <button className={mergeClasses(styles.addButton, isToday && styles.addButtonToday, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
+                        + add task
+                    </button>
+                )}
             </div>
         </div>
     );
