@@ -13,6 +13,7 @@ export const useDayCardStyles = makeStyles({
         border: `1px solid ${tokens.colorNeutralStroke2}`,
         cursor: "default",
         overflow: "hidden",
+        position: "relative",
         transition: "box-shadow 0.15s, border-color 0.15s",
         "--add-btn-opacity": "0",
         ":hover": {
@@ -55,6 +56,12 @@ export const useDayCardStyles = makeStyles({
             ${tokens.colorPaletteLightGreenBackground3} 100%)`,
         backgroundRepeat: "no-repeat",
         transition: "width 0.3s ease",
+    },
+    progressCircle: {
+        position: "absolute",
+        top: "10px",
+        right: "8px",
+        pointerEvents: "none",
     },
     header: {
         display: "flex",
