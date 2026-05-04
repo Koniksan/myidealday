@@ -1,3 +1,4 @@
+import { Toaster } from "@fluentui/react-components";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -12,6 +13,7 @@ export const App = () => {
     return (
         <AuthProvider>
             <ThemeProvider>
+                <Toaster toasterId="app" position="bottom-end" />
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<LoginPage />} />

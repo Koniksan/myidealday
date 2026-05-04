@@ -1,8 +1,9 @@
 import { Avatar, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
-import { ArrowExitRegular, SettingsRegular } from "@fluentui/react-icons";
+import { ArrowExitRegular, ChatRegular, SettingsRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../infrastructure/context/auth-context";
+import { FeedbackPanel } from "../feedback";
 import { SettingsPanel } from "../settings-panel";
 import { useUserLogoStyles } from "./user-logo-styles";
 
@@ -11,6 +12,7 @@ export const UserLogo: React.FC = () => {
     const navigate = useNavigate();
     const { logout, user, profile } = useAuth();
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -33,6 +35,9 @@ export const UserLogo: React.FC = () => {
                         <MenuItem icon={<SettingsRegular />} onClick={() => setSettingsOpen(true)}>
                             Settings
                         </MenuItem>
+                        <MenuItem icon={<ChatRegular />} onClick={() => setFeedbackOpen(true)}>
+                            Feedback
+                        </MenuItem>
                         <MenuItem icon={<ArrowExitRegular />} onClick={handleLogout}>
                             Log out
                         </MenuItem>
@@ -40,6 +45,7 @@ export const UserLogo: React.FC = () => {
                 </MenuPopover>
             </Menu>
             <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+            <FeedbackPanel open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
         </>
     );
 };
