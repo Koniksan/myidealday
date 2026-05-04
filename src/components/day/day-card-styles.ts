@@ -90,7 +90,6 @@ export const useDayCardStyles = makeStyles({
     },
     checkboxItem: {
         fontSize: "12px",
-        touchAction: "manipulation",
     },
     checkboxItemToday: {
         "& .fui-Checkbox__label": {

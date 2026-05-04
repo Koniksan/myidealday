@@ -141,6 +141,12 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                         checked={checked}
                         disabled={isReadOnly}
                         onChange={() => toggle(i)}
+                        onPointerDown={!isReadOnly ? (e) => {
+                            if (e.pointerType === "touch") {
+                                e.preventDefault();
+                                toggle(i);
+                            }
+                        } : undefined}
                     />
                 ))}
 
