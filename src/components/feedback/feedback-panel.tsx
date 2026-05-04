@@ -50,7 +50,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
         if (!draft.trim() || !user) return;
         setSending(true);
         try {
-            const saved = await createFeedback(user.id, draft.trim());
+            const saved = await createFeedback(user.id, draft.trim(), user.email ?? "");
             setFeedbacks(prev => [saved, ...prev]);
             setDraft("");
             setDialogOpen(false);

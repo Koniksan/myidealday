@@ -29,12 +29,17 @@ export const useDayCardStyles = makeStyles({
         },
     },
     today: {
-        background: tokens.colorBrandBackground,
-        border: `1px solid ${tokens.colorBrandBackground}`,
+        border: `1.5px solid ${tokens.colorBrandBackground}`,
         ":hover": {
             boxShadow: tokens.shadow8,
-            border: `1px solid ${tokens.colorBrandBackgroundHover}`,
+            border: `1.5px solid ${tokens.colorBrandBackgroundHover}`,
         },
+    },
+    todayBadge: {
+        position: "absolute",
+        top: "10px",
+        left: "10px",
+        padding: "4px 8px",
     },
     weekend: {
         background: tokens.colorNeutralBackground3,
@@ -69,17 +74,11 @@ export const useDayCardStyles = makeStyles({
         textTransform: "uppercase",
         letterSpacing: "0.04em",
     },
-    dayNameToday: {
-        color: tokens.colorNeutralForegroundOnBrand,
-    },
     dayNumber: {
         fontSize: "20px",
         fontWeight: "600",
         color: tokens.colorNeutralForeground1,
         lineHeight: 1,
-    },
-    dayNumberToday: {
-        color: tokens.colorNeutralForegroundOnBrand,
     },
     body: {
         display: "flex",
@@ -90,14 +89,6 @@ export const useDayCardStyles = makeStyles({
     },
     checkboxItem: {
         fontSize: "12px",
-    },
-    checkboxItemToday: {
-        "& .fui-Checkbox__label": {
-            color: tokens.colorNeutralForegroundOnBrand,
-        },
-        "& .fui-Checkbox__indicator": {
-            color: tokens.colorNeutralForegroundOnBrand,
-        },
     },
     addInput: {
         width: "100%",
@@ -115,12 +106,6 @@ export const useDayCardStyles = makeStyles({
         transition: "opacity 0.15s, color 0.15s",
         ":hover": {
             color: tokens.colorNeutralForeground1,
-        },
-    },
-    addButtonToday: {
-        color: tokens.colorNeutralForegroundOnBrand,
-        ":hover": {
-            color: tokens.colorNeutralForegroundOnBrand,
         },
     },
     addButtonVisible: {

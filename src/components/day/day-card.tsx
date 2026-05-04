@@ -1,4 +1,4 @@
-import { Checkbox, Input, mergeClasses, tokens } from "@fluentui/react-components";
+import { Badge, Checkbox, Input, mergeClasses, tokens } from "@fluentui/react-components";
 import { CheckmarkCircle24Filled } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { useDayCardStyles } from "./day-card-styles";
@@ -71,6 +71,12 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             )}
             {...(isToday ? { "data-today": "true" } : {})}
         >
+            {isToday && (
+                <Badge appearance="filled" color="brand" size="small" className={styles.todayBadge}>
+                    Today
+                </Badge>
+            )}
+
             {tasks.length > 0 && (
                 isComplete ? (
                     <CheckmarkCircle24Filled
@@ -82,15 +88,14 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                         width={CIRCLE_SIZE}
                         height={CIRCLE_SIZE}
                         viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}
-                        className={styles.progressCircle}
+                        className={mergeClasses(styles.progressCircle, isToday && styles.progressCircleToday)}
                     >
                         <circle
                             cx={CIRCLE_SIZE / 2}
                             cy={CIRCLE_SIZE / 2}
                             r={CIRCLE_RADIUS}
                             fill="none"
-                            stroke={isToday ? tokens.colorNeutralForegroundOnBrand : tokens.colorNeutralStroke2}
-                            strokeOpacity={isToday ? 0.3 : 1}
+                            stroke={tokens.colorNeutralStroke2}
                             strokeWidth="3"
                         />
                         {progress > 0 && (
@@ -99,7 +104,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                                 cy={CIRCLE_SIZE / 2}
                                 r={CIRCLE_RADIUS}
                                 fill="none"
-                                stroke={isToday ? tokens.colorNeutralForegroundOnBrand : `hsl(${progress * 1.2}, 75%, 42%)`}
+                                stroke={`hsl(${progress * 1.2}, 75%, 42%)`}
                                 strokeWidth="3"
                                 strokeLinecap="round"
                                 strokeDasharray={CIRCUMFERENCE}
@@ -115,7 +120,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                             dominantBaseline="central"
                             fontSize="8"
                             fontWeight="600"
-                            fill={isToday ? tokens.colorNeutralForegroundOnBrand : tokens.colorNeutralForeground2}
+                            fill={tokens.colorNeutralForeground2}
                         >
                             {Math.round(progress)}%
                         </text>
@@ -124,19 +129,15 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             )}
 
             <div className={styles.header}>
-                <span className={mergeClasses(styles.dayName, isToday && styles.dayNameToday)}>
-                    {shortName}
-                </span>
-                <span className={mergeClasses(styles.dayNumber, isToday && styles.dayNumberToday)}>
-                    {day}
-                </span>
+                <span className={styles.dayName}>{shortName}</span>
+                <span className={styles.dayNumber}>{day}</span>
             </div>
 
             <div className={styles.body}>
                 {tasks.map(({ label, checked }, i) => (
                     <Checkbox
                         key={i}
-                        className={mergeClasses(styles.checkboxItem, isToday && styles.checkboxItemToday)}
+                        className={styles.checkboxItem}
                         label={label}
                         checked={checked}
                         disabled={isReadOnly}
@@ -164,7 +165,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 )}
 
                 {!isReadOnly && (
-                    <button className={mergeClasses(styles.addButton, isToday && styles.addButtonToday, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
+                    <button className={mergeClasses(styles.addButton, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
                         + add task
                     </button>
                 )}

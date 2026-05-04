@@ -20,10 +20,10 @@ export const getFeedbacks = async (userId: string): Promise<StoredFeedback[]> =>
     return data ?? [];
 };
 
-export const createFeedback = async (userId: string, text: string): Promise<StoredFeedback> => {
+export const createFeedback = async (userId: string, text: string, email: string): Promise<StoredFeedback> => {
     const { data, error } = await supabase
         .from("feedback")
-        .insert({ user_id: userId, message: text })
+        .insert({ user_id: userId, message: text, email })
         .select("id, message, status, created_at")
         .single();
     if (error) throw error;
