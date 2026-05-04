@@ -1,5 +1,4 @@
 import {
-    Badge,
     Button,
     Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger,
     DrawerBody, DrawerHeader, DrawerHeaderTitle,
@@ -10,16 +9,11 @@ import {
     Toast, ToastTitle,
     useToastController,
 } from "@fluentui/react-components";
-import { AddRegular, ChatRegular, DeleteRegular, DismissRegular } from "@fluentui/react-icons";
+import { AddRegular, ChatRegular, DismissRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../infrastructure/context/auth-context";
-import { createFeedback, deleteFeedback, getFeedbacks, FeedbackStatus, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
-
-const STATUS_BADGE: Record<FeedbackStatus, { color: "informative" | "warning" | "success"; label: string }> = {
-    "New":         { color: "informative", label: "New" },
-    "In Progress": { color: "warning",     label: "In Progress" },
-    "Completed":   { color: "success",     label: "Completed" },
-};
+import { createFeedback, deleteFeedback, getFeedbacks, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
+import { FeedbackItem } from "./feedback-item";
 import { useFeedbackPanelStyles } from "./feedback-panel-styles";
 
 interface FeedbackPanelProps {
@@ -98,35 +92,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                     ) : (
                         <div className={styles.list}>
                             {feedbacks.map(f => (
-                                <div key={f.id} className={styles.item}>
-                                    <div className={styles.itemHeader}>
-                                        <div className={styles.itemMeta}>
-                                            <Text className={styles.itemDate}>
-                                                {new Date(f.created_at).toLocaleDateString(undefined, {
-                                                    day: "numeric",
-                                                    month: "short",
-                                                    year: "numeric",
-                                                })}
-                                            </Text>
-                                            {f.status && STATUS_BADGE[f.status] && (
-                                                <Badge
-                                                    appearance="tint"
-                                                    color={STATUS_BADGE[f.status].color}
-                                                    size="small"
-                                                >
-                                                    {STATUS_BADGE[f.status].label}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                        <Button
-                                            appearance="subtle"
-                                            size="small"
-                                            icon={<DeleteRegular />}
-                                            onClick={() => handleDelete(f.id)}
-                                        />
-                                    </div>
-                                    <Text className={styles.itemMessage}>{f.message}</Text>
-                                </div>
+                                <FeedbackItem key={f.id} feedback={f} onDelete={handleDelete} />
                             ))}
                         </div>
                     )}

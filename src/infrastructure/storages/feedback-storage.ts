@@ -6,6 +6,7 @@ export interface StoredFeedback {
     id: string;
     message: string;
     status: FeedbackStatus;
+    answer?: string | null;
     created_at: string;
 }
 
