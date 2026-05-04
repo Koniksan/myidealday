@@ -1,4 +1,5 @@
 import { Checkbox, Input, mergeClasses, tokens } from "@fluentui/react-components";
+import { CheckmarkCircle24Filled } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { useDayCardStyles } from "./day-card-styles";
 import { saveTask, updateTask, StoredTask } from "../../infrastructure/storages/day-storage";
@@ -35,6 +36,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
     const progress = tasks.length > 0
         ? (tasks.filter(t => t.checked).length / tasks.length) * 100
         : 0;
+    const isComplete = progress === 100;
 
     const toggle = (i: number) => {
         const task = tasks[i];
@@ -69,59 +71,56 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             )}
             {...(isToday ? { "data-today": "true" } : {})}
         >
-            <div className={styles.progressTrack}>
-                <div
-                    className={styles.progressFill}
-                    style={{
-                        width: `${progress}%`,
-                        backgroundSize: progress > 0 ? `${(10000 / progress).toFixed(1)}% 100%` : undefined,
-                    }}
-                />
-            </div>
-
             {tasks.length > 0 && (
-                <svg
-                    width={CIRCLE_SIZE}
-                    height={CIRCLE_SIZE}
-                    viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}
-                    className={styles.progressCircle}
-                >
-                    <circle
-                        cx={CIRCLE_SIZE / 2}
-                        cy={CIRCLE_SIZE / 2}
-                        r={CIRCLE_RADIUS}
-                        fill="none"
-                        stroke={isToday ? tokens.colorNeutralForegroundOnBrand : tokens.colorNeutralStroke2}
-                        strokeOpacity={isToday ? 0.3 : 1}
-                        strokeWidth="3"
+                isComplete ? (
+                    <CheckmarkCircle24Filled
+                        className={mergeClasses(styles.progressCircle, styles.completedCircle)}
+                        style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE, color: "hsl(120, 75%, 42%)" }}
                     />
-                    {progress > 0 && (
+                ) : (
+                    <svg
+                        width={CIRCLE_SIZE}
+                        height={CIRCLE_SIZE}
+                        viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}
+                        className={styles.progressCircle}
+                    >
                         <circle
                             cx={CIRCLE_SIZE / 2}
                             cy={CIRCLE_SIZE / 2}
                             r={CIRCLE_RADIUS}
                             fill="none"
-                            stroke={isToday ? tokens.colorNeutralForegroundOnBrand : tokens.colorPaletteGreenBackground3}
+                            stroke={isToday ? tokens.colorNeutralForegroundOnBrand : tokens.colorNeutralStroke2}
+                            strokeOpacity={isToday ? 0.3 : 1}
                             strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeDasharray={CIRCUMFERENCE}
-                            strokeDashoffset={CIRCUMFERENCE * (1 - progress / 100)}
-                            transform={`rotate(-90 ${CIRCLE_SIZE / 2} ${CIRCLE_SIZE / 2})`}
-                            style={{ transition: "stroke-dashoffset 0.4s ease" }}
                         />
-                    )}
-                    <text
-                        x={CIRCLE_SIZE / 2}
-                        y={CIRCLE_SIZE / 2}
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                        fontSize="8"
-                        fontWeight="600"
-                        fill={isToday ? tokens.colorNeutralForegroundOnBrand : tokens.colorNeutralForeground2}
-                    >
-                        {Math.round(progress)}%
-                    </text>
-                </svg>
+                        {progress > 0 && (
+                            <circle
+                                cx={CIRCLE_SIZE / 2}
+                                cy={CIRCLE_SIZE / 2}
+                                r={CIRCLE_RADIUS}
+                                fill="none"
+                                stroke={isToday ? tokens.colorNeutralForegroundOnBrand : `hsl(${progress * 1.2}, 75%, 42%)`}
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeDasharray={CIRCUMFERENCE}
+                                strokeDashoffset={CIRCUMFERENCE * (1 - progress / 100)}
+                                transform={`rotate(-90 ${CIRCLE_SIZE / 2} ${CIRCLE_SIZE / 2})`}
+                                style={{ transition: "stroke-dashoffset 0.4s ease" }}
+                            />
+                        )}
+                        <text
+                            x={CIRCLE_SIZE / 2}
+                            y={CIRCLE_SIZE / 2}
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            fontSize="8"
+                            fontWeight="600"
+                            fill={isToday ? tokens.colorNeutralForegroundOnBrand : tokens.colorNeutralForeground2}
+                        >
+                            {Math.round(progress)}%
+                        </text>
+                    </svg>
+                )
             )}
 
             <div className={styles.header}>

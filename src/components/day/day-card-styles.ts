@@ -39,29 +39,22 @@ export const useDayCardStyles = makeStyles({
     weekend: {
         background: tokens.colorNeutralBackground3,
     },
-    progressTrack: {
-        width: "100%",
-        height: "5px",
-        background: tokens.colorNeutralStroke2,
-        flexShrink: 0,
-    },
-    progressFill: {
-        height: "100%",
-        background: `linear-gradient(
-            to right,
-            ${tokens.colorPaletteDarkOrangeBackground3} 0%,
-            ${tokens.colorPaletteDarkOrangeBackground3} 20%,
-            ${tokens.colorPaletteYellowBackground3} 25%,
-            ${tokens.colorPaletteLightGreenBorder2} 65%,
-            ${tokens.colorPaletteLightGreenBackground3} 100%)`,
-        backgroundRepeat: "no-repeat",
-        transition: "width 0.3s ease",
-    },
     progressCircle: {
         position: "absolute",
         top: "10px",
         right: "8px",
         pointerEvents: "none",
+    },
+    completedCircle: {
+        transformBox: "fill-box",
+        transformOrigin: "center",
+        animationName: {
+            from: { transform: "scale(0.5)", opacity: "0" },
+            to: { transform: "scale(1)", opacity: "1" },
+        },
+        animationDuration: "0.35s",
+        animationTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        animationFillMode: "both",
     },
     header: {
         display: "flex",
@@ -97,6 +90,7 @@ export const useDayCardStyles = makeStyles({
     },
     checkboxItem: {
         fontSize: "12px",
+        touchAction: "manipulation",
     },
     checkboxItemToday: {
         "& .fui-Checkbox__label": {
