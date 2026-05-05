@@ -110,6 +110,7 @@ export const DayCardList: React.FC = () => {
             <DayPlanPanel
                 open={dialogOpen}
                 mode={dialogMode}
+                monthName={monthName}
                 planLabels={planLabels}
                 onClose={() => setDialogOpen(false)}
                 addPlanToAllDays={addPlanToAllDays}

@@ -1,8 +1,8 @@
-import { Badge, Checkbox, Input, mergeClasses, tokens } from "@fluentui/react-components";
-import { CheckmarkCircle24Filled } from "@fluentui/react-icons";
+import { Badge, Checkbox, Divider, Input, mergeClasses, Spinner, tokens } from "@fluentui/react-components";
+import { CheckmarkCircle24Filled, DismissRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { useDayCardStyles } from "./day-card-styles";
-import { saveTask, updateTask, StoredTask } from "../../infrastructure/storages/day-storage";
+import { saveTask, updateTask, deleteTask, StoredTask } from "../../infrastructure/storages/day-storage";
 
 const CIRCLE_SIZE = 36;
 const CIRCLE_RADIUS = 14;
@@ -23,6 +23,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
     const [tasks, setTasks] = useState<StoredTask[]>(initialTasks);
     const [adding, setAdding] = useState(false);
     const [draft, setDraft] = useState("");
+    const [saving, setSaving] = useState(false);
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -52,15 +53,22 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
         setTasks(prev => prev.map((t, idx) => idx === i ? { ...t, checked } : t));
     };
 
+    const removeCustomTask = (id: string) => {
+        setTasks(prev => prev.filter(t => t.id !== id));
+        deleteTask(id).catch(console.error);
+    };
+
     const commitDraft = () => {
         const label = draft.trim();
-        if (label) {
-            saveTask(year, month, day, { label, checked: false, position: tasks.length })
-                .then(saved => setTasks(prev => [...prev, saved]))
-                .catch(console.error);
-        }
         setDraft("");
         setAdding(false);
+        if (label) {
+            setSaving(true);
+            saveTask(year, month, day, { label, checked: false, position: tasks.length, is_custom: true })
+                .then(saved => setTasks(prev => [...prev, saved]))
+                .catch(console.error)
+                .finally(() => setSaving(false));
+        }
     };
 
     const onKeyDown = (e: React.KeyboardEvent) => {
@@ -83,7 +91,9 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 </Badge>
             )}
 
-            {tasks.length > 0 && (
+            {saving ? (
+                <Spinner size="tiny" className={styles.progressCircle} />
+            ) : tasks.length > 0 && (
                 isComplete ? (
                     <CheckmarkCircle24Filled
                         className={mergeClasses(styles.progressCircle, styles.completedCircle)}
@@ -94,7 +104,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                         width={CIRCLE_SIZE}
                         height={CIRCLE_SIZE}
                         viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}
-                        className={mergeClasses(styles.progressCircle, isToday && styles.progressCircleToday)}
+                        className={styles.progressCircle}
                     >
                         <circle
                             cx={CIRCLE_SIZE / 2}
@@ -140,22 +150,59 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             </div>
 
             <div className={styles.body}>
-                {tasks.map(({ label, checked }, i) => (
-                    <Checkbox
-                        key={i}
-                        className={styles.checkboxItem}
-                        label={label}
-                        checked={checked}
-                        disabled={isReadOnly}
-                        onChange={() => toggle(i)}
-                        onPointerDown={!isReadOnly ? (e) => {
-                            if (e.pointerType === "touch") {
-                                e.preventDefault();
-                                toggle(i);
-                            }
-                        } : undefined}
-                    />
-                ))}
+                {tasks.filter(t => !t.is_custom).map((task) => {
+                    const idx = tasks.indexOf(task);
+                    return (
+                        <Checkbox
+                            key={idx}
+                            className={styles.checkboxItem}
+                            label={task.label}
+                            checked={task.checked}
+                            disabled={isReadOnly}
+                            onChange={() => toggle(idx)}
+                            onPointerDown={!isReadOnly ? (e) => {
+                                if (e.pointerType === "touch") {
+                                    e.preventDefault();
+                                    toggle(idx);
+                                }
+                            } : undefined}
+                        />
+                    );
+                })}
+
+                {tasks.some(t => t.is_custom) && tasks.some(t => !t.is_custom) && (
+                    <Divider className={styles.customDivider}>Custom</Divider>
+                )}
+
+                {tasks.filter(t => t.is_custom).map((task) => {
+                    const idx = tasks.indexOf(task);
+                    return (
+                        <div key={`custom-${idx}`} className={styles.customTaskRow}>
+                            <Checkbox
+                                className={styles.customTaskCheckbox}
+                                label={task.label}
+                                checked={task.checked}
+                                disabled={isReadOnly}
+                                onChange={() => toggle(idx)}
+                                onPointerDown={!isReadOnly ? (e) => {
+                                    if (e.pointerType === "touch") {
+                                        e.preventDefault();
+                                        toggle(idx);
+                                    }
+                                } : undefined}
+                            />
+                            {task.id && (
+                                <button
+                                    className={styles.deleteTaskButton}
+                                    onClick={() => removeCustomTask(task.id!)}
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                >
+                                    <DismissRegular fontSize={12} />
+                                </button>
+                            )}
+                        </div>
+                    );
+                })}
 
                 {adding && (
                     <Input

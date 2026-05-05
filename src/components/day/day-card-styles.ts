@@ -26,6 +26,9 @@ export const useDayCardStyles = makeStyles({
             flexShrink: 0,
             minHeight: "340px",
             scrollSnapAlign: "center",
+            ":hover": {
+                boxShadow: "none",
+            },
         },
     },
     today: {
@@ -48,6 +51,11 @@ export const useDayCardStyles = makeStyles({
         position: "absolute",
         top: "10px",
         right: "8px",
+        width: "36px",
+        height: "36px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         pointerEvents: "none",
     },
     completedCircle: {
@@ -110,5 +118,39 @@ export const useDayCardStyles = makeStyles({
     },
     addButtonVisible: {
         opacity: 1,
+    },
+    customDivider: {
+        marginTop: "4px",
+        marginBottom: "2px",
+        fontSize: "10px",
+        color: tokens.colorNeutralForeground4,
+    },
+    customTaskRow: {
+        display: "flex",
+        alignItems: "center",
+        "--delete-btn-opacity": "0",
+        ":hover": {
+            "--delete-btn-opacity": "1",
+        },
+    },
+    customTaskCheckbox: {
+        flex: 1,
+        fontSize: "12px",
+        minWidth: 0,
+    },
+    deleteTaskButton: {
+        flexShrink: 0,
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        padding: "2px",
+        display: "flex",
+        alignItems: "center",
+        color: tokens.colorNeutralForeground3,
+        opacity: "var(--delete-btn-opacity, 0)" as unknown as number,
+        transition: "opacity 0.15s, color 0.15s",
+        ":hover": {
+            color: tokens.colorStatusDangerForeground1,
+        },
     },
 });

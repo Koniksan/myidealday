@@ -5,6 +5,7 @@ export interface StoredTask {
     label: string;
     checked: boolean;
     position: number;
+    is_custom?: boolean;
 }
 
 export interface StoredDay {
@@ -21,7 +22,7 @@ export const loadTasksForMonth = async (year: number, month: number): Promise<Re
 
     const { data, error } = await supabase
         .from("tasks")
-        .select("id, date, label, checked, position")
+        .select("id, date, label, checked, position, is_custom")
         .gte("date", from)
         .lte("date", to)
         .order("position");
@@ -73,7 +74,7 @@ export const saveTask = async (
     const { data, error } = await supabase
         .from("tasks")
         .insert({ date, ...task })
-        .select("id, label, checked, position")
+        .select("id, label, checked, position, is_custom")
         .single();
 
     if (error) throw error;

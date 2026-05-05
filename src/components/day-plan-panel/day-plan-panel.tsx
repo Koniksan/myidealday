@@ -13,6 +13,7 @@ import {
     Input,
     OverlayDrawer,
     Spinner,
+    Subtitle2,
 } from "@fluentui/react-components";
 import { AddRegular, ArrowSortFilled, DeleteRegular, DismissRegular } from "@fluentui/react-icons";
 import React from "react";
@@ -23,6 +24,7 @@ import { useDayPlanPanel } from "./useDayPlanPanel";
 interface DayPlanPanelProps {
     open: boolean;
     mode: "add" | "edit";
+    monthName: string;
     planLabels: string[];
     onClose: () => void;
     addPlanToAllDays: (labels: string[]) => Promise<void>;
@@ -74,6 +76,9 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                     >
                         {isEditMode ? "Edit plan" : "Add plan to all days"}
                     </DrawerHeaderTitle>
+                    <Subtitle2 block as="h2" className={styles.description}>
+                        Changes will apply to all days in {props.monthName}.
+                    </Subtitle2>
                 </DrawerHeader>
 
                 <DrawerBody className={styles.body}>

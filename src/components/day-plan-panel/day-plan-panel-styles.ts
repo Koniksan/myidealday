@@ -73,4 +73,9 @@ export const useDayPlanPanelStyles = makeStyles({
         flex: 1,
         fontSize: "14px",
     },
+    description: {
+        marginTop: "4px",
+        fontSize: "14px",
+        color: tokens.colorNeutralForeground3,
+    },
 });
