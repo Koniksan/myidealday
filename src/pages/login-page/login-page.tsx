@@ -1,4 +1,4 @@
-import { Body1Strong, Button, Caption1, Field, Input, Link, mergeClasses, Text, Subtitle1 } from "@fluentui/react-components";
+import { Body1Strong, Button, Caption1, Field, Input, Link, mergeClasses, Spinner, Text, Subtitle1 } from "@fluentui/react-components";
 import { EyeOffRegular, EyeRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +23,7 @@ export const LoginPage: React.FC = () => {
     const [identifierError, setIdentifierError] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [loginError, setLoginError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
     const styles = useLoginPageStyles();
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -35,7 +36,9 @@ export const LoginPage: React.FC = () => {
         setPasswordError(pwErr);
         if (idErr || pwErr) return;
 
+        setLoading(true);
         const error = await login(identifier, password);
+        setLoading(false);
         if (error) {
             setLoginError(error);
         } else {
@@ -100,7 +103,13 @@ export const LoginPage: React.FC = () => {
                     {loginError && (
                         <Caption1 className={styles.loginError}>{loginError}</Caption1>
                     )}
-                    <Button className={styles.loginButton} appearance="primary" type="submit">
+                    <Button
+                        className={styles.loginButton}
+                        appearance="primary"
+                        type="submit"
+                        disabled={loading}
+                        icon={loading ? <Spinner size="tiny" /> : undefined}
+                    >
                         Login
                     </Button>
                 </form>

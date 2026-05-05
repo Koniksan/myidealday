@@ -51,8 +51,8 @@ export const useDayCardStyles = makeStyles({
         position: "absolute",
         top: "10px",
         right: "8px",
-        width: "36px",
-        height: "36px",
+        width: "46px",
+        height: "46px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -101,23 +101,10 @@ export const useDayCardStyles = makeStyles({
     addInput: {
         width: "100%",
     },
-    addButton: {
-        marginTop: "auto",
-        background: "none",
-        border: "none",
-        cursor: "pointer",
-        color: tokens.colorNeutralForeground3,
-        fontSize: "11px",
-        textAlign: "left",
-        padding: "4px 2px",
-        opacity: "var(--add-btn-opacity, 0)" as unknown as number,
-        transition: "opacity 0.15s, color 0.15s",
-        ":hover": {
-            color: tokens.colorNeutralForeground1,
-        },
-    },
-    addButtonVisible: {
-        opacity: 1,
+    menuButton: {
+        position: "absolute",
+        bottom: "6px",
+        right: "6px",
     },
     customDivider: {
         marginTop: "4px",
