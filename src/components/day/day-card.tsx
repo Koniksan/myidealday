@@ -66,12 +66,6 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                             checked={task.checked}
                             disabled={isReadOnly}
                             onChange={() => toggle(idx)}
-                            onPointerDown={!isReadOnly ? (e) => {
-                                if (e.pointerType === "touch") {
-                                    e.preventDefault();
-                                    toggle(idx);
-                                }
-                            } : undefined}
                         />
                     );
                 })}
@@ -90,12 +84,6 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                                 checked={task.checked}
                                 disabled={isReadOnly}
                                 onChange={() => toggle(idx)}
-                                onPointerDown={!isReadOnly ? (e) => {
-                                    if (e.pointerType === "touch") {
-                                        e.preventDefault();
-                                        toggle(idx);
-                                    }
-                                } : undefined}
                             />
                             {task.id && (
                                 <button
