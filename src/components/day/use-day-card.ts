@@ -23,6 +23,7 @@ export const useDayCard = ({ year, month, day, initialTasks }: UseDayCardOptions
     tomorrow.setHours(0, 0, 0, 0);
 
     const cardDate = new Date(year, month, day);
+    const isPast = cardDate <= yesterday;
     const isReadOnly = cardDate < yesterday || cardDate > tomorrow;
 
     useEffect(() => {
@@ -71,6 +72,7 @@ export const useDayCard = ({ year, month, day, initialTasks }: UseDayCardOptions
         draft,
         setDraft,
         saving,
+        isPast,
         isReadOnly,
         progress,
         toggle,

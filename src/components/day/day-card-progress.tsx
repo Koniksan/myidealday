@@ -1,33 +1,54 @@
 import { mergeClasses, Spinner, tokens } from "@fluentui/react-components";
 import { CheckmarkCircle24Filled } from "@fluentui/react-icons";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDayCardStyles } from "./day-card-styles";
 
 const CIRCLE_SIZE = 36;
 const CIRCLE_RADIUS = 14;
 const CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
+const FADE_OUT_MS = 200;
 
 interface DayCardProgressProps {
     progress: number;
     saving: boolean;
+    hasTasks: boolean;
+    isPast: boolean;
 }
 
-export const DayCardProgress: React.FC<DayCardProgressProps> = ({ progress, saving }) => {
+export const DayCardProgress: React.FC<DayCardProgressProps> = ({ progress, saving, hasTasks, isPast }) => {
     const styles = useDayCardStyles();
     const isComplete = progress === 100;
+    const shouldRender = saving || progress > 0 || (isPast && hasTasks);
+
+    const [visible, setVisible] = useState(shouldRender);
+    const [fadingOut, setFadingOut] = useState(false);
+
+    useEffect(() => {
+        if (shouldRender) {
+            setVisible(true);
+            setFadingOut(false);
+        } else if (visible) {
+            setFadingOut(true);
+            const timer = setTimeout(() => {
+                setVisible(false);
+                setFadingOut(false);
+            }, FADE_OUT_MS);
+            return () => clearTimeout(timer);
+        }
+    }, [shouldRender]);
+
+    if (!visible) return null;
+
+    const circleClass = mergeClasses(styles.progressCircle, fadingOut && styles.progressCircleFadeOut);
 
     if (saving) {
-        return <Spinner size="tiny" className={styles.progressCircle} />;
-    }
-
-    if (progress === 0) {
-        return null;
+        return <Spinner size="tiny" className={circleClass} />;
     }
 
     if (isComplete) {
         return (
             <CheckmarkCircle24Filled
-                className={mergeClasses(styles.progressCircle, styles.completedCircle)}
+                className={mergeClasses(circleClass, styles.completedCircle)}
                 style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE, color: "hsl(120, 75%, 42%)" }}
             />
         );
@@ -38,7 +59,7 @@ export const DayCardProgress: React.FC<DayCardProgressProps> = ({ progress, savi
             width={CIRCLE_SIZE}
             height={CIRCLE_SIZE}
             viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}
-            className={styles.progressCircle}
+            className={circleClass}
         >
             <circle
                 cx={CIRCLE_SIZE / 2}

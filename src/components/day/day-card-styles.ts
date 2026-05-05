@@ -57,6 +57,13 @@ export const useDayCardStyles = makeStyles({
         alignItems: "center",
         justifyContent: "center",
         pointerEvents: "none",
+        animationName: {
+            from: { opacity: "0", transform: "scale(0.6)" },
+            to: { opacity: "1", transform: "scale(1)" },
+        },
+        animationDuration: "0.2s",
+        animationTimingFunction: "ease-out",
+        animationFillMode: "both",
     },
     completedCircle: {
         transformBox: "fill-box",
@@ -67,6 +74,15 @@ export const useDayCardStyles = makeStyles({
         },
         animationDuration: "0.35s",
         animationTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        animationFillMode: "both",
+    },
+    progressCircleFadeOut: {
+        animationName: {
+            from: { opacity: "1", transform: "scale(1)" },
+            to: { opacity: "0", transform: "scale(0.6)" },
+        },
+        animationDuration: "0.2s",
+        animationTimingFunction: "ease-in",
         animationFillMode: "both",
     },
     header: {

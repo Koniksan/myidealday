@@ -25,6 +25,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
         draft,
         setDraft,
         saving,
+        isPast,
         isReadOnly,
         progress,
         toggle,
@@ -48,7 +49,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 </Badge>
             )}
 
-            <DayCardProgress progress={progress} saving={saving} />
+            <DayCardProgress progress={progress} saving={saving} hasTasks={tasks.length > 0} isPast={isPast} />
 
             <div className={styles.header}>
                 <span className={styles.dayName}>{shortName}</span>
