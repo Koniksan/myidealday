@@ -120,6 +120,28 @@ export const useDayCardStyles = makeStyles({
     checkboxItem: {
         fontSize: "12px",
     },
+    detailCard: {
+        gridColumn: "unset",
+        minHeight: "unset",
+        borderRadius: "12px",
+    },
+    detailHeader: {
+        padding: "20px 20px 8px",
+    },
+    detailDate: {
+        fontSize: "22px",
+        fontWeight: "700",
+        color: tokens.colorNeutralForeground1,
+        lineHeight: "1.2",
+        textTransform: "capitalize",
+    },
+    detailBody: {
+        padding: "0 16px 16px",
+        gap: "4px",
+    },
+    detailCheckboxItem: {
+        fontSize: "14px",
+    },
     addInput: {
         width: "100%",
     },

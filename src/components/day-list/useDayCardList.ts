@@ -12,6 +12,9 @@ import {
 interface UseDayCardListResult {
     days: DayCardProps[];
     offsetDays: DayCardProps[];
+    selectedDay: number;
+    setSelectedDay: (day: number) => void;
+    selectedDayProps: DayCardProps;
     monthName: string;
     year: number;
     month: number;
@@ -65,6 +68,12 @@ export const useDayCardList = (): UseDayCardListResult => {
 
     const isFutureMonth = year > todayYear || (year === todayYear && month > todayMonth);
     const fromDay = isFutureMonth ? 1 : today;
+
+    const [selectedDay, setSelectedDay] = useState<number>(today);
+
+    useEffect(() => {
+        setSelectedDay(year === todayYear && month === todayMonth ? today : 1);
+    }, [year, month]);
 
     const gridRef = useRef<HTMLDivElement>(null);
     const [daysByDate, setDaysByDate] = useState<Record<string, StoredDay>>({});
@@ -229,5 +238,16 @@ export const useDayCardList = (): UseDayCardListResult => {
         }
     }, [loading]);
 
-    return { days, offsetDays, monthName, year, month, firstDayOffset, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday };
+    const selectedDayDate = new Date(year, month, selectedDay);
+    const selectedDayProps: DayCardProps = {
+        year,
+        month,
+        day: selectedDay,
+        shortName: selectedDayDate.toLocaleString("default", { weekday: "short" }),
+        isToday: year === todayYear && month === todayMonth && selectedDay === today,
+        isWeekend: [0, 6].includes(selectedDayDate.getDay()),
+        initialTasks: daysByDate[toDateString(selectedDay)]?.tasks ?? [],
+    };
+
+    return { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, month, firstDayOffset, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday };
 };

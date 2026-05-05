@@ -72,4 +72,39 @@ export const useDayCardListStyles = makeStyles({
             display: "none",
         },
     },
+    desktopLayout: {
+        display: "flex",
+        gap: "24px",
+        alignItems: "flex-start",
+        [breakpoints.mobile]: {
+            display: "none",
+        },
+    },
+    calendarSide: {
+        flex: "0 0 auto",
+        width: "min(460px, 50%)",
+    },
+    detailSide: {
+        flex: 1,
+        position: "sticky",
+        top: "calc(56px + env(safe-area-inset-top) + 16px)",
+    },
+    mobileLayout: {
+        display: "none",
+        [breakpoints.mobile]: {
+            display: "block",
+        },
+    },
+    mobileGrid: {
+        display: "flex",
+        flexWrap: "nowrap",
+        overflowX: "auto",
+        scrollSnapType: "x mandatory",
+        justifyContent: "flex-start",
+        padding: "4px 20px 16px",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+        gap: "12px",
+        "::-webkit-scrollbar": { display: "none" },
+    },
 });

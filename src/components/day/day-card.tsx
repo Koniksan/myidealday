@@ -14,11 +14,13 @@ export interface DayCardProps {
     isToday: boolean;
     isWeekend: boolean;
     isOtherMonth?: boolean;
+    isDetailView?: boolean;
     initialTasks?: StoredTask[];
 }
 
-export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, isOtherMonth = false, initialTasks = [] }) => {
+export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, isOtherMonth = false, isDetailView = false, initialTasks = [] }) => {
     const styles = useDayCardStyles();
+    const fullDate = new Date(year, month, day).toLocaleString("default", { weekday: "long", day: "numeric", month: "long" });
     const {
         tasks,
         adding,
@@ -39,6 +41,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
         <div
             className={mergeClasses(
                 styles.card,
+                isDetailView && styles.detailCard,
                 isToday && styles.today,
                 !isToday && isWeekend && styles.weekend,
                 isOtherMonth && styles.otherMonth,
@@ -53,18 +56,24 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
 
             <DayCardProgress progress={progress} saving={saving} hasTasks={tasks.length > 0} isPast={isPast} />
 
-            <div className={styles.header}>
-                <span className={styles.dayName}>{shortName}</span>
-                <span className={styles.dayNumber}>{day}</span>
-            </div>
+            {isDetailView ? (
+                <div className={styles.detailHeader}>
+                    <span className={styles.detailDate}>{fullDate}</span>
+                </div>
+            ) : (
+                <div className={styles.header}>
+                    <span className={styles.dayName}>{shortName}</span>
+                    <span className={styles.dayNumber}>{day}</span>
+                </div>
+            )}
 
-            <div className={styles.body}>
+            <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
                 {tasks.filter(t => !t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     return (
                         <Checkbox
                             key={idx}
-                            className={styles.checkboxItem}
+                            className={mergeClasses(styles.checkboxItem, isDetailView && styles.detailCheckboxItem)}
                             label={task.label}
                             checked={task.checked}
                             disabled={isReadOnly}
@@ -82,7 +91,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     return (
                         <div key={`custom-${idx}`} className={styles.customTaskRow}>
                             <Checkbox
-                                className={styles.customTaskCheckbox}
+                                className={mergeClasses(styles.customTaskCheckbox, isDetailView && styles.detailCheckboxItem)}
                                 label={task.label}
                                 checked={task.checked}
                                 disabled={isReadOnly}
