@@ -27,7 +27,13 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday.setHours(0, 0, 0, 0);
-    const isReadOnly = new Date(year, month, day) < yesterday;
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    const cardDate = new Date(year, month, day);
+    const isReadOnly = cardDate < yesterday || cardDate > tomorrow;
 
     useEffect(() => {
         setTasks(initialTasks);
@@ -151,7 +157,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     />
                 ))}
 
-                {!isReadOnly && adding && (
+                {adding && (
                     <Input
                         autoFocus
                         size="small"
@@ -164,11 +170,9 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     />
                 )}
 
-                {!isReadOnly && (
-                    <button className={mergeClasses(styles.addButton, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
-                        + add task
-                    </button>
-                )}
+                <button className={mergeClasses(styles.addButton, adding && styles.addButtonVisible)} onClick={() => setAdding(true)}>
+                    + add task
+                </button>
             </div>
         </div>
     );
