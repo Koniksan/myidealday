@@ -46,8 +46,8 @@ export const useDayCardListStyles = makeStyles({
     },
     grid: {
         display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "12px",
+        gridTemplateColumns: "repeat(7, 1fr)",
+        gap: "8px",
         [breakpoints.mobile]: {
             display: "flex",
             flexWrap: "nowrap",
@@ -58,6 +58,18 @@ export const useDayCardListStyles = makeStyles({
             scrollbarWidth: "none",
             msOverflowStyle: "none",
             "::-webkit-scrollbar": { display: "none" },
+        },
+    },
+    weekDayHeader: {
+        textAlign: "center",
+        fontSize: "11px",
+        fontWeight: "600",
+        color: tokens.colorNeutralForeground3,
+        textTransform: "uppercase",
+        letterSpacing: "0.05em",
+        padding: "4px 0 8px",
+        [breakpoints.mobile]: {
+            display: "none",
         },
     },
 });

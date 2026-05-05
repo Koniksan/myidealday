@@ -11,8 +11,11 @@ import {
 
 interface UseDayCardListResult {
     days: DayCardProps[];
+    offsetDays: DayCardProps[];
     monthName: string;
     year: number;
+    month: number;
+    firstDayOffset: number;
     planLabels: string[];
     loading: boolean;
     gridRef: RefObject<HTMLDivElement | null>;
@@ -65,7 +68,12 @@ export const useDayCardList = (): UseDayCardListResult => {
 
     const gridRef = useRef<HTMLDivElement>(null);
     const [daysByDate, setDaysByDate] = useState<Record<string, StoredDay>>({});
+    const [prevMonthDaysByDate, setPrevMonthDaysByDate] = useState<Record<string, StoredDay>>({});
     const [loading, setLoading] = useState(true);
+
+    const firstDayOffset = (new Date(year, month, 1).getDay() + 6) % 7;
+    const prevYear = month === 0 ? year - 1 : year;
+    const prevMonthIndex = month === 0 ? 11 : month - 1;
 
     useEffect(() => {
         setLoading(true);
@@ -74,6 +82,13 @@ export const useDayCardList = (): UseDayCardListResult => {
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [year, month]);
+
+    useEffect(() => {
+        if (firstDayOffset === 0) { setPrevMonthDaysByDate({}); return; }
+        loadTasksForMonth(prevYear, prevMonthIndex)
+            .then(setPrevMonthDaysByDate)
+            .catch(console.error);
+    }, [prevYear, prevMonthIndex, firstDayOffset]);
 
     const toDateString = (day: number) =>
         `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -108,6 +123,25 @@ export const useDayCardList = (): UseDayCardListResult => {
             isToday: year === todayYear && month === todayMonth && day === today,
             isWeekend: dow === 0 || dow === 6,
             initialTasks: daysByDate[toDateString(day)]?.tasks ?? [],
+        };
+    });
+
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const toPrevDateString = (day: number) =>
+        `${prevYear}-${String(prevMonthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    const offsetDays: DayCardProps[] = Array.from({ length: firstDayOffset }, (_, i) => {
+        const day = prevMonthLastDay - firstDayOffset + 1 + i;
+        const date = new Date(prevYear, prevMonthIndex, day);
+        const dow = date.getDay();
+        return {
+            year: prevYear,
+            month: prevMonthIndex,
+            day,
+            shortName: date.toLocaleString("default", { weekday: "short" }),
+            isToday: false,
+            isWeekend: dow === 0 || dow === 6,
+            initialTasks: prevMonthDaysByDate[toPrevDateString(day)]?.tasks ?? [],
         };
     });
 
@@ -195,5 +229,5 @@ export const useDayCardList = (): UseDayCardListResult => {
         }
     }, [loading]);
 
-    return { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday };
+    return { days, offsetDays, monthName, year, month, firstDayOffset, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday };
 };

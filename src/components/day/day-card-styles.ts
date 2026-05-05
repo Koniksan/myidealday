@@ -7,7 +7,7 @@ export const useDayCardStyles = makeStyles({
         flexDirection: "column",
         alignItems: "stretch",
         width: "100%",
-        minHeight: "200px",
+        minHeight: "160px",
         borderRadius: "10px",
         background: tokens.colorNeutralBackground2,
         border: `1px solid ${tokens.colorNeutralStroke2}`,
@@ -32,6 +32,7 @@ export const useDayCardStyles = makeStyles({
         },
     },
     today: {
+        gridColumn: "span 2",
         border: `1.5px solid ${tokens.colorBrandBackground}`,
         ":hover": {
             boxShadow: tokens.shadow8,
@@ -46,6 +47,11 @@ export const useDayCardStyles = makeStyles({
     },
     weekend: {
         background: tokens.colorNeutralBackground3,
+    },
+    otherMonth: {
+        background: tokens.colorNeutralBackground2,
+        border: `1px solid ${tokens.colorNeutralStrokeDisabled}`,
+        pointerEvents: "none",
     },
     progressCircle: {
         position: "absolute",
@@ -150,10 +156,5 @@ export const useDayCardStyles = makeStyles({
         display: "flex",
         alignItems: "center",
         color: tokens.colorNeutralForeground3,
-        opacity: "var(--delete-btn-opacity, 0)" as unknown as number,
-        transition: "opacity 0.15s, color 0.15s",
-        ":hover": {
-            color: tokens.colorStatusDangerForeground1,
-        },
     },
 });

@@ -7,9 +7,11 @@ import { useDayCardList } from "./useDayCardList";
 import { DayPlanPanel } from "../day-plan-panel";
 import { useHeaderActions } from "../../infrastructure/context/header-actions-context";
 
+const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
-    const { days, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday } = useDayCardList();
+    const { days, offsetDays, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
@@ -90,6 +92,12 @@ export const DayCardList: React.FC = () => {
             </div>
 
             <div className={styles.grid} ref={gridRef}>
+                {WEEK_DAYS.map(d => (
+                    <div key={d} className={styles.weekDayHeader}>{d}</div>
+                ))}
+                {!loading && offsetDays.map(dayProps => (
+                    <DayCard key={`prev-${dayProps.day}`} {...dayProps} isOtherMonth />
+                ))}
                 {loading
                     ? Array.from({ length: 30 }, (_, i) => <DayCardShimmer key={i} />)
                     : days.map(({ year, month, day, shortName, isToday, isWeekend, initialTasks }) => (

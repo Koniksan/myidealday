@@ -13,10 +13,11 @@ export interface DayCardProps {
     shortName: string;
     isToday: boolean;
     isWeekend: boolean;
+    isOtherMonth?: boolean;
     initialTasks?: StoredTask[];
 }
 
-export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, initialTasks = [] }) => {
+export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, isOtherMonth = false, initialTasks = [] }) => {
     const styles = useDayCardStyles();
     const {
         tasks,
@@ -40,6 +41,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 styles.card,
                 isToday && styles.today,
                 !isToday && isWeekend && styles.weekend,
+                isOtherMonth && styles.otherMonth,
             )}
             {...(isToday ? { "data-today": "true" } : {})}
         >
