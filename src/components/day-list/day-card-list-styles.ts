@@ -25,12 +25,11 @@ export const useDayCardListStyles = makeStyles({
         border: `1px solid ${tokens.colorNeutralStroke2}`,
         pointerEvents: "all",
     },
-    detailSideActions: {
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        minHeight: "40px",
-        marginBottom: "60px",
+    fab: {
+        position: "fixed",
+        bottom: "32px",
+        right: "32px",
+        boxShadow: tokens.shadow16,
     },
     grid: {
         display: "grid",
@@ -69,7 +68,7 @@ export const useDayCardListStyles = makeStyles({
     desktopColumns: {
         display: "flex",
         gap: "24px",
-        alignItems: "flex-start",
+        alignItems: "center",
     },
     calendarSide: {
         flex: "0 0 65%",

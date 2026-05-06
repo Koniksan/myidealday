@@ -46,13 +46,6 @@ export const DayCardList: React.FC = () => {
                 appearance: "secondary" as const,
                 onClick: goToToday,
             },
-            {
-                id: "edit-plan",
-                label: hasExistingPlan ? "Edit month plan" : "Add month plan",
-                icon: hasExistingPlan ? <EditRegular /> : <AddRegular />,
-                appearance: "primary" as const,
-                onClick: () => openDialog(hasExistingPlan ? "edit" : "add"),
-            },
         ]);
         return () => setActions([]);
     }, [hasExistingPlan, isMobile, setActions]);
@@ -69,11 +62,11 @@ export const DayCardList: React.FC = () => {
 
     return (
         <>
-            {/* Desktop: two-column layout */}
+            {/* Desktop layout */}
             <div className={styles.desktopLayout}>
+                {monthNav}
                 <div className={styles.desktopColumns}>
                     <div className={styles.calendarSide}>
-                        {monthNav}
                         <div className={styles.grid} ref={gridRef}>
                             {WEEK_DAYS.map(d => (
                                 <div key={d} className={styles.weekDayHeader}>{d}</div>
@@ -100,17 +93,7 @@ export const DayCardList: React.FC = () => {
                             }
                         </div>
                     </div>
-
                     <div className={styles.detailSide}>
-                        <div className={styles.detailSideActions}>
-                            <Button
-                                appearance="primary"
-                                icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}
-                                onClick={() => openDialog(hasExistingPlan ? "edit" : "add")}
-                            >
-                                {hasExistingPlan ? "Edit month plan" : "Add month plan"}
-                            </Button>
-                        </div>
                         <DayCard
                             key={`detail-${selectedDayProps.year}-${selectedDayProps.month}-${selectedDayProps.day}`}
                             {...selectedDayProps}
@@ -141,6 +124,17 @@ export const DayCardList: React.FC = () => {
                     }
                 </div>
             </div>
+
+            <Button
+                shape="circular"
+                size="large"
+                appearance="primary"
+                icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}
+                onClick={() => openDialog(hasExistingPlan ? "edit" : "add")}
+                className={styles.fab}
+            >
+                {hasExistingPlan ? "Edit month plan" : "Add month plan"}
+            </Button>
 
             <DayPlanPanel
                 open={dialogOpen}

@@ -91,6 +91,33 @@ export const useDayCardStyles = makeStyles({
         animationTimingFunction: "ease-in",
         animationFillMode: "both",
     },
+    progressCircleSmall: {
+        position: "absolute",
+        top: "4px",
+        right: "4px",
+        width: "26px",
+        height: "26px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        pointerEvents: "none",
+        animationName: {
+            from: { opacity: "0", transform: "scale(0.6)" },
+            to: { opacity: "1", transform: "scale(1)" },
+        },
+        animationDuration: "0.2s",
+        animationTimingFunction: "ease-out",
+        animationFillMode: "both",
+    },
+    progressCircleSmallFadeOut: {
+        animationName: {
+            from: { opacity: "1", transform: "scale(1)" },
+            to: { opacity: "0", transform: "scale(0.6)" },
+        },
+        animationDuration: "0.2s",
+        animationTimingFunction: "ease-in",
+        animationFillMode: "both",
+    },
     header: {
         display: "flex",
         flexDirection: "column",
