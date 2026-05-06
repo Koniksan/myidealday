@@ -17,7 +17,7 @@ export interface DayCardMiniProps {
 }
 
 export const DayCardMini: React.FC<DayCardMiniProps> = ({
-    day, shortName, isWeekend, isOtherMonth, isSelected, initialTasks = [], onClick,
+    day, shortName, isToday, isWeekend, isOtherMonth, isSelected, initialTasks = [], onClick,
 }) => {
     const styles = useDayCardMiniStyles();
 
@@ -29,6 +29,7 @@ export const DayCardMini: React.FC<DayCardMiniProps> = ({
                 !isSelected && isWeekend && styles.weekend,
                 isOtherMonth && styles.otherMonth,
             )}
+            {...(isToday ? { "data-today": "true" } : {})}
             onClick={onClick}
         >
             <span className={mergeClasses(styles.dayName, isSelected && styles.dayNameSelected)}>

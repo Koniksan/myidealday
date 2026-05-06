@@ -46,7 +46,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 !isToday && isWeekend && styles.weekend,
                 isOtherMonth && styles.otherMonth,
             )}
-            {...(isToday ? { "data-today": "true" } : {})}
+            {...(isToday && !isDetailView ? { "data-today": "true" } : {})}
         >
             {isToday && (
                 <Badge appearance="filled" color="brand" size="small" className={styles.todayBadge}>

@@ -58,9 +58,14 @@ export const useDayCardList = (): UseDayCardListResult => {
         return next;
     });
 
+    const scrollToToday = () => {
+        const el = [...document.querySelectorAll("[data-today]")].find(e => e.getBoundingClientRect().width > 0);
+        el?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+    };
+
     const goToToday = () => {
         if (year === todayYear && month === todayMonth) {
-            document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+            scrollToToday();
         } else {
             setSelectedDate(new Date(todayYear, todayMonth, 1));
         }
@@ -232,7 +237,7 @@ export const useDayCardList = (): UseDayCardListResult => {
     useEffect(() => {
         if (loading) return;
         if (year === todayYear && month === todayMonth) {
-            document.querySelector("[data-today]")?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+            scrollToToday();
         } else {
             window.scrollTo({ top: 0, behavior: "smooth" });
         }

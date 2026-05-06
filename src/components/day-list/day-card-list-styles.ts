@@ -2,14 +2,6 @@ import { makeStyles, tokens } from "@fluentui/react-components";
 import { breakpoints } from "../common/styles/breakpoints";
 
 export const useDayCardListStyles = makeStyles({
-    header: {
-        display: "flex",
-        alignItems: "center",
-        marginBottom: "24px",
-        [breakpoints.mobile]: {
-            padding: "0 20px",
-        },
-    },
     monthNav: {
         position: "sticky",
         top: "calc(56px + env(safe-area-inset-top) + 8px)",
@@ -33,16 +25,12 @@ export const useDayCardListStyles = makeStyles({
         border: `1px solid ${tokens.colorNeutralStroke2}`,
         pointerEvents: "all",
     },
-    actions: {
+    detailSideActions: {
         display: "flex",
+        justifyContent: "flex-end",
         alignItems: "center",
-        gap: "8px",
-        marginLeft: "auto",
-        flexShrink: 0,
-        "& > button": {
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-        },
+        minHeight: "40px",
+        marginBottom: "60px",
     },
     grid: {
         display: "grid",
@@ -73,16 +61,19 @@ export const useDayCardListStyles = makeStyles({
         },
     },
     desktopLayout: {
-        display: "flex",
-        gap: "24px",
-        alignItems: "flex-start",
+        display: "block",
         [breakpoints.mobile]: {
             display: "none",
         },
     },
+    desktopColumns: {
+        display: "flex",
+        gap: "24px",
+        alignItems: "flex-start",
+    },
     calendarSide: {
-        flex: "0 0 auto",
-        width: "min(460px, 50%)",
+        flex: "0 0 65%",
+        width: "65%",
     },
     detailSide: {
         flex: 1,

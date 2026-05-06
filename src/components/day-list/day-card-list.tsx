@@ -1,6 +1,6 @@
 import { Button, Text } from "@fluentui/react-components";
 import { AddRegular, CalendarTodayRegular, ChevronLeftRegular, ChevronRightRegular, EditRegular } from "@fluentui/react-icons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DayCard, DayCardShimmer } from "../day";
 import { DayCardMini } from "../day/day-card-mini";
 import { useDayCardListStyles } from "./day-card-list-styles";
@@ -16,9 +16,15 @@ export const DayCardList: React.FC = () => {
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
-    const actionsRef = useRef<HTMLDivElement>(null);
-    const [actionsInView, setActionsInView] = useState(true);
+    const [isMobile, setIsMobile] = useState(() => window.matchMedia("(max-width: 768px)").matches);
     const { setActions } = useHeaderActions();
+
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 768px)");
+        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+        mq.addEventListener("change", handler);
+        return () => mq.removeEventListener("change", handler);
+    }, []);
 
     const openDialog = (mode: "add" | "edit") => {
         setDialogMode(mode);
@@ -28,19 +34,7 @@ export const DayCardList: React.FC = () => {
     const hasExistingPlan = planLabels.length > 0;
 
     useEffect(() => {
-        const target = actionsRef.current;
-        if (!target) return;
-        const headerHeight = document.querySelector("header")?.getBoundingClientRect().height ?? 44;
-        const observer = new IntersectionObserver(
-            ([entry]) => setActionsInView(entry.isIntersecting),
-            { rootMargin: `-${Math.ceil(headerHeight)}px 0px 0px 0px`, threshold: 0 },
-        );
-        observer.observe(target);
-        return () => observer.disconnect();
-    }, [loading]);
-
-    useEffect(() => {
-        if (actionsInView) {
+        if (!isMobile) {
             setActions([]);
             return;
         }
@@ -49,36 +43,19 @@ export const DayCardList: React.FC = () => {
                 id: "today",
                 label: "Today",
                 icon: <CalendarTodayRegular />,
-                appearance: "secondary",
+                appearance: "secondary" as const,
                 onClick: goToToday,
             },
             {
                 id: "edit-plan",
-                label: hasExistingPlan ? "Edit plan" : "Add plan",
+                label: hasExistingPlan ? "Edit month plan" : "Add month plan",
                 icon: hasExistingPlan ? <EditRegular /> : <AddRegular />,
-                appearance: "primary",
+                appearance: "primary" as const,
                 onClick: () => openDialog(hasExistingPlan ? "edit" : "add"),
             },
         ]);
         return () => setActions([]);
-    }, [actionsInView, hasExistingPlan, setActions]);
-
-    const topBar = (
-        <div className={styles.header}>
-            <div className={styles.actions} ref={actionsRef}>
-                <Button appearance="secondary" icon={<CalendarTodayRegular />} onClick={goToToday}>
-                    Today
-                </Button>
-                <Button
-                    appearance="primary"
-                    icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}
-                    onClick={() => openDialog(hasExistingPlan ? "edit" : "add")}
-                >
-                    {hasExistingPlan ? "Edit plan" : "Add plan"}
-                </Button>
-            </div>
-        </div>
-    );
+    }, [hasExistingPlan, isMobile, setActions]);
 
     const monthNav = (
         <div className={styles.monthNav}>
@@ -94,48 +71,57 @@ export const DayCardList: React.FC = () => {
         <>
             {/* Desktop: two-column layout */}
             <div className={styles.desktopLayout}>
-                <div className={styles.calendarSide}>
-                    {topBar}
-                    {monthNav}
-                    <div className={styles.grid} ref={gridRef}>
-                        {WEEK_DAYS.map(d => (
-                            <div key={d} className={styles.weekDayHeader}>{d}</div>
-                        ))}
-                        {!loading && offsetDays.map(dayProps => (
-                            <DayCardMini
-                                key={`prev-${dayProps.day}`}
-                                {...dayProps}
-                                isOtherMonth
-                                isSelected={false}
-                                onClick={() => {}}
-                            />
-                        ))}
-                        {loading
-                            ? Array.from({ length: 30 }, (_, i) => <DayCardShimmer key={i} />)
-                            : days.map(dayProps => (
+                <div className={styles.desktopColumns}>
+                    <div className={styles.calendarSide}>
+                        {monthNav}
+                        <div className={styles.grid} ref={gridRef}>
+                            {WEEK_DAYS.map(d => (
+                                <div key={d} className={styles.weekDayHeader}>{d}</div>
+                            ))}
+                            {!loading && offsetDays.map(dayProps => (
                                 <DayCardMini
-                                    key={dayProps.day}
+                                    key={`prev-${dayProps.day}`}
                                     {...dayProps}
-                                    isSelected={dayProps.day === selectedDay}
-                                    onClick={() => setSelectedDay(dayProps.day)}
+                                    isOtherMonth
+                                    isSelected={false}
+                                    onClick={() => {}}
                                 />
-                            ))
-                        }
+                            ))}
+                            {loading
+                                ? Array.from({ length: 30 }, (_, i) => <DayCardShimmer key={i} />)
+                                : days.map(dayProps => (
+                                    <DayCardMini
+                                        key={dayProps.day}
+                                        {...dayProps}
+                                        isSelected={dayProps.day === selectedDay}
+                                        onClick={() => setSelectedDay(dayProps.day)}
+                                    />
+                                ))
+                            }
+                        </div>
                     </div>
-                </div>
 
-                <div className={styles.detailSide}>
-                    <DayCard
-                        key={`detail-${selectedDayProps.year}-${selectedDayProps.month}-${selectedDayProps.day}`}
-                        {...selectedDayProps}
-                        isDetailView
-                    />
+                    <div className={styles.detailSide}>
+                        <div className={styles.detailSideActions}>
+                            <Button
+                                appearance="primary"
+                                icon={hasExistingPlan ? <EditRegular /> : <AddRegular />}
+                                onClick={() => openDialog(hasExistingPlan ? "edit" : "add")}
+                            >
+                                {hasExistingPlan ? "Edit month plan" : "Add month plan"}
+                            </Button>
+                        </div>
+                        <DayCard
+                            key={`detail-${selectedDayProps.year}-${selectedDayProps.month}-${selectedDayProps.day}`}
+                            {...selectedDayProps}
+                            isDetailView
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Mobile: horizontal scroll layout */}
             <div className={styles.mobileLayout}>
-                {topBar}
                 {monthNav}
                 <div className={styles.mobileGrid} ref={gridRef}>
                     {loading
