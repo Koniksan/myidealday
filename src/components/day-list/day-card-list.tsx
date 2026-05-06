@@ -1,5 +1,5 @@
 import { Button, Text } from "@fluentui/react-components";
-import { AddRegular, CalendarTodayRegular, ChevronLeftRegular, ChevronRightRegular, EditRegular } from "@fluentui/react-icons";
+import { AddRegular, ChevronLeftRegular, ChevronRightRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { DayCard, DayCardShimmer } from "../day";
 import { DayCardMini } from "../day/day-card-mini";
@@ -12,7 +12,7 @@ const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
-    const { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday } = useDayCardList();
+    const { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
@@ -40,11 +40,11 @@ export const DayCardList: React.FC = () => {
         }
         setActions([
             {
-                id: "today",
-                label: "Today",
-                icon: <CalendarTodayRegular />,
-                appearance: "secondary" as const,
-                onClick: goToToday,
+                id: "edit-plan",
+                label: hasExistingPlan ? "Edit month plan" : "Add month plan",
+                icon: hasExistingPlan ? <EditRegular /> : <AddRegular />,
+                appearance: "primary" as const,
+                onClick: () => openDialog(hasExistingPlan ? "edit" : "add"),
             },
         ]);
         return () => setActions([]);
