@@ -25,8 +25,14 @@ export const useFeedbackPanelStyles = makeStyles({
         flexDirection: "column",
         gap: "8px",
     },
+    composeBody: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+    },
     textarea: {
         width: "100%",
-        minHeight: "120px",
+        minHeight: "160px",
+        fontSize: "16px",
     },
 });

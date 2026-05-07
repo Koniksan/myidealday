@@ -1,6 +1,5 @@
 import {
     Button,
-    Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger,
     DrawerBody, DrawerHeader, DrawerHeaderTitle,
     OverlayDrawer,
     Spinner,
@@ -9,7 +8,7 @@ import {
     Toast, ToastTitle,
     useToastController,
 } from "@fluentui/react-components";
-import { AddRegular, ChatRegular, DismissRegular } from "@fluentui/react-icons";
+import { AddRegular, ArrowLeftRegular, ChatRegular, DismissRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../infrastructure/context/auth-context";
 import { createFeedback, deleteFeedback, getFeedbacks, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
@@ -28,7 +27,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
 
     const [feedbacks, setFeedbacks] = useState<StoredFeedback[]>([]);
     const [loading, setLoading] = useState(false);
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [composing, setComposing] = useState(false);
     const [draft, setDraft] = useState("");
     const [sending, setSending] = useState(false);
 
@@ -53,7 +52,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
             const saved = await createFeedback(user.id, draft.trim(), user.email ?? "");
             setFeedbacks(prev => [saved, ...prev]);
             setDraft("");
-            setDialogOpen(false);
+            setComposing(false);
             dispatchToast(
                 <Toast>
                     <ToastTitle>Feedback sent successfully!</ToastTitle>
@@ -67,18 +66,24 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
         }
     };
 
+    const handleClose = () => {
+        setComposing(false);
+        setDraft("");
+        onClose();
+    };
+
     return (
         <>
-            <OverlayDrawer position="end" open={open} onOpenChange={(_, { open: isOpen }) => !isOpen && onClose()}>
+            <OverlayDrawer position="end" open={open} onOpenChange={(_, { open: isOpen }) => !isOpen && handleClose()}>
                 <DrawerHeader>
                     <DrawerHeaderTitle
-                        action={<Button appearance="subtle" icon={<DismissRegular />} onClick={onClose} />}
+                        action={<Button appearance="subtle" icon={<DismissRegular />} onClick={handleClose} />}
                     >
                         My feedbacks
                     </DrawerHeaderTitle>
                 </DrawerHeader>
                 <DrawerBody className={styles.body}>
-                    <Button appearance="primary" icon={<AddRegular />} onClick={() => setDialogOpen(true)}>
+                    <Button appearance="primary" icon={<AddRegular />} onClick={() => setComposing(true)}>
                         New feedback
                     </Button>
 
@@ -99,35 +104,33 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                 </DrawerBody>
             </OverlayDrawer>
 
-            <Dialog open={dialogOpen} onOpenChange={(_, { open: isOpen }) => !isOpen && setDialogOpen(false)}>
-                <DialogSurface>
-                    <DialogBody>
-                        <DialogTitle>New feedback</DialogTitle>
-                        <DialogContent>
-                            <Textarea
-                                className={styles.textarea}
-                                placeholder="Share your thoughts..."
-                                value={draft}
-                                onChange={(_, d) => setDraft(d.value)}
-                                resize="vertical"
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <DialogTrigger disableButtonEnhancement>
-                                <Button appearance="secondary">Cancel</Button>
-                            </DialogTrigger>
-                            <Button
-                                appearance="primary"
-                                disabled={!draft.trim() || sending}
-                                icon={sending ? <Spinner size="tiny" /> : undefined}
-                                onClick={handleSubmit}
-                            >
-                                Send
-                            </Button>
-                        </DialogActions>
-                    </DialogBody>
-                </DialogSurface>
-            </Dialog>
+            <OverlayDrawer position="end" open={composing} onOpenChange={(_, { open: isOpen }) => !isOpen && setComposing(false)}>
+                <DrawerHeader>
+                    <DrawerHeaderTitle
+                        action={<Button appearance="subtle" icon={<DismissRegular />} onClick={() => setComposing(false)} />}
+                    >
+                        <Button appearance="subtle" icon={<ArrowLeftRegular />} onClick={() => setComposing(false)} />
+                        New feedback
+                    </DrawerHeaderTitle>
+                </DrawerHeader>
+                <DrawerBody className={styles.composeBody}>
+                    <Textarea
+                        className={styles.textarea}
+                        placeholder="Share your thoughts..."
+                        value={draft}
+                        onChange={(_, d) => setDraft(d.value)}
+                        resize="vertical"
+                    />
+                    <Button
+                        appearance="primary"
+                        disabled={!draft.trim() || sending}
+                        icon={sending ? <Spinner size="tiny" /> : undefined}
+                        onClick={handleSubmit}
+                    >
+                        Send
+                    </Button>
+                </DrawerBody>
+            </OverlayDrawer>
         </>
     );
 };

@@ -171,6 +171,7 @@ export const useDayCardStyles = makeStyles({
     },
     addInput: {
         width: "100%",
+        fontSize: "16px",
     },
     menuButton: {
         position: "absolute",

@@ -7,6 +7,7 @@ import {
     deleteAllTasksFromDate,
     reorderTasksByLabelsForMonth,
     StoredDay,
+    StoredTask,
 } from "../../infrastructure/storages/day-storage";
 
 interface UseDayCardListResult {
@@ -28,6 +29,7 @@ interface UseDayCardListResult {
     prevMonth: () => void;
     nextMonth: () => void;
     goToToday: () => void;
+    updateDayTasks: (day: number, tasks: StoredTask[]) => void;
 }
 
 export const useDayCardList = (): UseDayCardListResult => {
