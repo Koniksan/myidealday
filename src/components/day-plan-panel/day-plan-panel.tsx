@@ -57,6 +57,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
         handleDragStart,
         handleDragOver,
         handleDragEnd,
+        handleTouchStart,
         apply,
         reset,
     } = useDayPlanPanel(props);
@@ -110,12 +111,16 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                 <div
                                     key={label}
                                     className={styles.listItem}
+                                    data-drag-index={i}
                                     draggable={editingIndex !== i}
                                     onDragStart={() => handleDragStart(i)}
                                     onDragOver={e => handleDragOver(e, i)}
                                     onDragEnd={handleDragEnd}
                                 >
-                                    <span className={styles.dragHandle}><ArrowSortFilled /></span>
+                                    <span
+                                        className={styles.dragHandle}
+                                        onTouchStart={editingIndex !== i ? () => handleTouchStart(i) : undefined}
+                                    ><ArrowSortFilled /></span>
                                     {editingIndex === i ? (
                                         <Input
                                             autoFocus
