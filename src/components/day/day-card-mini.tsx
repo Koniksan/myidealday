@@ -39,6 +39,7 @@ export const DayCardMini: React.FC<DayCardMiniProps> = ({
         <div
             className={mergeClasses(
                 styles.card,
+                isToday && styles.today,
                 isSelected && styles.selected,
                 !isSelected && isWeekend && styles.weekend,
                 isOtherMonth && styles.otherMonth,
@@ -67,6 +68,7 @@ export const DayCardMini: React.FC<DayCardMiniProps> = ({
                 isPast={isPast}
                 small
             />
+            {isToday && <span className={styles.todayDot} />}
         </div>
     );
 };
