@@ -15,7 +15,7 @@ import {
     Spinner,
     Subtitle2,
 } from "@fluentui/react-components";
-import { AddRegular, ArrowSortFilled, DeleteRegular, DismissRegular } from "@fluentui/react-icons";
+import { AddRegular, ArrowSortFilled, CheckmarkRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
 import React from "react";
 import { DesktopTooltip } from "../common";
 import { useDayPlanPanelStyles } from "./day-plan-panel-styles";
@@ -39,6 +39,12 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
         items,
         draft,
         setDraft,
+        editingIndex,
+        editingValue,
+        setEditingValue,
+        startEditing,
+        commitEdit,
+        cancelEdit,
         hasChanges,
         saving,
         confirmDiscard,
@@ -61,7 +67,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                 open={props.open}
                 onOpenChange={handleOpenChange}
                 position="end"
-                size="small"
+                size="medium"
             >
                 <DrawerHeader>
                     <DrawerHeaderTitle
@@ -104,19 +110,41 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                 <div
                                     key={label}
                                     className={styles.listItem}
-                                    draggable
+                                    draggable={editingIndex !== i}
                                     onDragStart={() => handleDragStart(i)}
                                     onDragOver={e => handleDragOver(e, i)}
                                     onDragEnd={handleDragEnd}
                                 >
                                     <span className={styles.dragHandle}><ArrowSortFilled /></span>
-                                    <span className={styles.listItemLabel}>{label}</span>
+                                    {editingIndex === i ? (
+                                        <Input
+                                            autoFocus
+                                            className={styles.listItemInput}
+                                            value={editingValue}
+                                            onChange={(_, d) => setEditingValue(d.value)}
+                                            onBlur={commitEdit}
+                                            onKeyDown={e => {
+                                                if (e.key === "Enter") commitEdit();
+                                                if (e.key === "Escape") cancelEdit();
+                                            }}
+                                        />
+                                    ) : (
+                                        <span className={styles.listItemLabel}>{label}</span>
+                                    )}
                                     <Button
                                         appearance="subtle"
                                         size="small"
-                                        icon={<DismissRegular />}
-                                        onClick={() => removeItem(i)}
+                                        icon={editingIndex === i ? <CheckmarkRegular /> : <EditRegular />}
+                                        onClick={() => editingIndex === i ? commitEdit() : startEditing(i)}
                                     />
+                                    {editingIndex !== i && (
+                                        <Button
+                                            appearance="subtle"
+                                            size="small"
+                                            icon={<DismissRegular />}
+                                            onClick={() => removeItem(i)}
+                                        />
+                                    )}
                                 </div>
                             ))}
                         </div>
