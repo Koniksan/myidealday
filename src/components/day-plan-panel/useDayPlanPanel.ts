@@ -40,6 +40,13 @@ export const useDayPlanPanel = ({
         setConfirmReset(false);
     }, [open]);
 
+    useEffect(() => {
+        if (!open) return;
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => { document.body.style.overflow = prev; };
+    }, [open]);
+
     const hasChanges = isEditMode
         ? JSON.stringify(items) !== JSON.stringify(originalLabels.current) || draft.trim().length > 0
         : items.length > 0 || draft.trim().length > 0;
@@ -98,6 +105,36 @@ export const useDayPlanPanel = ({
 
     const handleDragEnd = () => { dragIndex.current = null; };
 
+    const handleTouchStart = (i: number) => {
+        dragIndex.current = i;
+
+        const onMove = (e: TouchEvent) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const el = document.elementFromPoint(touch.clientX, touch.clientY);
+            const item = el?.closest("[data-drag-index]");
+            if (!item) return;
+            const targetIndex = parseInt(item.getAttribute("data-drag-index") ?? "-1", 10);
+            if (targetIndex < 0 || targetIndex === dragIndex.current) return;
+            setItems(prev => {
+                const next = [...prev];
+                const [moved] = next.splice(dragIndex.current!, 1);
+                next.splice(targetIndex, 0, moved);
+                dragIndex.current = targetIndex;
+                return next;
+            });
+        };
+
+        const onEnd = () => {
+            dragIndex.current = null;
+            document.removeEventListener("touchmove", onMove);
+            document.removeEventListener("touchend", onEnd);
+        };
+
+        document.addEventListener("touchmove", onMove, { passive: false });
+        document.addEventListener("touchend", onEnd);
+    };
+
     const apply = async () => {
         if (saving) return;
         setSaving(true);
@@ -146,6 +183,7 @@ export const useDayPlanPanel = ({
         handleDragStart,
         handleDragOver,
         handleDragEnd,
+        handleTouchStart,
         apply,
         reset,
     };
