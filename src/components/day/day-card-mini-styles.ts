@@ -1,4 +1,5 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
+import { breakpoints } from "../common";
 
 export const useDayCardMiniStyles = makeStyles({
     card: {
@@ -6,7 +7,7 @@ export const useDayCardMiniStyles = makeStyles({
         flexDirection: "column",
         padding: "10px",
         borderRadius: "8px",
-        minHeight: "70px",
+        minHeight: "110px",
         position: "relative",
         border: `1px solid ${tokens.colorNeutralStroke2}`,
         background: tokens.colorNeutralBackground2,
@@ -17,6 +18,9 @@ export const useDayCardMiniStyles = makeStyles({
             border: `1px solid ${tokens.colorNeutralStroke1}`,
             boxShadow: tokens.shadow4,
         },
+        [breakpoints.tablet]: {
+           padding: "6px",
+        },
     },
     selected: {
         border: `2px solid ${tokens.colorBrandBackground}`,
@@ -24,6 +28,22 @@ export const useDayCardMiniStyles = makeStyles({
             border: `2px solid ${tokens.colorBrandBackgroundHover}`,
             boxShadow: tokens.shadow8,
         },
+    },
+    today: {
+        border: `2px solid ${tokens.colorBrandBackground}`,
+        ":hover": {
+            border: `2px solid ${tokens.colorBrandBackgroundHover}`,
+        },
+    },
+    todayDot: {
+        position: "absolute",
+        bottom: "6px",
+        right: "6px",
+        width: "6px",
+        height: "6px",
+        borderRadius: "50%",
+        background: tokens.colorBrandBackground,
+        pointerEvents: "none",
     },
     weekend: {
         background: tokens.colorNeutralBackground3,
@@ -70,12 +90,12 @@ export const useDayCardMiniStyles = makeStyles({
     dots: {
         display: "flex",
         flexWrap: "wrap",
-        gap: "3px",
-        marginTop: "6px",
+        gap: "5px",
+        marginTop: "14px",
     },
     dot: {
-        width: "6px",
-        height: "6px",
+        width: "10px",
+        height: "10px",
         borderRadius: "50%",
         flexShrink: 0,
         border: `1px solid ${tokens.colorNeutralStroke1}`,
