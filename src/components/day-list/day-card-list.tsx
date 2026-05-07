@@ -12,7 +12,7 @@ const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
-    const { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday } = useDayCardList();
+    const { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday, updateDayTasks } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
@@ -98,6 +98,7 @@ export const DayCardList: React.FC = () => {
                             key={`detail-${selectedDayProps.year}-${selectedDayProps.month}-${selectedDayProps.day}`}
                             {...selectedDayProps}
                             isDetailView
+                            onTasksChange={(tasks) => updateDayTasks(selectedDay, tasks)}
                         />
                     </div>
                 </div>

@@ -16,9 +16,10 @@ export interface DayCardProps {
     isOtherMonth?: boolean;
     isDetailView?: boolean;
     initialTasks?: StoredTask[];
+    onTasksChange?: (tasks: StoredTask[]) => void;
 }
 
-export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, isOtherMonth = false, isDetailView = false, initialTasks = [] }) => {
+export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, isOtherMonth = false, isDetailView = false, initialTasks = [], onTasksChange }) => {
     const styles = useDayCardStyles();
     const fullDate = new Date(year, month, day).toLocaleString("default", { weekday: "long", day: "numeric", month: "long" });
     const {
@@ -35,7 +36,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
         removeCustomTask,
         commitDraft,
         onKeyDown,
-    } = useDayCard({ year, month, day, initialTasks });
+    } = useDayCard({ year, month, day, initialTasks, onTasksChange });
 
     return (
         <div

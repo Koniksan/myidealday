@@ -25,9 +25,9 @@ export const DayCardProgress: React.FC<DayCardProgressProps> = ({ progress, savi
     const styles = useDayCardStyles();
     const isComplete = progress === 100;
     const shouldRender = saving || progress > 0 || (isPast && hasTasks);
-
     const [visible, setVisible] = useState(shouldRender);
     const [fadingOut, setFadingOut] = useState(false);
+
 
     useEffect(() => {
         if (shouldRender) {

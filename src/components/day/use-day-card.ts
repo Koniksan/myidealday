@@ -6,9 +6,10 @@ interface UseDayCardOptions {
     month: number;
     day: number;
     initialTasks: StoredTask[];
+    onTasksChange?: (tasks: StoredTask[]) => void;
 }
 
-export const useDayCard = ({ year, month, day, initialTasks }: UseDayCardOptions) => {
+export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: UseDayCardOptions) => {
     const [tasks, setTasks] = useState<StoredTask[]>(initialTasks);
     const [adding, setAdding] = useState(false);
     const [draft, setDraft] = useState("");
@@ -39,12 +40,16 @@ export const useDayCard = ({ year, month, day, initialTasks }: UseDayCardOptions
         if (!task.id) return;
         const checked = !task.checked;
         updateTask(task.id, { checked }).catch(console.error);
-        setTasks(prev => prev.map((t, idx) => idx === i ? { ...t, checked } : t));
+        const newTasks = tasks.map((t, idx) => idx === i ? { ...t, checked } : t);
+        setTasks(newTasks);
+        onTasksChange?.(newTasks);
     };
 
     const removeCustomTask = (id: string) => {
-        setTasks(prev => prev.filter(t => t.id !== id));
+        const newTasks = tasks.filter(t => t.id !== id);
+        setTasks(newTasks);
         deleteTask(id).catch(console.error);
+        onTasksChange?.(newTasks);
     };
 
     const commitDraft = () => {
@@ -54,7 +59,11 @@ export const useDayCard = ({ year, month, day, initialTasks }: UseDayCardOptions
         if (label) {
             setSaving(true);
             saveTask(year, month, day, { label, checked: false, position: tasks.length, is_custom: true })
-                .then(saved => setTasks(prev => [...prev, saved]))
+                .then(saved => {
+                    const newTasks = [...tasks, saved];
+                    setTasks(newTasks);
+                    onTasksChange?.(newTasks);
+                })
                 .catch(console.error)
                 .finally(() => setSaving(false));
         }

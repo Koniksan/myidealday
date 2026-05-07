@@ -153,7 +153,7 @@ export const useDayCardStyles = makeStyles({
         borderRadius: "12px",
     },
     detailHeader: {
-        padding: "20px 20px 8px",
+        padding: "40px 20px 8px",
     },
     detailDate: {
         fontSize: "22px",

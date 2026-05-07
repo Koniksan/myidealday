@@ -254,5 +254,13 @@ export const useDayCardList = (): UseDayCardListResult => {
         initialTasks: daysByDate[toDateString(selectedDay)]?.tasks ?? [],
     };
 
-    return { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, month, firstDayOffset, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday };
+    const updateDayTasks = (day: number, tasks: StoredTask[]) => {
+        const dateStr = toDateString(day);
+        setDaysByDate(prev => ({
+            ...prev,
+            [dateStr]: { ...(prev[dateStr] ?? { date: dateStr }), tasks },
+        }));
+    };
+
+    return { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, month, firstDayOffset, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday, updateDayTasks };
 };
