@@ -14,6 +14,7 @@ import {
     OverlayDrawer,
     Spinner,
     Subtitle2,
+    mergeClasses,
 } from "@fluentui/react-components";
 import { AddRegular, ArrowSortFilled, CheckmarkRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
 import React from "react";
@@ -54,6 +55,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
         handleOpenChange,
         addItem,
         removeItem,
+        draggingIndex,
         handleDragStart,
         handleDragOver,
         handleDragEnd,
@@ -110,7 +112,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                             {items.map((label, i) => (
                                 <div
                                     key={label}
-                                    className={styles.listItem}
+                                    className={mergeClasses(styles.listItem, draggingIndex === i && styles.listItemDragging)}
                                     data-drag-index={i}
                                     draggable={editingIndex !== i}
                                     onDragStart={() => handleDragStart(i)}

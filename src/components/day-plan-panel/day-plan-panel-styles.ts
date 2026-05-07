@@ -61,7 +61,15 @@ export const useDayPlanPanelStyles = makeStyles({
         borderRadius: "6px",
         background: tokens.colorNeutralBackground3,
         cursor: "grab",
+        transition: "opacity 0.15s, box-shadow 0.15s, transform 0.15s",
         ":active": { cursor: "grabbing" },
+    },
+    listItemDragging: {
+        opacity: 0.6,
+        transform: "scale(1.02)",
+        boxShadow: tokens.shadow8,
+        background: tokens.colorNeutralBackground1,
+        cursor: "grabbing",
     },
     dragHandle: {
         display: "flex",

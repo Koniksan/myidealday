@@ -30,6 +30,7 @@ export const useDayPlanPanel = ({
     const [confirmReset, setConfirmReset] = useState(false);
     const [saving, setSaving] = useState(false);
     const dragIndex = useRef<number | null>(null);
+    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
     useEffect(() => {
         if (!open) return;
@@ -107,6 +108,7 @@ export const useDayPlanPanel = ({
 
     const handleTouchStart = (i: number) => {
         dragIndex.current = i;
+        setDraggingIndex(i);
 
         const onMove = (e: TouchEvent) => {
             e.preventDefault();
@@ -123,10 +125,12 @@ export const useDayPlanPanel = ({
                 dragIndex.current = targetIndex;
                 return next;
             });
+            setDraggingIndex(targetIndex);
         };
 
         const onEnd = () => {
             dragIndex.current = null;
+            setDraggingIndex(null);
             document.removeEventListener("touchmove", onMove);
             document.removeEventListener("touchend", onEnd);
         };
@@ -180,6 +184,7 @@ export const useDayPlanPanel = ({
         handleOpenChange,
         addItem,
         removeItem,
+        draggingIndex,
         handleDragStart,
         handleDragOver,
         handleDragEnd,
