@@ -24,6 +24,8 @@ export const useDayPlanPanel = ({
     const originalLabels = useRef<string[]>(planLabels);
     const [items, setItems] = useState<string[]>(planLabels);
     const [draft, setDraft] = useState("");
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
+    const [editingValue, setEditingValue] = useState("");
     const [confirmDiscard, setConfirmDiscard] = useState(false);
     const [confirmReset, setConfirmReset] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -59,6 +61,26 @@ export const useDayPlanPanel = ({
 
     const removeItem = (index: number) =>
         setItems(prev => prev.filter((_, i) => i !== index));
+
+    const startEditing = (index: number) => {
+        setEditingIndex(index);
+        setEditingValue(items[index]);
+    };
+
+    const commitEdit = () => {
+        if (editingIndex === null) return;
+        const value = editingValue.trim();
+        if (value && !items.some((l, i) => l === value && i !== editingIndex)) {
+            setItems(prev => prev.map((l, i) => i === editingIndex ? value : l));
+        }
+        setEditingIndex(null);
+        setEditingValue("");
+    };
+
+    const cancelEdit = () => {
+        setEditingIndex(null);
+        setEditingValue("");
+    };
 
     const handleDragStart = (i: number) => { dragIndex.current = i; };
 
@@ -106,6 +128,12 @@ export const useDayPlanPanel = ({
         items,
         draft,
         setDraft,
+        editingIndex,
+        editingValue,
+        setEditingValue,
+        startEditing,
+        commitEdit,
+        cancelEdit,
         hasChanges,
         saving,
         confirmDiscard,

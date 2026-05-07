@@ -73,6 +73,10 @@ export const useDayPlanPanelStyles = makeStyles({
         flex: 1,
         fontSize: "14px",
     },
+    listItemInput: {
+        flex: 1,
+        fontSize: "16px",
+    },
     description: {
         marginTop: "4px",
         fontSize: "14px",
