@@ -5,24 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useSignUpPageStyles } from "./signup-page-styles";
 import { PageLayout } from "../../components";
 import { useAuth } from "../../infrastructure/context/auth-context";
-
-const validateEmail = (value: string) => {
-    if (!value.trim()) return "Email is required.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Enter a valid email address.";
-    return null;
-};
-
-const validatePassword = (value: string) => {
-    if (!value) return "Password is required.";
-    if (value.length < 6) return "Password must be at least 6 characters.";
-    return null;
-};
-
-const validateConfirmPassword = (password: string, confirm: string) => {
-    if (!confirm) return "Please confirm your password.";
-    if (confirm !== password) return "Passwords do not match.";
-    return null;
-};
+import { useLocalization } from "../../infrastructure/context/locale-context";
 
 export const SignUpPage: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -38,6 +21,25 @@ export const SignUpPage: React.FC = () => {
     const styles = useSignUpPageStyles();
     const navigate = useNavigate();
     const { signUp } = useAuth();
+    const rs = useLocalization();
+
+    const validateEmail = (value: string) => {
+        if (!value.trim()) return rs.EmailRequired;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return rs.EmailInvalid;
+        return null;
+    };
+
+    const validatePassword = (value: string) => {
+        if (!value) return rs.PasswordRequired;
+        if (value.length < 6) return rs.PasswordMin;
+        return null;
+    };
+
+    const validateConfirmPassword = (pwd: string, confirm: string) => {
+        if (!confirm) return rs.ConfirmPasswordRequired;
+        if (confirm !== pwd) return rs.PasswordsMismatch;
+        return null;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,11 +63,11 @@ export const SignUpPage: React.FC = () => {
         return (
             <PageLayout centered>
                 <div className={styles.card}>
-                    <Body1Strong className={styles.subtitle}>Check your email</Body1Strong>
-                    <Text>We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.</Text>
+                    <Body1Strong className={styles.subtitle}>{rs.CheckEmail}</Body1Strong>
+                    <Text>{rs.ConfirmationSentPre} <strong>{email}</strong>{rs.ConfirmationSentPost}</Text>
                     <Text className={styles.login}>
-                        {"Already confirmed? "}
-                        <Link onClick={() => navigate("/")}>Log in</Link>
+                        {rs.AlreadyConfirmed}
+                        <Link onClick={() => navigate("/")}>{rs.LogIn}</Link>
                     </Text>
                 </div>
             </PageLayout>
@@ -74,7 +76,7 @@ export const SignUpPage: React.FC = () => {
 
     return (
         <PageLayout centered>
-            <Body1Strong className={styles.subtitle}>Create your account</Body1Strong>
+            <Body1Strong className={styles.subtitle}>{rs.CreateAccount}</Body1Strong>
 
             <div className={styles.card}>
                 <form className={styles.form} onSubmit={handleSubmit}>
@@ -87,7 +89,7 @@ export const SignUpPage: React.FC = () => {
                             id="signup-email"
                             name="email"
                             type="email"
-                            placeholder="Enter your email"
+                            placeholder={rs.EmailPlaceholder}
                             value={email}
                             onChange={(e) => {
                                 setEmail(e.target.value);
@@ -106,8 +108,8 @@ export const SignUpPage: React.FC = () => {
                             id="signup-password"
                             name="password"
                             type={passwordVisible ? "text" : "password"}
-                            placeholder="Create a password"
-                            aria-label="Password"
+                            placeholder={rs.CreatePasswordPlaceholder}
+                            aria-label={rs.Password}
                             value={password}
                             onChange={(e) => {
                                 setPassword(e.target.value);
@@ -119,7 +121,7 @@ export const SignUpPage: React.FC = () => {
                                     appearance="subtle"
                                     size="small"
                                     type="button"
-                                    aria-label={passwordVisible ? "Hide password" : "Show password"}
+                                    aria-label={passwordVisible ? rs.HidePassword : rs.ShowPassword}
                                     onClick={() => setPasswordVisible(v => !v)}
                                     icon={passwordVisible ? <EyeOffRegular /> : <EyeRegular />}
                                 />
@@ -136,8 +138,8 @@ export const SignUpPage: React.FC = () => {
                             id="signup-confirm-password"
                             name="confirmPassword"
                             type={confirmVisible ? "text" : "password"}
-                            placeholder="Confirm your password"
-                            aria-label="Confirm password"
+                            placeholder={rs.ConfirmPasswordPlaceholder}
+                            aria-label={rs.ConfirmPasswordLabel}
                             value={confirmPassword}
                             onChange={(e) => {
                                 setConfirmPassword(e.target.value);
@@ -149,7 +151,7 @@ export const SignUpPage: React.FC = () => {
                                     appearance="subtle"
                                     size="small"
                                     type="button"
-                                    aria-label={confirmVisible ? "Hide password" : "Show password"}
+                                    aria-label={confirmVisible ? rs.HidePassword : rs.ShowPassword}
                                     onClick={() => setConfirmVisible(v => !v)}
                                     icon={confirmVisible ? <EyeOffRegular /> : <EyeRegular />}
                                 />
@@ -162,13 +164,13 @@ export const SignUpPage: React.FC = () => {
                     )}
 
                     <Button className={styles.submitButton} appearance="primary" type="submit">
-                        Sign up
+                        {rs.SignUp}
                     </Button>
                 </form>
 
                 <Text className={styles.login}>
-                    {"Already have an account? "}
-                    <Link onClick={() => navigate("/")}>Log in</Link>
+                    {rs.AlreadyHaveAccount}
+                    <Link onClick={() => navigate("/")}>{rs.LogIn}</Link>
                 </Text>
             </div>
         </PageLayout>

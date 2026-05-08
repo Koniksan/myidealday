@@ -1,10 +1,11 @@
 import { Button, Divider, Text } from "@fluentui/react-components";
-import { DesktopTooltip } from "..";
+import { DesktopTooltip, LanguageSwitcher } from "..";
 import { WeatherMoonRegular, WeatherSunnyRegular } from "@fluentui/react-icons";
 import React from "react";
 import { useTheme } from "../../../infrastructure/context/theme-context";
 import { useAuth } from "../../../infrastructure/context/auth-context";
 import { useHeaderActions } from "../../../infrastructure/context/header-actions-context";
+import { useLocalization } from "../../../infrastructure/context/locale-context";
 import { UserLogo } from "../../user-logo";
 import { useHeaderStyles } from "./header-styles";
 import { Logo } from "./logo";
@@ -13,6 +14,7 @@ export const Header: React.FC = () => {
     const { isDark, toggleTheme } = useTheme();
     const { isLoggedIn } = useAuth();
     const { actions } = useHeaderActions();
+    const rs = useLocalization();
     const styles = useHeaderStyles();
 
     return (
@@ -34,7 +36,10 @@ export const Header: React.FC = () => {
                     </DesktopTooltip>
                 ))}
                 {actions.length > 0 && <Divider vertical className={styles.divider} />}
-                <DesktopTooltip content={isDark ? "Switch to light mode" : "Switch to dark mode"} relationship="label">
+
+                <LanguageSwitcher />
+
+                <DesktopTooltip content={isDark ? rs.SwitchToLight : rs.SwitchToDark} relationship="label">
                     <Button
                         appearance="subtle"
                         icon={isDark ? <WeatherSunnyRegular /> : <WeatherMoonRegular />}

@@ -5,12 +5,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { LoginPage, SignUpPage, UserPage, AuthCallbackPage, NotFoundPage } from "./pages";
 import { ThemeProvider } from "./infrastructure/context/theme-context";
 import { AuthProvider } from "./infrastructure/context/auth-context";
+import { LocaleProvider } from "./infrastructure/context/locale-context";
 import { ProtectedRoute } from "./components/protected-route/protected-route";
 
 import "./reset.css";
 
 export const App = () => {
     return (
+        <LocaleProvider>
         <AuthProvider>
             <ThemeProvider>
                 <Toaster toasterId="app" position="bottom-end" />
@@ -25,6 +27,7 @@ export const App = () => {
                 </BrowserRouter>
             </ThemeProvider>
         </AuthProvider>
+        </LocaleProvider>
     );
 };
 
