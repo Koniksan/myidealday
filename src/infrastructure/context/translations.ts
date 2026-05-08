@@ -20,7 +20,7 @@ const en = {
     Reset: "Reset",
     // calendar / day list
     Today: "Today",
-    EditMonthPlan: "Edit month plan",
+    EditMonthPlan: "Edit habit",
     AddMonthPlan: "Add new habit",
     WeekDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     DateLocale: "en-US",
@@ -123,7 +123,7 @@ const ru: typeof en = {
     Reset: "Сбросить",
     // calendar / day list
     Today: "Сегодня",
-    EditMonthPlan: "Редактировать план месяца",
+    EditMonthPlan: "Редактировать привычку",
     AddMonthPlan: "Добавить новую привычку",
     WeekDays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
     DateLocale: "ru-RU",
