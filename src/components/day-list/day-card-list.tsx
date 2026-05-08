@@ -134,7 +134,7 @@ export const DayCardList: React.FC = () => {
                 onClick={() => openDialog(hasExistingPlan ? "edit" : "add")}
                 className={styles.fab}
             >
-                {hasExistingPlan ? rs.EditMonthPlan : rs.AddMonthPlan}
+                {hasExistingPlan ? rs.EditHabit : rs.AddHabit}
             </Button>
 
             <DayPlanPanel
