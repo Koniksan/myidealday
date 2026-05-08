@@ -88,6 +88,19 @@ const en = {
     LocaleRU: "Ru",
     Feedback: "Feedback",
     LogOut: "Log out",
+    // admin panel
+    AdminPanel: "Admin Panel",
+    AdminUsers: "Users",
+    AdminFeedbacks: "Feedbacks",
+    AdminNoUsers: "No users found",
+    AdminNoFeedbacks: "No feedbacks found",
+    AdminAnonymous: "Anonymous",
+    AdminReplyPlaceholder: "Write a reply...",
+    AdminLastLogin: "Last login",
+    AdminNeverLoggedIn: "Never logged in",
+    AdminColName: "Name",
+    AdminColEmail: "Email",
+    AdminColRegistered: "Registered",
 };
 
 const ru: typeof en = {
@@ -178,6 +191,19 @@ const ru: typeof en = {
     LocaleEN: "Анг",
     Feedback: "Обратная связь",
     LogOut: "Выйти",
+    // admin panel
+    AdminPanel: "Панель администратора",
+    AdminUsers: "Пользователи",
+    AdminFeedbacks: "Отзывы",
+    AdminNoUsers: "Пользователи не найдены",
+    AdminNoFeedbacks: "Отзывов нет",
+    AdminAnonymous: "Аноним",
+    AdminReplyPlaceholder: "Напишите ответ...",
+    AdminLastLogin: "Последний вход",
+    AdminNeverLoggedIn: "Ещё не входил",
+    AdminColName: "Имя",
+    AdminColEmail: "Email",
+    AdminColRegistered: "Зарегистрирован",
 };
 
 export const translations: Record<Locale, typeof en> = { en, ru };
