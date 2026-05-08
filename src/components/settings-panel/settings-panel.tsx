@@ -9,7 +9,8 @@ import {
     OverlayDrawer,
 } from "@fluentui/react-components";
 import { DeleteRegular, DismissRegular, ImageAddRegular } from "@fluentui/react-icons";
-import React, { useState } from "react";
+import React from "react";
+import { useLocalization } from "../../infrastructure/context/locale-context";
 import { useSettingsPanelStyles } from "./settings-panel-styles";
 import { useSettingsPanel } from "./useSettingsPanel";
 
@@ -20,6 +21,7 @@ interface SettingsPanelProps {
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) => {
     const styles = useSettingsPanelStyles();
+    const rs = useLocalization();
     const {
         displayName,
         setDisplayName,
@@ -49,13 +51,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) =
                         <Button
                             appearance="subtle"
                             icon={<DismissRegular />}
-                            aria-label="Close"
+                            aria-label={rs.Close}
                             onClick={cancel}
                             disabled={saving}
                         />
                     }
                 >
-                    Settings
+                    {rs.Settings}
                 </DrawerHeaderTitle>
             </DrawerHeader>
 
@@ -81,7 +83,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) =
                             onClick={pickPhoto}
                             disabled={saving}
                         >
-                            {hasPhoto ? "Change photo" : "Add photo"}
+                            {hasPhoto ? rs.ChangePhoto : rs.AddPhoto}
                         </Button>
                         {hasPhoto && (
                             <Button
@@ -90,21 +92,21 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) =
                                 onClick={removePhoto}
                                 disabled={saving}
                             >
-                                Remove
+                                {rs.Remove}
                             </Button>
                         )}
                     </div>
                 </div>
 
                 <div className={styles.field}>
-                    <label className={styles.label} htmlFor="settings-display-name">Display name</label>
+                    <label className={styles.label} htmlFor="settings-display-name">{rs.DisplayName}</label>
                     <Input
                         id="settings-display-name"
                         className={styles.input}
                         value={displayName}
                         onChange={(_, d) => setDisplayName(d.value)}
                         disabled={saving}
-                        placeholder="Your name"
+                        placeholder={rs.YourName}
                     />
                 </div>
 
@@ -112,13 +114,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ open, onClose }) =
             </DrawerBody>
 
             <DrawerFooter className={styles.footer}>
-                <Button appearance="secondary" onClick={cancel} disabled={saving}>Cancel</Button>
+                <Button appearance="secondary" onClick={cancel} disabled={saving}>{rs.Cancel}</Button>
                 <Button
                     appearance="primary"
                     onClick={save}
                     disabled={!hasChanges || saving}
                 >
-                    {saving ? "Saving..." : "Save"}
+                    {saving ? rs.Saving : rs.Save}
                 </Button>
             </DrawerFooter>
         </OverlayDrawer>

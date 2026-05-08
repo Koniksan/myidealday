@@ -11,6 +11,7 @@ import {
 import { AddRegular, ArrowLeftRegular, ChatRegular, DismissRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../infrastructure/context/auth-context";
+import { useLocalization } from "../../infrastructure/context/locale-context";
 import { createFeedback, deleteFeedback, getFeedbacks, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
 import { FeedbackItem } from "./feedback-item";
 import { useFeedbackPanelStyles } from "./feedback-panel-styles";
@@ -22,6 +23,7 @@ interface FeedbackPanelProps {
 
 export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) => {
     const styles = useFeedbackPanelStyles();
+    const rs = useLocalization();
     const { user } = useAuth();
     const { dispatchToast } = useToastController("app");
 
@@ -55,7 +57,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
             setComposing(false);
             dispatchToast(
                 <Toast>
-                    <ToastTitle>Feedback sent successfully!</ToastTitle>
+                    <ToastTitle>{rs.FeedbackSent}</ToastTitle>
                 </Toast>,
                 { intent: "success" },
             );
@@ -79,12 +81,12 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                     <DrawerHeaderTitle
                         action={<Button appearance="subtle" icon={<DismissRegular />} onClick={handleClose} />}
                     >
-                        My feedbacks
+                        {rs.MyFeedbacks}
                     </DrawerHeaderTitle>
                 </DrawerHeader>
                 <DrawerBody className={styles.body}>
                     <Button appearance="primary" icon={<AddRegular />} onClick={() => setComposing(true)}>
-                        New feedback
+                        {rs.NewFeedback}
                     </Button>
 
                     {loading ? (
@@ -92,7 +94,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                     ) : feedbacks.length === 0 ? (
                         <div className={styles.emptyState}>
                             <ChatRegular fontSize={32} />
-                            <Text>No feedback yet</Text>
+                            <Text>{rs.NoFeedbackYet}</Text>
                         </div>
                     ) : (
                         <div className={styles.list}>
@@ -110,13 +112,13 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                         action={<Button appearance="subtle" icon={<DismissRegular />} onClick={() => setComposing(false)} />}
                     >
                         <Button appearance="subtle" icon={<ArrowLeftRegular />} onClick={() => setComposing(false)} />
-                        New feedback
+                        {rs.NewFeedback}
                     </DrawerHeaderTitle>
                 </DrawerHeader>
                 <DrawerBody className={styles.composeBody}>
                     <Textarea
                         className={styles.textarea}
-                        placeholder="Share your thoughts..."
+                        placeholder={rs.FeedbackPlaceholder}
                         value={draft}
                         onChange={(_, d) => setDraft(d.value)}
                         resize="vertical"
@@ -127,7 +129,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                         icon={sending ? <Spinner size="tiny" /> : undefined}
                         onClick={handleSubmit}
                     >
-                        Send
+                        {rs.Send}
                     </Button>
                 </DrawerBody>
             </OverlayDrawer>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, RefObject } from "react";
+import { useLocalization } from "../../infrastructure/context/locale-context";
 import { DayCardProps } from "../day";
 import {
     loadTasksForMonth,
@@ -33,6 +34,7 @@ interface UseDayCardListResult {
 }
 
 export const useDayCardList = (): UseDayCardListResult => {
+    const rs = useLocalization();
     const realToday = new Date();
     const todayYear = realToday.getFullYear();
     const todayMonth = realToday.getMonth();
@@ -45,7 +47,7 @@ export const useDayCardList = (): UseDayCardListResult => {
     });
     const year = selectedDate.getFullYear();
     const month = selectedDate.getMonth();
-    const monthName = selectedDate.toLocaleString("default", { month: "long" });
+    const monthName = selectedDate.toLocaleString(rs.DateLocale, { month: "long" });
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     const prevMonth = () => setSelectedDate(d => {
@@ -135,7 +137,7 @@ export const useDayCardList = (): UseDayCardListResult => {
             year,
             month,
             day,
-            shortName: date.toLocaleString("default", { weekday: "short" }),
+            shortName: date.toLocaleString(rs.DateLocale, { weekday: "short" }),
             isToday: year === todayYear && month === todayMonth && day === today,
             isWeekend: dow === 0 || dow === 6,
             initialTasks: daysByDate[toDateString(day)]?.tasks ?? [],
@@ -154,7 +156,7 @@ export const useDayCardList = (): UseDayCardListResult => {
             year: prevYear,
             month: prevMonthIndex,
             day,
-            shortName: date.toLocaleString("default", { weekday: "short" }),
+            shortName: date.toLocaleString(rs.DateLocale, { weekday: "short" }),
             isToday: false,
             isWeekend: dow === 0 || dow === 6,
             initialTasks: prevMonthDaysByDate[toPrevDateString(day)]?.tasks ?? [],
@@ -250,7 +252,7 @@ export const useDayCardList = (): UseDayCardListResult => {
         year,
         month,
         day: selectedDay,
-        shortName: selectedDayDate.toLocaleString("default", { weekday: "short" }),
+        shortName: selectedDayDate.toLocaleString(rs.DateLocale, { weekday: "short" }),
         isToday: year === todayYear && month === todayMonth && selectedDay === today,
         isWeekend: [0, 6].includes(selectedDayDate.getDay()),
         initialTasks: daysByDate[toDateString(selectedDay)]?.tasks ?? [],

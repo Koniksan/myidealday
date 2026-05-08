@@ -5,16 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useLoginPageStyles } from "./login-page-styles";
 import { PageLayout } from "../../components";
 import { useAuth } from "../../infrastructure/context/auth-context";
-
-const validateIdentifier = (value: string) => {
-    if (!value.trim()) return "Email or username is required.";
-    return null;
-};
-
-const validatePassword = (value: string) => {
-    if (!value) return "Password is required.";
-    return null;
-};
+import { useLocalization } from "../../infrastructure/context/locale-context";
 
 export const LoginPage: React.FC = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -27,6 +18,17 @@ export const LoginPage: React.FC = () => {
     const styles = useLoginPageStyles();
     const navigate = useNavigate();
     const { login } = useAuth();
+    const rs = useLocalization();
+
+    const validateIdentifier = (value: string) => {
+        if (!value.trim()) return rs.EmailUsernameRequired;
+        return null;
+    };
+
+    const validatePassword = (value: string) => {
+        if (!value) return rs.PasswordRequired;
+        return null;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -48,7 +50,7 @@ export const LoginPage: React.FC = () => {
 
     return (
         <PageLayout centered>
-            <Body1Strong className={styles.subtitle}>Focus. Build. Repeat.</Body1Strong>
+            <Body1Strong className={styles.subtitle}>{rs.FocusBuildRepeat}</Body1Strong>
 
             <div className={styles.card}>
                 <form className={styles.form} onSubmit={handleSubmit}>
@@ -60,7 +62,7 @@ export const LoginPage: React.FC = () => {
                             className={styles.input}
                             id="login-identifier"
                             name="identifier"
-                            placeholder="Enter your email or username"
+                            placeholder={rs.EmailUsernamePlaceholder}
                             value={identifier}
                             onChange={(e) => {
                                 setIdentifier(e.target.value);
@@ -79,8 +81,8 @@ export const LoginPage: React.FC = () => {
                             id="login-password"
                             name="password"
                             type={passwordVisible ? "text" : "password"}
-                            placeholder="Enter your password"
-                            aria-label="Password"
+                            placeholder={rs.PasswordPlaceholder}
+                            aria-label={rs.Password}
                             value={password}
                             onChange={(e) => {
                                 setPassword(e.target.value);
@@ -92,10 +94,10 @@ export const LoginPage: React.FC = () => {
                                     appearance="subtle"
                                     size="small"
                                     type="button"
-                                    aria-label={passwordVisible ? "Hide password" : "Show password"}
+                                    aria-label={passwordVisible ? rs.HidePassword : rs.ShowPassword}
                                     onClick={() => setPasswordVisible(prevVal => !prevVal)}
                                     icon={passwordVisible ? <EyeOffRegular /> : <EyeRegular />}
-                                    title={passwordVisible ? "Hide password" : "Show password"}
+                                    title={passwordVisible ? rs.HidePassword : rs.ShowPassword}
                                 />
                             }
                         />
@@ -110,22 +112,21 @@ export const LoginPage: React.FC = () => {
                         disabled={loading}
                         icon={loading ? <Spinner size="tiny" /> : undefined}
                     >
-                        Login
+                        {rs.Login}
                     </Button>
                 </form>
 
                 <Link href="#" className={styles.forgot} onClick={(e) => e.preventDefault()}>
-                    Forgot password?
+                    {rs.ForgotPassword}
                 </Link>
 
                 <Text className={styles.register}>
-                    {"Don't have an account? "}
+                    {rs.NoAccount}
                     <Link onClick={() => navigate("/signup")}>
-                        Sign up
+                        {rs.SignUpLink}
                     </Link>
                 </Text>
             </div>
         </PageLayout>
-
     );
 };

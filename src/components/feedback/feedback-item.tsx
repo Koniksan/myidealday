@@ -1,13 +1,14 @@
 import { Badge, Button, Text } from "@fluentui/react-components";
 import { ChatRegular, DeleteRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
+import { useLocalization } from "../../infrastructure/context/locale-context";
 import { FeedbackStatus, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
 import { useFeedbackItemStyles } from "./feedback-item-styles";
 
-const STATUS_BADGE: Record<FeedbackStatus, { color: "informative" | "warning" | "success"; label: string }> = {
-    "New":         { color: "informative", label: "New" },
-    "In Progress": { color: "warning",     label: "In Progress" },
-    "Completed":   { color: "success",     label: "Completed" },
+const STATUS_COLOR: Record<FeedbackStatus, "informative" | "warning" | "success"> = {
+    "New": "informative",
+    "In Progress": "warning",
+    "Completed": "success",
 };
 
 interface FeedbackItemProps {
@@ -17,7 +18,14 @@ interface FeedbackItemProps {
 
 export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete }) => {
     const styles = useFeedbackItemStyles();
+    const rs = useLocalization();
     const [expanded, setExpanded] = useState(false);
+
+    const STATUS_LABEL: Record<FeedbackStatus, string> = {
+        "New": rs.StatusNew,
+        "In Progress": rs.StatusInProgress,
+        "Completed": rs.StatusCompleted,
+    };
 
     return (
         <div className={styles.item} onClick={() => setExpanded(v => !v)}>
@@ -30,9 +38,9 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete }
                             year: "numeric",
                         })}
                     </Text>
-                    {feedback.status && STATUS_BADGE[feedback.status] && (
-                        <Badge appearance="tint" color={STATUS_BADGE[feedback.status].color} size="small" className={styles.badge}>
-                            {STATUS_BADGE[feedback.status].label}
+                    {feedback.status && STATUS_COLOR[feedback.status] && (
+                        <Badge appearance="tint" color={STATUS_COLOR[feedback.status]} size="small" className={styles.badge}>
+                            {STATUS_LABEL[feedback.status]}
                         </Badge>
                     )}
                     {feedback.answer && (
@@ -51,7 +59,7 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete }
             </Text>
             {expanded && feedback.answer && (
                 <div className={styles.answer}>
-                    <Text className={styles.answerLabel}>Admin reply</Text>
+                    <Text className={styles.answerLabel}>{rs.AdminReply}</Text>
                     <Text className={styles.answerText}>{feedback.answer}</Text>
                 </div>
             )}

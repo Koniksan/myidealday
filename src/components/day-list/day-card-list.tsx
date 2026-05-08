@@ -7,11 +7,11 @@ import { useDayCardListStyles } from "./day-card-list-styles";
 import { useDayCardList } from "./useDayCardList";
 import { DayPlanPanel } from "../day-plan-panel";
 import { useHeaderActions } from "../../infrastructure/context/header-actions-context";
-
-const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+import { useLocalization } from "../../infrastructure/context/locale-context";
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
+    const rs = useLocalization();
     const { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday, updateDayTasks } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -41,7 +41,7 @@ export const DayCardList: React.FC = () => {
         setActions([
             {
                 id: "today",
-                label: "Today",
+                label: rs.Today,
                 icon: <CalendarTodayRegular />,
                 appearance: "secondary" as const,
                 onClick: goToToday,
@@ -68,7 +68,7 @@ export const DayCardList: React.FC = () => {
                 <div className={styles.desktopColumns}>
                     <div className={styles.calendarSide}>
                         <div className={styles.grid} ref={gridRef}>
-                            {WEEK_DAYS.map(d => (
+                            {rs.WeekDays.map(d => (
                                 <div key={d} className={styles.weekDayHeader}>{d}</div>
                             ))}
                             {!loading && offsetDays.map(dayProps => (
@@ -134,7 +134,7 @@ export const DayCardList: React.FC = () => {
                 onClick={() => openDialog(hasExistingPlan ? "edit" : "add")}
                 className={styles.fab}
             >
-                {hasExistingPlan ? "Edit month plan" : "Add month plan"}
+                {hasExistingPlan ? rs.EditMonthPlan : rs.AddMonthPlan}
             </Button>
 
             <DayPlanPanel

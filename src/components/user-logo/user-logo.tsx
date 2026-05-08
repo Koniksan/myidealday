@@ -3,6 +3,7 @@ import { ArrowExitRegular, ChatRegular, SettingsRegular } from "@fluentui/react-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../infrastructure/context/auth-context";
+import { useLocalization } from "../../infrastructure/context/locale-context";
 import { FeedbackPanel } from "../feedback";
 import { SettingsPanel } from "../settings-panel";
 import { useUserLogoStyles } from "./user-logo-styles";
@@ -11,6 +12,7 @@ export const UserLogo: React.FC = () => {
     const styles = useUserLogoStyles();
     const navigate = useNavigate();
     const { logout, user, profile } = useAuth();
+    const rs = useLocalization();
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
 
@@ -33,13 +35,13 @@ export const UserLogo: React.FC = () => {
                 <MenuPopover>
                     <MenuList>
                         <MenuItem icon={<SettingsRegular />} onClick={() => setSettingsOpen(true)}>
-                            Settings
+                            {rs.Settings}
                         </MenuItem>
                         <MenuItem icon={<ChatRegular />} onClick={() => setFeedbackOpen(true)}>
-                            Feedback
+                            {rs.Feedback}
                         </MenuItem>
                         <MenuItem icon={<ArrowExitRegular />} onClick={handleLogout}>
-                            Log out
+                            {rs.LogOut}
                         </MenuItem>
                     </MenuList>
                 </MenuPopover>

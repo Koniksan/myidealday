@@ -1,6 +1,7 @@
 import { Badge, Button, Checkbox, Divider, Input, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, mergeClasses } from "@fluentui/react-components";
 import { AddRegular, DismissRegular, MoreHorizontalRegular } from "@fluentui/react-icons";
 import React from "react";
+import { useLocalization } from "../../infrastructure/context/locale-context";
 import { StoredTask } from "../../infrastructure/storages/day-storage";
 import { DayCardProgress } from "./day-card-progress";
 import { useDayCardStyles } from "./day-card-styles";
@@ -21,7 +22,8 @@ export interface DayCardProps {
 
 export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, isToday, isWeekend, isOtherMonth = false, isDetailView = false, initialTasks = [], onTasksChange }) => {
     const styles = useDayCardStyles();
-    const fullDate = new Date(year, month, day).toLocaleString("default", { weekday: "long", day: "numeric", month: "long" });
+    const rs = useLocalization();
+    const fullDate = new Date(year, month, day).toLocaleString(rs.DateLocale, { weekday: "long", day: "numeric", month: "long" });
     const {
         tasks,
         adding,
@@ -51,7 +53,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
         >
             {isToday && (
                 <Badge appearance="filled" color="brand" size="small" className={styles.todayBadge}>
-                    Today
+                    {rs.Today}
                 </Badge>
             )}
 
@@ -69,7 +71,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             )}
 
             <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
-                {tasks.filter(t => !t.is_custom).map((task) => {
+                {tasks.filter(t => !rs.Is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     return (
                         <Checkbox
@@ -83,11 +85,11 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     );
                 })}
 
-                {tasks.some(t => t.is_custom) && tasks.some(t => !t.is_custom) && (
-                    <Divider className={styles.customDivider}>Custom</Divider>
+                {tasks.some(t => rs.Is_custom) && tasks.some(t => !rs.Is_custom) && (
+                    <Divider className={styles.customDivider}>{rs.Custom}</Divider>
                 )}
 
-                {tasks.filter(t => t.is_custom).map((task) => {
+                {tasks.filter(t => rs.Is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     return (
                         <div key={`custom-${idx}`} className={styles.customTaskRow}>
@@ -116,7 +118,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                         autoFocus
                         size="small"
                         className={styles.addInput}
-                        placeholder="Task name..."
+                        placeholder={rs.TaskNamePlaceholder}
                         value={draft}
                         onChange={(_, d) => setDraft(d.value)}
                         onKeyDown={onKeyDown}
@@ -137,7 +139,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 <MenuPopover>
                     <MenuList>
                         <MenuItem icon={<AddRegular />} onClick={() => setAdding(true)}>
-                            Add task
+                            {rs.AddTask}
                         </MenuItem>
                     </MenuList>
                 </MenuPopover>

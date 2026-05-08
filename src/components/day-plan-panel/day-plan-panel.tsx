@@ -19,6 +19,7 @@ import {
 import { AddRegular, ArrowSortFilled, CheckmarkRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
 import React from "react";
 import { DesktopTooltip } from "../common";
+import { useLocalization } from "../../infrastructure/context/locale-context";
 import { useDayPlanPanelStyles } from "./day-plan-panel-styles";
 import { useDayPlanPanel } from "./useDayPlanPanel";
 
@@ -35,6 +36,7 @@ interface DayPlanPanelProps {
 
 export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
     const styles = useDayPlanPanelStyles();
+    const rs = useLocalization();
     const {
         isEditMode,
         items,
@@ -78,15 +80,15 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                             <Button
                                 appearance="subtle"
                                 icon={<DismissRegular />}
-                                aria-label="Close"
+                                aria-label={rs.Close}
                                 onClick={() => hasChanges ? setConfirmDiscard(true) : props.onClose()}
                             />
                         }
                     >
-                        {isEditMode ? "Edit plan" : "Add plan to all days"}
+                        {isEditMode ? rs.EditPlan : rs.AddPlanToAllDays}
                     </DrawerHeaderTitle>
                     <Subtitle2 block as="h2" className={styles.description}>
-                        Changes will apply to all days in {props.monthName}.
+                        {rs.ChangesApplyTo} {props.monthName}.
                     </Subtitle2>
                 </DrawerHeader>
 
@@ -94,7 +96,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                     <div className={styles.inputRow}>
                         <Input
                             className={styles.input}
-                            placeholder="Task name..."
+                            placeholder={rs.TaskNamePlaceholder}
                             value={draft}
                             onChange={(_, d) => setDraft(d.value)}
                             onKeyDown={e => { if (e.key === "Enter") addItem(); }}
@@ -161,24 +163,24 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
 
                 <DrawerFooter className={styles.footer}>
                     {isEditMode && (
-                        <DesktopTooltip content="Reset all tasks" relationship="label">
+                        <DesktopTooltip content={rs.ResetAllTasks} relationship="label">
                             <Button
                                 className={styles.resetButton}
                                 appearance="subtle"
                                 icon={<DeleteRegular />}
-                                aria-label="Reset all tasks"
+                                aria-label={rs.ResetAllTasks}
                                 onClick={() => setConfirmReset(true)}
                             />
                         </DesktopTooltip>
                     )}
-                    <Button appearance="secondary" onClick={() => hasChanges ? setConfirmDiscard(true) : props.onClose()}>Cancel</Button>
+                    <Button appearance="secondary" onClick={() => hasChanges ? setConfirmDiscard(true) : props.onClose()}>{rs.Cancel}</Button>
                     <Button
                         appearance="primary"
                         onClick={apply}
                         disabled={!hasChanges || saving}
                         icon={saving ? <Spinner size="tiny" /> : undefined}
                     >
-                        {isEditMode ? "Save changes" : "Add to all days"}
+                        {isEditMode ? rs.SaveChanges : rs.AddToAllDays}
                     </Button>
                 </DrawerFooter>
             </OverlayDrawer>
@@ -186,13 +188,11 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
             <Dialog open={confirmDiscard} onOpenChange={(_, d) => !d.open && setConfirmDiscard(false)}>
                 <DialogSurface className={styles.confirmSurface}>
                     <DialogBody>
-                        <DialogTitle>Discard changes?</DialogTitle>
-                        <DialogContent>
-                            You have unsaved changes. Are you sure you want to discard them?
-                        </DialogContent>
+                        <DialogTitle>{rs.DiscardChangesTitle}</DialogTitle>
+                        <DialogContent>{rs.DiscardChangesMessage}</DialogContent>
                         <DialogActions className={styles.confirmActions}>
-                            <Button appearance="secondary" onClick={() => setConfirmDiscard(false)}>Keep editing</Button>
-                            <Button appearance="primary" onClick={props.onClose}>Discard</Button>
+                            <Button appearance="secondary" onClick={() => setConfirmDiscard(false)}>{rs.KeepEditing}</Button>
+                            <Button appearance="primary" onClick={props.onClose}>{rs.Discard}</Button>
                         </DialogActions>
                     </DialogBody>
                 </DialogSurface>
@@ -201,13 +201,11 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
             <Dialog open={confirmReset} onOpenChange={(_, d) => !d.open && setConfirmReset(false)}>
                 <DialogSurface className={styles.confirmSurface}>
                     <DialogBody>
-                        <DialogTitle>Reset all tasks?</DialogTitle>
-                        <DialogContent>
-                            This will permanently delete every task from today onwards. This cannot be undone.
-                        </DialogContent>
+                        <DialogTitle>{rs.ResetAllTasksTitle}</DialogTitle>
+                        <DialogContent>{rs.ResetWarningMessage}</DialogContent>
                         <DialogActions className={styles.confirmActions}>
-                            <Button appearance="secondary" onClick={() => setConfirmReset(false)}>Cancel</Button>
-                            <Button appearance="primary" onClick={reset}>Reset</Button>
+                            <Button appearance="secondary" onClick={() => setConfirmReset(false)}>{rs.Cancel}</Button>
+                            <Button appearance="primary" onClick={reset}>{rs.Reset}</Button>
                         </DialogActions>
                     </DialogBody>
                 </DialogSurface>
