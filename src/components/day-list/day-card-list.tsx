@@ -108,7 +108,7 @@ export const DayCardList: React.FC = () => {
             <div className={styles.mobileLayout}>
                 {monthNav}
                 <div className={styles.mobileGrid} ref={gridRef}>
-                    {!loading
+                    {loading
                         ? Array.from({ length: 30 }, (_, i) => <DayCardShimmer key={i} />)
                         : days.map(({ year, month, day, shortName, isToday, isWeekend, initialTasks }) => (
                             <DayCard
