@@ -191,6 +191,9 @@ export const useDayCardStyles = makeStyles({
         ":hover": {
             "--delete-btn-opacity": "1",
         },
+        [breakpoints.mobile]: {
+            "--delete-btn-opacity": "1",
+        },
     },
     customTaskCheckbox: {
         flex: 1,
@@ -206,5 +209,7 @@ export const useDayCardStyles = makeStyles({
         display: "flex",
         alignItems: "center",
         color: tokens.colorNeutralForeground3,
+        opacity: "var(--delete-btn-opacity)",
+        transition: "opacity 0.15s",
     },
 });

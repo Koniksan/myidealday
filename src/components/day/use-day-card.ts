@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { saveTask, updateTask, deleteTask, StoredTask } from "../../infrastructure/storages/day-storage";
 
 interface UseDayCardOptions {
@@ -14,6 +14,7 @@ export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: Us
     const [adding, setAdding] = useState(false);
     const [draft, setDraft] = useState("");
     const [saving, setSaving] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -52,25 +53,36 @@ export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: Us
         onTasksChange?.(newTasks);
     };
 
+    const persistDraft = (label: string, currentTasks: StoredTask[]) => {
+        setSaving(true);
+        saveTask(year, month, day, { label, checked: false, position: currentTasks.length, is_custom: true })
+            .then(saved => {
+                const newTasks = [...currentTasks, saved];
+                setTasks(newTasks);
+                onTasksChange?.(newTasks);
+            })
+            .catch(console.error)
+            .finally(() => setSaving(false));
+    };
+
+    // Enter: save current draft but keep input open for the next task
+    const submitDraft = () => {
+        const label = draft.trim();
+        setDraft("");
+        if (label) persistDraft(label, tasks);
+        inputRef.current?.focus();
+    };
+
+    // Blur: save any pending draft and close the input
     const commitDraft = () => {
         const label = draft.trim();
         setDraft("");
         setAdding(false);
-        if (label) {
-            setSaving(true);
-            saveTask(year, month, day, { label, checked: false, position: tasks.length, is_custom: true })
-                .then(saved => {
-                    const newTasks = [...tasks, saved];
-                    setTasks(newTasks);
-                    onTasksChange?.(newTasks);
-                })
-                .catch(console.error)
-                .finally(() => setSaving(false));
-        }
+        if (label) persistDraft(label, tasks);
     };
 
     const onKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") commitDraft();
+        if (e.key === "Enter") submitDraft();
         if (e.key === "Escape") { setDraft(""); setAdding(false); }
     };
 
@@ -86,6 +98,7 @@ export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: Us
         progress,
         toggle,
         removeCustomTask,
+        inputRef,
         commitDraft,
         onKeyDown,
     };

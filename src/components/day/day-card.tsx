@@ -36,6 +36,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
         progress,
         toggle,
         removeCustomTask,
+        inputRef,
         commitDraft,
         onKeyDown,
     } = useDayCard({ year, month, day, initialTasks, onTasksChange });
@@ -71,7 +72,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             )}
 
             <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
-                {tasks.filter(t => !rs.Is_custom).map((task) => {
+                {tasks.filter(t => !t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     return (
                         <Checkbox
@@ -85,11 +86,11 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     );
                 })}
 
-                {tasks.some(t => rs.Is_custom) && tasks.some(t => !rs.Is_custom) && (
+                {tasks.some(t => t.is_custom) && tasks.some(t => !t.is_custom) && (
                     <Divider className={styles.customDivider}>{rs.Custom}</Divider>
                 )}
 
-                {tasks.filter(t => rs.Is_custom).map((task) => {
+                {tasks.filter(t => t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     return (
                         <div key={`custom-${idx}`} className={styles.customTaskRow}>
@@ -115,8 +116,10 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
 
                 {adding && (
                     <Input
+                        ref={inputRef}
                         autoFocus
                         size="small"
+                        appearance={isDetailView ? "outline" : "underline"}
                         className={styles.addInput}
                         placeholder={rs.TaskNamePlaceholder}
                         value={draft}
