@@ -20,8 +20,8 @@ const en = {
     Reset: "Reset",
     // calendar / day list
     Today: "Today",
-    EditMonthPlan: "Edit habit",
-    AddMonthPlan: "Add new habit",
+    EditHabit: "Edit habit",
+    AddHabit: "Add new habit",
     WeekDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     DateLocale: "en-US",
     // day card
@@ -123,8 +123,8 @@ const ru: typeof en = {
     Reset: "Сбросить",
     // calendar / day list
     Today: "Сегодня",
-    EditMonthPlan: "Редактировать привычку",
-    AddMonthPlan: "Добавить новую привычку",
+    EditHabit: "Редактировать привычку",
+    AddHabit: "Добавить новую привычку",
     WeekDays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
     DateLocale: "ru-RU",
     // day card
