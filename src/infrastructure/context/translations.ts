@@ -98,6 +98,9 @@ const en = {
     AdminReplyPlaceholder: "Write a reply...",
     AdminLastLogin: "Last login",
     AdminNeverLoggedIn: "Never logged in",
+    AdminColName: "Name",
+    AdminColEmail: "Email",
+    AdminColRegistered: "Registered",
 };
 
 const ru: typeof en = {
@@ -198,6 +201,9 @@ const ru: typeof en = {
     AdminReplyPlaceholder: "Напишите ответ...",
     AdminLastLogin: "Последний вход",
     AdminNeverLoggedIn: "Ещё не входил",
+    AdminColName: "Имя",
+    AdminColEmail: "Email",
+    AdminColRegistered: "Зарегистрирован",
 };
 
 export const translations: Record<Locale, typeof en> = { en, ru };

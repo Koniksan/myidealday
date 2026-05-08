@@ -60,6 +60,15 @@ export const useAdminPanelStyles = makeStyles({
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
     },
+    dataGridWrapper: {
+        overflowX: "auto",
+    },
+    dataGrid: {
+        minWidth: "1000px",
+    },
+    userGridRow: {
+        padding: '10px 0',
+    },
     // feedback item
     feedbackItem: {
         display: "flex",
@@ -72,7 +81,7 @@ export const useAdminPanelStyles = makeStyles({
         cursor: "pointer",
         "&:hover": {
             background: tokens.colorNeutralBackground2Hover,
-            borderColor: tokens.colorNeutralStroke1Hover,
+            border: `1px solid ${tokens.colorNeutralStroke1Hover}`,
         },
     },
     feedbackMeta: {
