@@ -5,12 +5,13 @@ const BUCKET = "avatars";
 export interface UserProfile {
     fullName: string | null;
     avatarUrl: string | null;
+    isAdmin: boolean;
 }
 
 export const getProfile = async (userId: string): Promise<UserProfile> => {
     const { data, error } = await supabase
         .from("profiles")
-        .select("full_name, avatar_url")
+        .select("full_name, avatar_url, is_admin")
         .eq("id", userId)
         .single();
 
@@ -20,6 +21,7 @@ export const getProfile = async (userId: string): Promise<UserProfile> => {
     return {
         fullName: data?.full_name ?? null,
         avatarUrl: data?.avatar_url ?? null,
+        isAdmin: data?.is_admin ?? false,
     };
 };
 
