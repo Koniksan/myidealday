@@ -21,7 +21,7 @@ const en = {
     // calendar / day list
     Today: "Today",
     EditMonthPlan: "Edit month plan",
-    AddMonthPlan: "Add month plan",
+    AddMonthPlan: "Add new habit",
     WeekDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     DateLocale: "en-US",
     // day card
@@ -124,7 +124,7 @@ const ru: typeof en = {
     // calendar / day list
     Today: "Сегодня",
     EditMonthPlan: "Редактировать план месяца",
-    AddMonthPlan: "Добавить план месяца",
+    AddMonthPlan: "Добавить новую привычку",
     WeekDays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
     DateLocale: "ru-RU",
     // day card
