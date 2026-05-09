@@ -15,6 +15,9 @@ export const useFeedbackItemStyles = makeStyles({
             background: tokens.colorNeutralBackground2Hover,
         },
     },
+    itemUnread: {
+        borderLeft: `3px solid ${tokens.colorPaletteRedBorder2}`,
+    },
     header: {
         display: "flex",
         justifyContent: "space-between",

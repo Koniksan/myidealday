@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { FeedbackStatus, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
 import { useFeedbackItemStyles } from "./feedback-item-styles";
+import { mergeClasses } from "@fluentui/react-components";
 
 const STATUS_COLOR: Record<FeedbackStatus, "informative" | "warning" | "success"> = {
     "New": "informative",
@@ -14,9 +15,11 @@ const STATUS_COLOR: Record<FeedbackStatus, "informative" | "warning" | "success"
 interface FeedbackItemProps {
     feedback: StoredFeedback;
     onDelete: (id: string) => void;
+    isUnread?: boolean;
+    onSeen?: () => void;
 }
 
-export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete }) => {
+export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete, isUnread, onSeen }) => {
     const styles = useFeedbackItemStyles();
     const rs = useLocalization();
     const [expanded, setExpanded] = useState(false);
@@ -27,8 +30,13 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete }
         "Completed": rs.StatusCompleted,
     };
 
+    const handleClick = () => {
+        setExpanded(v => !v);
+        if (isUnread) onSeen?.();
+    };
+
     return (
-        <div className={styles.item} onClick={() => setExpanded(v => !v)}>
+        <div className={mergeClasses(styles.item, isUnread && styles.itemUnread)} onClick={handleClick}>
             <div className={styles.header}>
                 <div className={styles.meta}>
                     <Text className={styles.date}>
@@ -44,7 +52,7 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete }
                         </Badge>
                     )}
                     {feedback.answer && (
-                        <Badge appearance="tint" color="brand" size="small" icon={<ChatRegular />} className={styles.badge} />                            
+                        <Badge appearance="tint" color="brand" size="small" icon={<ChatRegular />} className={styles.badge} />
                     )}
                 </div>
                 <Button

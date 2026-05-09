@@ -9,6 +9,7 @@ import {
 import { AddRegular, ArrowLeftRegular, ChatRegular, DismissRegular } from "@fluentui/react-icons";
 import React from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
+import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
 import { FeedbackItem } from "./feedback-item";
 import { useFeedbackPanelStyles } from "./feedback-panel-styles";
 import { useFeedbackPanel } from "./use-feedback-panel";
@@ -21,6 +22,9 @@ interface FeedbackPanelProps {
 export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) => {
     const styles = useFeedbackPanelStyles();
     const rs = useLocalization();
+    const { getUnreadIds, markSeen } = useNotificationBadge();
+    const unreadIds = getUnreadIds("feedback");
+
     const {
         feedbacks,
         loading,
@@ -59,7 +63,13 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                     ) : (
                         <div className={styles.list}>
                             {feedbacks.map(f => (
-                                <FeedbackItem key={f.id} feedback={f} onDelete={handleDelete} />
+                                <FeedbackItem
+                                    key={f.id}
+                                    feedback={f}
+                                    onDelete={handleDelete}
+                                    isUnread={unreadIds.has(f.id)}
+                                    onSeen={() => markSeen("feedback", f.id)}
+                                />
                             ))}
                         </div>
                     )}
