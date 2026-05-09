@@ -46,7 +46,7 @@ export const Header: React.FC = () => {
                         onClick={(e) => { (e.currentTarget as HTMLElement).blur(); toggleTheme(); }}
                     />
                 </DesktopTooltip>
-                {isLoggedIn && <UserLogo />}
+                {isLoggedIn && <div className={styles.userLogo}><UserLogo /></div>}
             </div>
         </header>
     );

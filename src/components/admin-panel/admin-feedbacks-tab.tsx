@@ -81,6 +81,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onUpdated }) => {
 
             <OverlayDrawer
                 open={open}
+                size="medium"
                 onOpenChange={(_, d) => setOpen(d.open)}
                 position="end"
             >

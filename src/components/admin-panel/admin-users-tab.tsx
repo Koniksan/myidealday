@@ -116,8 +116,8 @@ export const AdminUsersTab: React.FC = () => {
             columnSizingOptions={{
                 user: { defaultWidth: 400, minWidth: 150 },
                 email: { defaultWidth: 250, minWidth: 120 },
-                registered: { defaultWidth: 175, minWidth: 120 },
-                lastLogin: { defaultWidth: 175, minWidth: 120 },
+                registered: { defaultWidth: 175, minWidth: 140 },
+                lastLogin: { defaultWidth: 195, minWidth: 140 },
             }}
         >
             <DataGridHeader>

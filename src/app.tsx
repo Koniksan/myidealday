@@ -6,6 +6,7 @@ import { LoginPage, SignUpPage, UserPage, AuthCallbackPage, NotFoundPage } from 
 import { ThemeProvider } from "./infrastructure/context/theme-context";
 import { AuthProvider } from "./infrastructure/context/auth-context";
 import { LocaleProvider } from "./infrastructure/context/locale-context";
+import { NotificationProvider } from "./infrastructure/context/notification-context";
 import { ProtectedRoute } from "./components/protected-route/protected-route";
 
 import "./reset.css";
@@ -15,6 +16,7 @@ export const App = () => {
         <LocaleProvider>
         <AuthProvider>
             <ThemeProvider>
+                <NotificationProvider>
                 <Toaster toasterId="app" position="bottom-end" />
                 <BrowserRouter>
                     <Routes>
@@ -25,6 +27,7 @@ export const App = () => {
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </BrowserRouter>
+                </NotificationProvider>
             </ThemeProvider>
         </AuthProvider>
         </LocaleProvider>

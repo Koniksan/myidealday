@@ -32,6 +32,9 @@ export const useHeaderStyles = makeStyles({
         alignItems: "center",
         gap: "4px",
     },
+    userLogo: {
+        marginLeft: "16px",
+    },
     divider: {
         flexGrow: 0,
         height: "20px",
