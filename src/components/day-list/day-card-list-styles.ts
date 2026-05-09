@@ -1,6 +1,8 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
 import { breakpoints } from "../common/styles/breakpoints";
 
+const desktopOnly = "@media (min-width: 769px)";
+
 export const useDayCardListStyles = makeStyles({
     monthNav: {
         position: "sticky",
@@ -10,6 +12,14 @@ export const useDayCardListStyles = makeStyles({
         justifyContent: "center",
         pointerEvents: "none",
         marginBottom: "16px",
+        paddingTop: "32px",
+        [desktopOnly]: {
+            paddingTop: "0px",
+        },
+    },
+    monthNavPillWrapper: {
+        position: "relative",
+        display: "inline-flex",
     },
     monthNavAction: {
         borderRadius: tokens.borderRadiusCircular,
@@ -24,6 +34,52 @@ export const useDayCardListStyles = makeStyles({
         boxShadow: tokens.shadow16,
         border: `1px solid ${tokens.colorNeutralStroke2}`,
         pointerEvents: "all",
+    },
+    todayNub: {
+        position: "absolute",
+        bottom: "calc(100% - 1px)",
+        left: "50%",
+        transform: "translateX(-50%) scaleY(0)",
+        transformOrigin: "bottom",
+        opacity: 0,
+        pointerEvents: "none",
+        [desktopOnly]: {
+            display: "none",
+        },
+        background: tokens.colorNeutralBackground1,
+        border: `1px solid ${tokens.colorNeutralStroke2}`,
+        borderBottom: "none",
+        borderRadius: "10px 10px 0 0",
+        padding: "6px 14px 8px",
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        transitionProperty: "transform, opacity",
+        transitionDuration: "0.35s, 0.2s",
+        transitionTimingFunction: "cubic-bezier(0.34, 1.4, 0.64, 1), ease",
+        userSelect: "none",
+    },
+    todayNubVisible: {
+        transform: "translateX(-50%) scaleY(1)",
+        opacity: 1,
+        pointerEvents: "all",
+    },
+    todayNubDot: {
+        width: "7px",
+        height: "7px",
+        borderRadius: tokens.borderRadiusCircular,
+        backgroundColor: tokens.colorBrandForeground1,
+        flexShrink: 0,
+        display: "inline-block",
+    },
+    todayNubText: {
+        fontSize: "11px",
+        color: tokens.colorNeutralForeground3,
+        fontWeight: "500",
+        letterSpacing: "0.02em",
+        lineHeight: 1,
     },
     fab: {
         position: "fixed",

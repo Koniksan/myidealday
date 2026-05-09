@@ -1,5 +1,5 @@
-import { Button, Text } from "@fluentui/react-components";
-import { AddRegular, CalendarTodayRegular, ChevronLeftRegular, ChevronRightRegular, EditRegular } from "@fluentui/react-icons";
+import { Button, Text, mergeClasses } from "@fluentui/react-components";
+import { AddRegular, ChevronLeftRegular, ChevronRightRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { DayCard, DayCardShimmer } from "../day";
 import { DayCardMini } from "../day/day-card-mini";
@@ -12,7 +12,7 @@ import { useLocalization } from "../../infrastructure/context/locale-context";
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
     const rs = useLocalization();
-    const { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday, updateDayTasks } = useDayCardList();
+    const { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday, showGoToToday, updateDayTasks } = useDayCardList();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
@@ -34,28 +34,25 @@ export const DayCardList: React.FC = () => {
     const hasExistingPlan = planLabels.length > 0;
 
     useEffect(() => {
-        if (!isMobile) {
-            setActions([]);
-            return;
-        }
-        setActions([
-            {
-                id: "today",
-                label: rs.Today,
-                icon: <CalendarTodayRegular />,
-                appearance: "secondary" as const,
-                onClick: goToToday,
-            },
-        ]);
+        setActions([]);
         return () => setActions([]);
-    }, [hasExistingPlan, isMobile, setActions]);
+    }, [isMobile, setActions]);
 
     const monthNav = (
         <div className={styles.monthNav}>
-            <div className={styles.monthNavPill}>
-                <Button className={styles.monthNavAction} appearance="subtle" icon={<ChevronLeftRegular />} onClick={prevMonth} />
-                <Text weight="semibold" size={400}>{monthName} {year}</Text>
-                <Button className={styles.monthNavAction} appearance="subtle" icon={<ChevronRightRegular />} onClick={nextMonth} />
+            <div className={styles.monthNavPillWrapper}>
+                <div
+                    className={mergeClasses(styles.todayNub, showGoToToday && styles.todayNubVisible)}
+                    onClick={goToToday}
+                >
+                    <span className={styles.todayNubDot} />
+                    <span className={styles.todayNubText}>{rs.GoToToday}</span>
+                </div>
+                <div className={styles.monthNavPill}>
+                    <Button className={styles.monthNavAction} appearance="subtle" icon={<ChevronLeftRegular />} onClick={prevMonth} />
+                    <Text weight="semibold" size={400}>{monthName} {year}</Text>
+                    <Button className={styles.monthNavAction} appearance="subtle" icon={<ChevronRightRegular />} onClick={nextMonth} />
+                </div>
             </div>
         </div>
     );
