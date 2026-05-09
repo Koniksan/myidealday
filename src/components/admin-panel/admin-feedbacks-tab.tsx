@@ -6,6 +6,7 @@ import { ChatRegular, DismissRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { AdminFeedback, getAllFeedbacks, updateFeedback } from "../../infrastructure/storages/admin-storage";
+import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
 import { FeedbackStatus } from "../../infrastructure/storages/feedback-storage";
 import { useAdminPanelStyles } from "./admin-panel-styles";
 
@@ -20,9 +21,10 @@ const STATUS_COLOR: Record<FeedbackStatus, "informative" | "warning" | "success"
 interface FeedbackItemProps {
     feedback: AdminFeedback;
     onUpdated: (id: string, status: FeedbackStatus, answer: string | null) => void;
+    onSeen: () => void;
 }
 
-const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onUpdated }) => {
+const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onUpdated, onSeen }) => {
     const styles = useAdminPanelStyles();
     const rs = useLocalization();
     const [open, setOpen] = useState(false);
@@ -58,7 +60,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onUpdated }) => {
 
     return (
         <>
-            <div className={styles.feedbackItem} onClick={() => setOpen(true)}>
+            <div className={styles.feedbackItem} onClick={() => { setOpen(true); onSeen(); }}>
                 <div className={styles.feedbackMeta}>
                     <Text className={styles.feedbackEmail}>{feedback.email ?? rs.AdminAnonymous}</Text>
                     <Badge appearance="tint" color={STATUS_COLOR[feedback.status]} size="small">
@@ -81,6 +83,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onUpdated }) => {
 
             <OverlayDrawer
                 open={open}
+                size="medium"
                 onOpenChange={(_, d) => setOpen(d.open)}
                 position="end"
             >
@@ -125,6 +128,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onUpdated }) => {
 export const AdminFeedbacksTab: React.FC = () => {
     const styles = useAdminPanelStyles();
     const rs = useLocalization();
+    const { markSeen } = useNotificationBadge();
     const [feedbacks, setFeedbacks] = useState<AdminFeedback[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -155,7 +159,12 @@ export const AdminFeedbacksTab: React.FC = () => {
     return (
         <>
             {feedbacks.map(f => (
-                <FeedbackItem key={f.id} feedback={f} onUpdated={handleUpdated} />
+                <FeedbackItem
+                    key={f.id}
+                    feedback={f}
+                    onUpdated={handleUpdated}
+                    onSeen={() => markSeen("admin-feedback", f.id)}
+                />
             ))}
         </>
     );

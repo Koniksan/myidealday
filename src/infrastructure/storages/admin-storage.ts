@@ -55,3 +55,14 @@ export const getAllFeedbacks = async (): Promise<AdminFeedback[]> => {
         createdAt: f.created_at,
     }));
 };
+
+export const getUnreadFeedbacksForAdmin = async (): Promise<{ id: string }[]> => {
+    const { data, error } = await supabase.rpc("get_unread_feedbacks_for_admin");
+    if (error) throw error;
+    return (data ?? []).map((r: { id: string }) => ({ id: r.id }));
+};
+
+export const markAdminFeedbackSeen = async (id: string): Promise<void> => {
+    const { error } = await supabase.rpc("mark_feedback_seen_by_admin", { p_id: id });
+    if (error) throw error;
+};

@@ -14,4 +14,23 @@ export const useUserLogoStyles = makeStyles({
             outlineOffset: "2px",
         },
     },
+    avatarWrapper: {
+        position: "relative",
+        display: "inline-flex",
+    },
+    avatarBadge: {
+        position: "absolute",
+        top: "-4px",
+        right: "-4px",
+        pointerEvents: "none",
+    },
+    menuItemContent: {
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        width: "100%",
+    },
+    menuItemBadge: {
+        marginLeft: "auto",
+    },
 });

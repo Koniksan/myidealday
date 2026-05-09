@@ -5,16 +5,14 @@ import {
     Spinner,
     Text,
     Textarea,
-    Toast, ToastTitle,
-    useToastController,
 } from "@fluentui/react-components";
 import { AddRegular, ArrowLeftRegular, ChatRegular, DismissRegular } from "@fluentui/react-icons";
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../../infrastructure/context/auth-context";
+import React from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
-import { createFeedback, deleteFeedback, getFeedbacks, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
+import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
 import { FeedbackItem } from "./feedback-item";
 import { useFeedbackPanelStyles } from "./feedback-panel-styles";
+import { useFeedbackPanel } from "./use-feedback-panel";
 
 interface FeedbackPanelProps {
     open: boolean;
@@ -24,55 +22,21 @@ interface FeedbackPanelProps {
 export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) => {
     const styles = useFeedbackPanelStyles();
     const rs = useLocalization();
-    const { user } = useAuth();
-    const { dispatchToast } = useToastController("app");
+    const { getUnreadIds, markSeen } = useNotificationBadge();
+    const unreadIds = getUnreadIds("feedback");
 
-    const [feedbacks, setFeedbacks] = useState<StoredFeedback[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [composing, setComposing] = useState(false);
-    const [draft, setDraft] = useState("");
-    const [sending, setSending] = useState(false);
-
-    useEffect(() => {
-        if (!open || !user) return;
-        setLoading(true);
-        getFeedbacks(user.id)
-            .then(setFeedbacks)
-            .catch(console.error)
-            .finally(() => setLoading(false));
-    }, [open, user]);
-
-    const handleDelete = (id: string) => {
-        setFeedbacks(prev => prev.filter(f => f.id !== id));
-        deleteFeedback(id).catch(console.error);
-    };
-
-    const handleSubmit = async () => {
-        if (!draft.trim() || !user) return;
-        setSending(true);
-        try {
-            const saved = await createFeedback(user.id, draft.trim(), user.email ?? "");
-            setFeedbacks(prev => [saved, ...prev]);
-            setDraft("");
-            setComposing(false);
-            dispatchToast(
-                <Toast>
-                    <ToastTitle>{rs.FeedbackSent}</ToastTitle>
-                </Toast>,
-                { intent: "success" },
-            );
-        } catch {
-            // no-op
-        } finally {
-            setSending(false);
-        }
-    };
-
-    const handleClose = () => {
-        setComposing(false);
-        setDraft("");
-        onClose();
-    };
+    const {
+        feedbacks,
+        loading,
+        composing,
+        setComposing,
+        draft,
+        setDraft,
+        sending,
+        handleDelete,
+        handleSubmit,
+        handleClose,
+    } = useFeedbackPanel(open, onClose);
 
     return (
         <>
@@ -99,7 +63,13 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                     ) : (
                         <div className={styles.list}>
                             {feedbacks.map(f => (
-                                <FeedbackItem key={f.id} feedback={f} onDelete={handleDelete} />
+                                <FeedbackItem
+                                    key={f.id}
+                                    feedback={f}
+                                    onDelete={handleDelete}
+                                    isUnread={unreadIds.has(f.id)}
+                                    onSeen={() => markSeen("feedback", f.id)}
+                                />
                             ))}
                         </div>
                     )}
