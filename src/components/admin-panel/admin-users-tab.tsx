@@ -110,6 +110,7 @@ export const AdminUsersTab: React.FC = () => {
             items={users}
             columns={columns}
             sortable
+            defaultSortState={{ sortColumn: "lastLogin", sortDirection: "descending" }}
             getRowId={(user) => user.id}
             size="small"
             resizableColumns
