@@ -101,6 +101,8 @@ const en = {
     AdminColName: "Name",
     AdminColEmail: "Email",
     AdminColRegistered: "Registered",
+    // month nav
+    GoToToday: "Go to Today",
 };
 
 const ru: typeof en = {
@@ -204,6 +206,8 @@ const ru: typeof en = {
     AdminColName: "Имя",
     AdminColEmail: "Email",
     AdminColRegistered: "Зарегистрирован",
+    // month nav
+    GoToToday: "К сегодняшнему дню",
 };
 
 export const translations: Record<Locale, typeof en> = { en, ru };

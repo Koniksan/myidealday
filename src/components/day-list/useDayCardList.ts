@@ -30,6 +30,7 @@ interface UseDayCardListResult {
     prevMonth: () => void;
     nextMonth: () => void;
     goToToday: () => void;
+    showGoToToday: boolean;
     updateDayTasks: (day: number, tasks: StoredTask[]) => void;
 }
 
@@ -75,6 +76,7 @@ export const useDayCardList = (): UseDayCardListResult => {
         }
     };
 
+    const isViewingToday = year === todayYear && month === todayMonth;
     const isFutureMonth = year > todayYear || (year === todayYear && month > todayMonth);
     const fromDay = isFutureMonth ? 1 : today;
 
@@ -88,6 +90,30 @@ export const useDayCardList = (): UseDayCardListResult => {
     const [daysByDate, setDaysByDate] = useState<Record<string, StoredDay>>({});
     const [prevMonthDaysByDate, setPrevMonthDaysByDate] = useState<Record<string, StoredDay>>({});
     const [loading, setLoading] = useState(true);
+
+    const [isTodayInView, setIsTodayInView] = useState(true);
+
+    useEffect(() => {
+        if (!isViewingToday || loading) {
+            setIsTodayInView(true);
+            return;
+        }
+
+        const todayEls = Array.from(document.querySelectorAll<Element>("[data-today]"));
+        if (todayEls.length === 0) return;
+
+        const intersecting = new Set<Element>();
+        const observer = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+                if (entry.isIntersecting) intersecting.add(entry.target);
+                else intersecting.delete(entry.target);
+            }
+            setIsTodayInView(intersecting.size > 0);
+        }, { threshold: 0.5 });
+
+        todayEls.forEach(el => observer.observe(el));
+        return () => observer.disconnect();
+    }, [isViewingToday, loading]);
 
     const firstDayOffset = (new Date(year, month, 1).getDay() + 6) % 7;
     const prevYear = month === 0 ? year - 1 : year;
@@ -266,5 +292,7 @@ export const useDayCardList = (): UseDayCardListResult => {
         }));
     };
 
-    return { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, month, firstDayOffset, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday, updateDayTasks };
+    const showGoToToday = !isViewingToday || !isTodayInView;
+
+    return { days, offsetDays, selectedDay, setSelectedDay, selectedDayProps, monthName, year, month, firstDayOffset, planLabels, loading, gridRef, addPlanToAllDays, editPlan, resetPlan, prevMonth, nextMonth, goToToday, showGoToToday, updateDayTasks };
 };
