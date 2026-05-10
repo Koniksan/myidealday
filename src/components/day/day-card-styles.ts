@@ -145,7 +145,15 @@ export const useDayCardStyles = makeStyles({
         gap: "2px",
     },
     checkboxItem: {
-        fontSize: "12px",
+        width: "100%",
+        maxWidth: "100%",
+        "& .fui-Label": {
+            width: "100%",
+        }
+    },
+    checkboxItemLabel: {
+        color: tokens.colorNeutralForeground1,
+        fontSize: "16px",
     },
     detailCard: {
         gridColumn: "unset",
@@ -163,11 +171,11 @@ export const useDayCardStyles = makeStyles({
         textTransform: "capitalize",
     },
     detailBody: {
-        padding: "0 16px 16px",
+        padding: "0 16px 32px 16px",
         gap: "4px",
     },
     detailCheckboxItem: {
-        fontSize: "14px",
+        fontSize: "18px",
     },
     addInput: {
         width: "100%",
@@ -223,7 +231,19 @@ export const useDayCardStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
-        transition: "opacity 0.2s",
+        transition: "opacity 0.2s, background 0.1s",
+        borderRadius: "4px",
+        padding: "2px 0",
+        cursor: "pointer",
+        ":hover": {
+            background: tokens.colorNeutralBackground1Hover,
+        },
+        [breakpoints.mobile]: {
+            cursor: "default",
+            ":hover": {
+                background: "transparent",
+            },
+        },
     },
     checkedTaskRow: {
         opacity: "0.45",

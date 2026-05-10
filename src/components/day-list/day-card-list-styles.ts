@@ -127,8 +127,8 @@ export const useDayCardListStyles = makeStyles({
         alignItems: "center",
     },
     calendarSide: {
-        flex: "0 0 65%",
-        width: "65%",
+        flex: "0 0 55%",
+        width: "55%",
     },
     detailSide: {
         flex: 1,
