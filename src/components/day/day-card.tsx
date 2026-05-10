@@ -78,7 +78,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                         <div key={idx} className={mergeClasses(styles.taskRow, task.checked && styles.checkedTaskRow)} style={task.color ? { "--task-color": task.color } as React.CSSProperties : {}}>
                             <Checkbox
                                 className={mergeClasses(styles.checkboxItem, isDetailView && styles.detailCheckboxItem)}
-                                label={<span className={task.checked ? styles.checkedLabel : undefined}>{task.label}</span>}
+                                label={<span className={mergeClasses(styles.checkboxItemLabel, task.checked && styles.checkedLabel)}>{task.label}</span>}
                                 checked={task.checked}
                                 disabled={isReadOnly}
                                 onChange={() => toggle(idx)}
