@@ -7,8 +7,10 @@ import {
     deleteTasksByLabelForMonth,
     deleteAllTasksFromDate,
     reorderTasksByLabelsForMonth,
+    updateTaskColorByLabel,
     StoredDay,
     StoredTask,
+    PlanItem,
 } from "../../infrastructure/storages/day-storage";
 
 interface UseDayCardListResult {
@@ -21,11 +23,11 @@ interface UseDayCardListResult {
     year: number;
     month: number;
     firstDayOffset: number;
-    planLabels: string[];
+    planLabels: PlanItem[];
     loading: boolean;
     gridRef: RefObject<HTMLDivElement | null>;
-    addPlanToAllDays: (labels: string[]) => Promise<void>;
-    editPlan: (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => Promise<void>;
+    addPlanToAllDays: (items: PlanItem[]) => Promise<void>;
+    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => Promise<void>;
     resetPlan: () => Promise<void>;
     prevMonth: () => void;
     nextMonth: () => void;
@@ -126,7 +128,7 @@ export const useDayCardList = (): UseDayCardListResult => {
 
         return activeDays[0].tasks
             .filter(t => universalLabels.has(t.label))
-            .map(t => t.label);
+            .map(t => ({ label: t.label, color: t.color ?? null }));
     }, [daysByDate]);
 
     const days: DayCardProps[] = Array.from({ length: daysInMonth }, (_, i) => {
@@ -163,8 +165,8 @@ export const useDayCardList = (): UseDayCardListResult => {
         };
     });
 
-    const addPlanToAllDays = async (labels: string[]) => {
-        const newByDate = await bulkSaveTasksForMonth(year, month, labels, 0, fromDay);
+    const addPlanToAllDays = async (items: PlanItem[]) => {
+        const newByDate = await bulkSaveTasksForMonth(year, month, items, 0, fromDay);
         setDaysByDate(prev => {
             const updated = { ...prev };
             for (const [date, newDay] of Object.entries(newByDate)) {
@@ -178,7 +180,7 @@ export const useDayCardList = (): UseDayCardListResult => {
         });
     };
 
-    const editPlan = async (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => {
+    const editPlan = async (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => {
         await Promise.all(labelsToRemove.map(label => deleteTasksByLabelForMonth(year, month, label, fromDay)));
 
         if (labelsToRemove.length > 0) {
@@ -193,8 +195,22 @@ export const useDayCardList = (): UseDayCardListResult => {
             });
         }
 
-        if (labelsToAdd.length > 0) {
-            const newByDate = await bulkSaveTasksForMonth(year, month, labelsToAdd, planLabels.length, fromDay);
+        if (colorChanges.length > 0) {
+            await Promise.all(colorChanges.map(item => updateTaskColorByLabel(year, month, item.label, item.color ?? null, fromDay)));
+            setDaysByDate(prev => {
+                const updated = { ...prev };
+                const colorMap = new Map(colorChanges.map(i => [i.label, i.color ?? null]));
+                for (const date of Object.keys(updated)) {
+                    if (date >= toDateString(fromDay)) {
+                        updated[date] = { ...updated[date], tasks: updated[date].tasks.map(t => colorMap.has(t.label) ? { ...t, color: colorMap.get(t.label) } : t) };
+                    }
+                }
+                return updated;
+            });
+        }
+
+        if (itemsToAdd.length > 0) {
+            const newByDate = await bulkSaveTasksForMonth(year, month, itemsToAdd, planLabels.length, fromDay);
             setDaysByDate(prev => {
                 const updated = { ...prev };
                 for (const [date, newDay] of Object.entries(newByDate)) {

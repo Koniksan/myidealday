@@ -1,11 +1,19 @@
 import { supabase } from "./supabase-client";
 
+export const TASK_COLORS = ["#e53935", "#f6bf26", "#039be5", "#33b679", "#8b5cf6"];
+
+export interface PlanItem {
+    label: string;
+    color?: string | null;
+}
+
 export interface StoredTask {
     id?: string;
     label: string;
     checked: boolean;
     position: number;
     is_custom?: boolean;
+    color?: string | null;
 }
 
 export interface StoredDay {
@@ -22,7 +30,7 @@ export const loadTasksForMonth = async (year: number, month: number): Promise<Re
 
     const { data, error } = await supabase
         .from("tasks")
-        .select("id, date, label, checked, position, is_custom")
+        .select("id, date, label, checked, position, is_custom, color")
         .gte("date", from)
         .lte("date", to)
         .order("position");
@@ -39,7 +47,7 @@ export const loadTasksForMonth = async (year: number, month: number): Promise<Re
 export const bulkSaveTasksForMonth = async (
     year: number,
     month: number,
-    labels: string[],
+    items: PlanItem[],
     positionOffset = 0,
     fromDay = 1,
 ): Promise<Record<string, StoredDay>> => {
@@ -47,12 +55,18 @@ export const bulkSaveTasksForMonth = async (
     const taskRows = Array.from({ length: daysInMonth }, (_, i) => i + 1)
         .filter(d => d >= fromDay)
         .map(d => toDateString(year, month, d))
-        .flatMap(date => labels.map((label, idx) => ({ date, label, checked: false, position: positionOffset + idx })));
+        .flatMap(date => items.map((item, idx) => ({
+            date,
+            label: item.label,
+            color: item.color ?? null,
+            checked: false,
+            position: positionOffset + idx,
+        })));
 
     const { data, error } = await supabase
         .from("tasks")
         .insert(taskRows)
-        .select("id, date, label, checked, position");
+        .select("id, date, label, checked, position, color");
 
     if (error) throw error;
 
@@ -74,15 +88,33 @@ export const saveTask = async (
     const { data, error } = await supabase
         .from("tasks")
         .insert({ date, ...task })
-        .select("id, label, checked, position, is_custom")
+        .select("id, label, checked, position, is_custom, color")
         .single();
 
     if (error) throw error;
     return data;
 };
 
-export const updateTask = async (id: string, patch: Partial<Pick<StoredTask, "checked" | "label">>): Promise<void> => {
+export const updateTask = async (id: string, patch: Partial<Pick<StoredTask, "checked" | "label" | "color">>): Promise<void> => {
     const { error } = await supabase.from("tasks").update(patch).eq("id", id);
+    if (error) throw error;
+};
+
+export const updateTaskColorByLabel = async (
+    year: number,
+    month: number,
+    label: string,
+    color: string | null,
+    fromDay = 1,
+): Promise<void> => {
+    const from = toDateString(year, month, fromDay);
+    const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
+    const { error } = await supabase
+        .from("tasks")
+        .update({ color })
+        .eq("label", label)
+        .gte("date", from)
+        .lte("date", to);
     if (error) throw error;
 };
 

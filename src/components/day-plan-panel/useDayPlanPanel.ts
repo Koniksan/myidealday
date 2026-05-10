@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { PlanItem } from "../../infrastructure/storages/day-storage";
 
 interface UseDayPlanPanelProps {
     open: boolean;
     mode: "add" | "edit";
-    planLabels: string[];
+    planLabels: PlanItem[];
     onClose: () => void;
-    addPlanToAllDays: (labels: string[]) => Promise<void>;
-    editPlan: (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => Promise<void>;
+    addPlanToAllDays: (items: PlanItem[]) => Promise<void>;
+    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => Promise<void>;
     resetPlan: () => Promise<void>;
 }
 
@@ -21,9 +22,10 @@ export const useDayPlanPanel = ({
 }: UseDayPlanPanelProps) => {
     const isEditMode = mode === "edit";
 
-    const originalLabels = useRef<string[]>(planLabels);
-    const [items, setItems] = useState<string[]>(planLabels);
+    const originalItems = useRef<PlanItem[]>(planLabels);
+    const [items, setItems] = useState<PlanItem[]>(planLabels);
     const [draft, setDraft] = useState("");
+    const [openPickerIndex, setOpenPickerIndex] = useState<number | null>(null);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [editingValue, setEditingValue] = useState("");
     const [confirmDiscard, setConfirmDiscard] = useState(false);
@@ -34,9 +36,12 @@ export const useDayPlanPanel = ({
 
     useEffect(() => {
         if (!open) return;
-        originalLabels.current = planLabels;
+        originalItems.current = planLabels;
         setItems(planLabels);
         setDraft("");
+        setOpenPickerIndex(null);
+        setEditingIndex(null);
+        setEditingValue("");
         setConfirmDiscard(false);
         setConfirmReset(false);
     }, [open]);
@@ -48,9 +53,7 @@ export const useDayPlanPanel = ({
         return () => { document.body.style.overflow = prev; };
     }, [open]);
 
-    const hasChanges = isEditMode
-        ? JSON.stringify(items) !== JSON.stringify(originalLabels.current) || draft.trim().length > 0
-        : items.length > 0 || draft.trim().length > 0;
+    const hasChanges = JSON.stringify(items) !== JSON.stringify(originalItems.current);
 
     const handleOpenChange = (_: unknown, d: { open: boolean }) => {
         if (!d.open) {
@@ -61,25 +64,36 @@ export const useDayPlanPanel = ({
 
     const addItem = () => {
         const label = draft.trim();
-        if (label && !items.includes(label)) {
-            setItems(prev => [...prev, label]);
+        if (label && !items.some(i => i.label === label)) {
+            setItems(prev => [...prev, { label, color: null }]);
             setDraft("");
         }
     };
 
-    const removeItem = (index: number) =>
+    const removeItem = (index: number) => {
         setItems(prev => prev.filter((_, i) => i !== index));
+        if (openPickerIndex === index) setOpenPickerIndex(null);
+    };
+
+    const setItemColor = (index: number, color: string | null) => {
+        setItems(prev => prev.map((item, i) => i === index ? { ...item, color } : item));
+        setOpenPickerIndex(null);
+    };
+
+    const togglePicker = (index: number) =>
+        setOpenPickerIndex(prev => prev === index ? null : index);
 
     const startEditing = (index: number) => {
         setEditingIndex(index);
-        setEditingValue(items[index]);
+        setEditingValue(items[index].label);
+        setOpenPickerIndex(null);
     };
 
     const commitEdit = () => {
         if (editingIndex === null) return;
         const value = editingValue.trim();
-        if (value && !items.some((l, i) => l === value && i !== editingIndex)) {
-            setItems(prev => prev.map((l, i) => i === editingIndex ? value : l));
+        if (value && !items.some((item, i) => item.label === value && i !== editingIndex)) {
+            setItems(prev => prev.map((item, i) => i === editingIndex ? { ...item, label: value } : item));
         }
         setEditingIndex(null);
         setEditingValue("");
@@ -90,7 +104,10 @@ export const useDayPlanPanel = ({
         setEditingValue("");
     };
 
-    const handleDragStart = (i: number) => { dragIndex.current = i; };
+    const handleDragStart = (i: number) => {
+        dragIndex.current = i;
+        setDraggingIndex(i);
+    };
 
     const handleDragOver = (e: React.DragEvent, i: number) => {
         e.preventDefault();
@@ -102,9 +119,13 @@ export const useDayPlanPanel = ({
             dragIndex.current = i;
             return next;
         });
+        setDraggingIndex(i);
     };
 
-    const handleDragEnd = () => { dragIndex.current = null; };
+    const handleDragEnd = () => {
+        dragIndex.current = null;
+        setDraggingIndex(null);
+    };
 
     const handleTouchStart = (i: number) => {
         dragIndex.current = i;
@@ -144,9 +165,15 @@ export const useDayPlanPanel = ({
         setSaving(true);
         try {
             if (isEditMode) {
-                const labelsToRemove = originalLabels.current.filter(l => !items.includes(l));
-                const labelsToAdd = items.filter(l => !originalLabels.current.includes(l));
-                await editPlan(labelsToAdd, labelsToRemove, items);
+                const origLabels = originalItems.current.map(i => i.label);
+                const currentLabels = items.map(i => i.label);
+                const labelsToRemove = origLabels.filter(l => !currentLabels.includes(l));
+                const itemsToAdd = items.filter(item => !origLabels.includes(item.label));
+                const colorChanges = items.filter(item => {
+                    const orig = originalItems.current.find(o => o.label === item.label);
+                    return orig && orig.color !== item.color;
+                });
+                await editPlan(itemsToAdd, labelsToRemove, currentLabels, colorChanges);
             } else {
                 if (items.length > 0) await addPlanToAllDays(items);
             }
@@ -169,6 +196,9 @@ export const useDayPlanPanel = ({
         items,
         draft,
         setDraft,
+        openPickerIndex,
+        togglePicker,
+        setItemColor,
         editingIndex,
         editingValue,
         setEditingValue,
