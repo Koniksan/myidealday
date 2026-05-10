@@ -186,7 +186,9 @@ export const useDayCardStyles = makeStyles({
     },
     customTaskRow: {
         display: "flex",
-        alignItems: "center",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        transition: "opacity 0.2s",
         "--delete-btn-opacity": "0",
         ":hover": {
             "--delete-btn-opacity": "1",
@@ -194,6 +196,11 @@ export const useDayCardStyles = makeStyles({
         [breakpoints.mobile]: {
             "--delete-btn-opacity": "1",
         },
+    },
+    customTaskInner: {
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
     },
     customTaskCheckbox: {
         flex: 1,
@@ -214,17 +221,24 @@ export const useDayCardStyles = makeStyles({
     },
     taskRow: {
         display: "flex",
-        alignItems: "center",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        transition: "opacity 0.2s",
     },
-    taskColorDot: {
-        width: "8px",
-        height: "12px",
-        borderRadius: "8px",
-        flexShrink: 0,
-        marginRight: "4px",
+    checkedTaskRow: {
+        opacity: "0.45",
+    },
+    checkedLabel: {
+        textDecorationLine: "line-through",
+    },
+    taskPriorityLine: {
+        display: "block",
+        width: "24px",
+        height: "3px",
+        borderRadius: "2px",
         background: "var(--task-color)",
-    },
-    taskColorDotEmpty: {
-        visibility: "hidden",
+        marginLeft: "35px",
+        marginTop: "-3px",
+        marginBottom: "2px",
     },
 });
