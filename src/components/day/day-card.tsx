@@ -41,6 +41,8 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
         onKeyDown,
     } = useDayCard({ year, month, day, initialTasks, onTasksChange });
 
+    const hasAnyPriority = tasks.some(t => t.color);
+
     return (
         <div
             className={mergeClasses(
@@ -75,14 +77,16 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 {tasks.filter(t => !t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     return (
-                        <Checkbox
-                            key={idx}
-                            className={mergeClasses(styles.checkboxItem, isDetailView && styles.detailCheckboxItem)}
-                            label={task.label}
-                            checked={task.checked}
-                            disabled={isReadOnly}
-                            onChange={() => toggle(idx)}
-                        />
+                        <div key={idx} className={styles.taskRow} style={task.color ? { "--task-color": task.color } as React.CSSProperties : {}}>
+                            {hasAnyPriority && <span className={mergeClasses(styles.taskColorDot, !task.color && styles.taskColorDotEmpty)} />}
+                            <Checkbox
+                                className={mergeClasses(styles.checkboxItem, isDetailView && styles.detailCheckboxItem)}
+                                label={task.label}
+                                checked={task.checked}
+                                disabled={isReadOnly}
+                                onChange={() => toggle(idx)}
+                            />
+                        </div>
                     );
                 })}
 
@@ -93,7 +97,8 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 {tasks.filter(t => t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     return (
-                        <div key={`custom-${idx}`} className={styles.customTaskRow}>
+                        <div key={`custom-${idx}`} className={styles.customTaskRow} style={task.color ? { "--task-color": task.color } as React.CSSProperties : {}}>
+                            {hasAnyPriority && <span className={mergeClasses(styles.taskColorDot, !task.color && styles.taskColorDotEmpty)} />}
                             <Checkbox
                                 className={mergeClasses(styles.customTaskCheckbox, isDetailView && styles.detailCheckboxItem)}
                                 label={task.label}

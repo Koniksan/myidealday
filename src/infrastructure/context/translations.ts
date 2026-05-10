@@ -27,6 +27,8 @@ const en = {
     // day card
     Custom: "Custom",
     AddTask: "Add task",
+    AddPriority: "+ priority",
+    TaskColorNames: ["No priority", "Critical", "High", "Medium", "Low", "Info"],
     // header
     SwitchToLight: "Switch to light mode",
     SwitchToDark: "Switch to dark mode",
@@ -132,6 +134,8 @@ const ru: typeof en = {
     // day card
     Custom: "Дополнительные",
     AddTask: "Добавить задачу",
+    AddPriority: "+ приоритет",
+    TaskColorNames: ["Без приоритета", "Критично", "Высокий", "Средний", "Низкий", "Инфо"],
     // header
     SwitchToLight: "Светлая тема",
     SwitchToDark: "Тёмная тема",

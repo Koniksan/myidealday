@@ -16,10 +16,11 @@ import {
     Subtitle2,
     mergeClasses,
 } from "@fluentui/react-components";
-import { AddRegular, ArrowSortFilled, CheckmarkRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
-import React from "react";
+import { AddRegular, ArrowSortFilled, CheckmarkRegular, ChevronDownRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
+import React, { useMemo } from "react";
 import { DesktopTooltip } from "../common";
 import { useLocalization } from "../../infrastructure/context/locale-context";
+import { PlanItem, TASK_COLORS } from "../../infrastructure/storages/day-storage";
 import { useDayPlanPanelStyles } from "./day-plan-panel-styles";
 import { useDayPlanPanel } from "./useDayPlanPanel";
 
@@ -27,12 +28,39 @@ interface DayPlanPanelProps {
     open: boolean;
     mode: "add" | "edit";
     monthName: string;
-    planLabels: string[];
+    planLabels: PlanItem[];
     onClose: () => void;
-    addPlanToAllDays: (labels: string[]) => Promise<void>;
-    editPlan: (labelsToAdd: string[], labelsToRemove: string[], orderedLabels: string[]) => Promise<void>;
+    addPlanToAllDays: (items: PlanItem[]) => Promise<void>;
+    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => Promise<void>;
     resetPlan: () => Promise<void>;
 }
+
+interface PriorityOption {
+    label: string;
+    color: string | null;
+}
+
+interface PriorityBadgeProps {
+    color: string | null;
+    label: string;
+    emptyText: string;
+    styles: ReturnType<typeof useDayPlanPanelStyles>;
+}
+
+const PriorityBadge: React.FC<PriorityBadgeProps> = ({ color, label, emptyText, styles }) => {
+    if (!color) {
+        return <span className={styles.priorityBadgeEmpty}>{emptyText}</span>;
+    }
+    return (
+        <span
+            className={styles.priorityBadge}
+            style={{ backgroundColor: `${color}18`, borderColor: `${color}70`, color }}
+        >
+            <span className={styles.priorityDot} style={{ backgroundColor: color }} />
+            {label}
+        </span>
+    );
+};
 
 export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
     const styles = useDayPlanPanelStyles();
@@ -42,6 +70,9 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
         items,
         draft,
         setDraft,
+        openPickerIndex,
+        togglePicker,
+        setItemColor,
         editingIndex,
         editingValue,
         setEditingValue,
@@ -65,6 +96,14 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
         apply,
         reset,
     } = useDayPlanPanel(props);
+
+    const priorityOptions: PriorityOption[] = useMemo(() => [
+        { label: rs.TaskColorNames[0], color: null },
+        ...TASK_COLORS.map((color, i) => ({ color, label: rs.TaskColorNames[i + 1] })),
+    ], [rs]);
+
+    const getOptionForColor = (color: string | null) =>
+        priorityOptions.find(o => o.color === color) ?? priorityOptions[0];
 
     return (
         <>
@@ -102,63 +141,132 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                             onKeyDown={e => { if (e.key === "Enter") addItem(); }}
                         />
                         <Button
-                            appearance="subtle"
+                            appearance="secondary"
                             icon={<AddRegular />}
                             onClick={addItem}
                             disabled={!draft.trim()}
-                        />
+                        >{rs.AddTask}</Button>
                     </div>
 
                     {items.length > 0 && (
                         <div className={styles.list}>
-                            {items.map((label, i) => (
-                                <div
-                                    key={label}
-                                    className={mergeClasses(styles.listItem, draggingIndex === i && styles.listItemDragging)}
-                                    data-drag-index={i}
-                                    draggable={editingIndex !== i}
-                                    onDragStart={() => handleDragStart(i)}
-                                    onDragOver={e => handleDragOver(e, i)}
-                                    onDragEnd={handleDragEnd}
-                                >
-                                    <span
-                                        className={styles.dragHandle}
-                                        onTouchStart={editingIndex !== i ? () => handleTouchStart(i) : undefined}
-                                    ><ArrowSortFilled /></span>
-                                    {editingIndex === i ? (
-                                        <Input
-                                            autoFocus
-                                            className={styles.listItemInput}
-                                            value={editingValue}
-                                            onChange={(_, d) => setEditingValue(d.value)}
-                                            onBlur={commitEdit}
-                                            onKeyDown={e => {
-                                                if (e.key === "Enter") commitEdit();
-                                                if (e.key === "Escape") cancelEdit();
-                                            }}
-                                        />
-                                    ) : (
-                                        <span className={styles.listItemLabel}>{label}</span>
-                                    )}
-                                    <Button
-                                        appearance="subtle"
-                                        size="small"
-                                        icon={editingIndex === i ? <CheckmarkRegular /> : <EditRegular />}
-                                        onClick={() => editingIndex === i ? commitEdit() : startEditing(i)}
-                                    />
-                                    {editingIndex !== i && (
-                                        <Button
-                                            appearance="subtle"
-                                            size="small"
-                                            icon={<DismissRegular />}
-                                            onClick={() => removeItem(i)}
-                                        />
-                                    )}
-                                </div>
-                            ))}
+                            {items.map((item, i) => {
+                                const opt = getOptionForColor(item.color ?? null);
+                                const isOpen = openPickerIndex === i;
+                                return (
+                                    <div
+                                        key={item.label}
+                                        className={mergeClasses(
+                                            styles.listItemWrapper,
+                                            draggingIndex === i && styles.listItemWrapperDragging,
+                                        )}
+                                        data-drag-index={i}
+                                        draggable
+                                        onDragStart={() => handleDragStart(i)}
+                                        onDragOver={e => handleDragOver(e, i)}
+                                        onDragEnd={handleDragEnd}
+                                    >
+                                        {/* Row */}
+                                        <div
+                                            className={mergeClasses(styles.listItem, isOpen && styles.listItemOpen)}
+                                            onClick={() => editingIndex !== i && togglePicker(i)}
+                                        >
+                                            <span
+                                                className={styles.dragHandle}
+                                                onTouchStart={() => handleTouchStart(i)}
+                                            >
+                                                <ArrowSortFilled fontSize={16} />
+                                            </span>
+                                            {editingIndex === i ? (
+                                                <Input
+                                                    autoFocus
+                                                    size="small"
+                                                    className={styles.listItemInput}
+                                                    value={editingValue}
+                                                    onChange={(_, d) => setEditingValue(d.value)}
+                                                    onKeyDown={e => {
+                                                        if (e.key === "Enter") commitEdit();
+                                                        if (e.key === "Escape") cancelEdit();
+                                                    }}
+                                                    onClick={e => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                <span className={styles.taskName}>{item.label}</span>
+                                            )}
+                                            {editingIndex !== i && (
+                                                <PriorityBadge
+                                                    color={item.color ?? null}
+                                                    label={opt.label}
+                                                    emptyText={rs.AddPriority}
+                                                    styles={styles}
+                                                />
+                                            )}
+                                            {editingIndex === i ? (
+                                                <button
+                                                    className={styles.deleteButton}
+                                                    onClick={e => { e.stopPropagation(); commitEdit(); }}
+                                                    onPointerDown={e => e.stopPropagation()}
+                                                >
+                                                    <CheckmarkRegular fontSize={14} />
+                                                </button>
+                                            ) : (
+                                                <>
+                                                    <span className={mergeClasses(styles.chevron, isOpen && styles.chevronOpen)}>
+                                                        <ChevronDownRegular fontSize={14} />
+                                                    </span>
+                                                    <button
+                                                        className={styles.deleteButton}
+                                                        onClick={e => { e.stopPropagation(); startEditing(i); }}
+                                                        onPointerDown={e => e.stopPropagation()}
+                                                    >
+                                                        <EditRegular fontSize={14} />
+                                                    </button>
+                                                </>
+                                            )}
+                                            <button
+                                                className={styles.deleteButton}
+                                                onClick={e => { e.stopPropagation(); editingIndex === i ? cancelEdit() : removeItem(i); }}
+                                                onPointerDown={e => e.stopPropagation()}
+                                            >
+                                                <DismissRegular fontSize={14} />
+                                            </button>
+                                        </div>
+
+                                        {/* Inline priority picker */}
+                                        <div className={mergeClasses(styles.priorityPicker, isOpen && styles.priorityPickerOpen)}>
+                                            {priorityOptions.map(opt => {
+                                                const isSelected = (item.color ?? null) === opt.color;
+                                                const isNone = opt.color === null;
+                                                return (
+                                                    <button
+                                                        key={opt.label}
+                                                        className={mergeClasses(
+                                                            styles.priorityPill,
+                                                            isNone && styles.priorityPillNone,
+                                                            isNone && isSelected && styles.priorityPillNoneSelected,
+                                                            !isNone && isSelected && styles.priorityPillSelected,
+                                                        )}
+                                                        style={!isNone ? {
+                                                            backgroundColor: `${opt.color}18`,
+                                                            borderColor: isSelected ? opt.color! : `${opt.color}50`,
+                                                            color: opt.color!,
+                                                        } : undefined}
+                                                        onClick={e => { e.stopPropagation(); setItemColor(i, opt.color); }}
+                                                    >
+                                                        <span
+                                                            className={styles.priorityDot}
+                                                            style={{ backgroundColor: opt.color ?? "#888" }}
+                                                        />
+                                                        {opt.label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
-
                 </DrawerBody>
 
                 <DrawerFooter className={styles.footer}>

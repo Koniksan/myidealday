@@ -212,4 +212,19 @@ export const useDayCardStyles = makeStyles({
         opacity: "var(--delete-btn-opacity)",
         transition: "opacity 0.15s",
     },
+    taskRow: {
+        display: "flex",
+        alignItems: "center",
+    },
+    taskColorDot: {
+        width: "8px",
+        height: "12px",
+        borderRadius: "8px",
+        flexShrink: 0,
+        marginRight: "4px",
+        background: "var(--task-color)",
+    },
+    taskColorDotEmpty: {
+        visibility: "hidden",
+    },
 });
