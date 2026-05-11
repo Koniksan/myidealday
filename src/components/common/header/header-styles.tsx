@@ -1,4 +1,5 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
+import { breakpoints } from "../styles";
 
 export const useHeaderStyles = makeStyles({
     root: {
@@ -16,6 +17,9 @@ export const useHeaderStyles = makeStyles({
         top: 0,
         left: 0,
         zIndex: 100,
+        [breakpoints.mobile]: {
+            justifyContent: "center",
+        },
     },
     brand: {
         display: "flex",
@@ -31,6 +35,9 @@ export const useHeaderStyles = makeStyles({
         display: "flex",
         alignItems: "center",
         gap: "4px",
+        [breakpoints.mobile]: {
+            display: "none",
+        },
     },
     userLogo: {
         marginLeft: "16px",
