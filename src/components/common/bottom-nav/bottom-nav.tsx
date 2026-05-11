@@ -1,40 +1,58 @@
-import { Button } from "@fluentui/react-components";
-import { WeatherMoonRegular, WeatherSunnyRegular } from "@fluentui/react-icons";
+import { Badge, mergeClasses } from "@fluentui/react-components";
+import { CalendarArrowRepeatAllRegular, HomeRegular, PersonRegular } from "@fluentui/react-icons";
 import React from "react";
-import { useTheme } from "../../../infrastructure/context/theme-context";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../infrastructure/context/auth-context";
-import { useHeaderActions } from "../../../infrastructure/context/header-actions-context";
 import { useLocalization } from "../../../infrastructure/context/locale-context";
-import { UserLogo } from "../../user-logo";
-import { LanguageSwitcher } from "../language-switcher";
+import { useNotificationBadge } from "../../../infrastructure/context/notification-badge-context";
 import { useBottomNavStyles } from "./bottom-nav-styles";
 
 export const BottomNav: React.FC = () => {
-    const { isDark, toggleTheme } = useTheme();
     const { isLoggedIn } = useAuth();
-    const { actions } = useHeaderActions();
+    const { totalCount } = useNotificationBadge();
     const rs = useLocalization();
     const styles = useBottomNavStyles();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const isHome = location.pathname === "/user";
+    const isHabit = location.pathname === "/habit";
+    const isAccount = location.pathname.startsWith("/account") || location.pathname === "/settings";
+
+    if (!isLoggedIn) return null;
 
     return (
         <nav className={styles.root}>
-            {actions.map(action => (
-                <Button
-                    key={action.id}
-                    appearance={action.appearance ?? "subtle"}
-                    icon={action.icon}
-                    aria-label={action.label}
-                    onClick={(e) => { (e.currentTarget as HTMLElement).blur(); action.onClick(); }}
-                />
-            ))}
-            <LanguageSwitcher />
-            <Button
-                appearance="subtle"
-                icon={isDark ? <WeatherSunnyRegular /> : <WeatherMoonRegular />}
-                aria-label={isDark ? rs.SwitchToLight : rs.SwitchToDark}
-                onClick={(e) => { (e.currentTarget as HTMLElement).blur(); toggleTheme(); }}
-            />
-            {isLoggedIn && <UserLogo />}
+            <button
+                className={mergeClasses(styles.navButton, isHome && styles.navButtonActive)}
+                onClick={() => navigate("/user")}
+            >
+                <HomeRegular fontSize={22} />
+                <span className={styles.navLabel}>{rs.Home}</span>
+            </button>
+
+            <button
+                className={mergeClasses(styles.navButton, isHabit && styles.navButtonActive)}
+                onClick={() => navigate("/habit")}
+            >
+                <CalendarArrowRepeatAllRegular fontSize={22} />
+                <span className={styles.navLabel}>{rs.MyHabit}</span>
+            </button>
+
+            <button
+                className={mergeClasses(styles.navButton, isAccount && styles.navButtonActive)}
+                onClick={() => navigate("/account")}
+            >
+                <div className={styles.iconWrapper}>
+                    <PersonRegular fontSize={22} />
+                    {totalCount > 0 && (
+                        <Badge className={styles.badge} color="danger" size="small" appearance="filled">
+                            {totalCount}
+                        </Badge>
+                    )}
+                </div>
+                <span className={styles.navLabel}>{rs.Account}</span>
+            </button>
         </nav>
     );
 };

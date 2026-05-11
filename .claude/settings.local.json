@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\dev\\\\myidealday\\\\src\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\dev\\\\myidealday\\\\src\" -Recurse | Where-Object { $_.PSIsContainer } | Select-Object -ExpandProperty FullName)",
+      "Bash(npx tsc *)",
+      "Bash(node_modules\\\\.bin\\\\tsc *)",
+      "PowerShell(.\\\\node_modules\\\\.bin\\\\tsc --noEmit 2>&1)",
+      "PowerShell(npm run *)",
+      "PowerShell(Get-ChildItem D:\\\\dev\\\\myidealday\\\\node_modules\\\\@fluentui\\\\react-icons\\\\lib\\\\icons | Where-Object { $_.Name -match \"Repeat|Star|Task|Notebook|Calendar|Reload|Loop\" } | Select-Object -First 20)"
+    ]
+  }
+}
