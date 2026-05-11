@@ -12,6 +12,7 @@ export const useStyles = makeStyles({
         fontFamily: 'Segoe UI, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif',
         [breakpoints.mobile]: {
             paddingTop: "calc(56px + env(safe-area-inset-top))",
+            paddingBottom: "calc(56px + env(safe-area-inset-bottom))",
         },
     },
     centered: {
