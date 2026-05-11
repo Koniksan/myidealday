@@ -86,6 +86,9 @@ export const useDayCardListStyles = makeStyles({
         bottom: "32px",
         right: "32px",
         boxShadow: tokens.shadow16,
+        [breakpoints.mobile]: {
+            display: "none",
+        },
     },
     grid: {
         display: "grid",

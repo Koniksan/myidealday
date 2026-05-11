@@ -33,6 +33,13 @@ const en = {
     SwitchToLight: "Switch to light mode",
     SwitchToDark: "Switch to dark mode",
     SwitchLanguage: "Switch to Russian",
+    MyHabit: "My Habit",
+    Account: "Account",
+    Back: "Back",
+    Profile: "Profile",
+    Appearance: "Appearance",
+    Language: "Language",
+    DarkMode: "Dark mode",
     // feedback
     MyFeedbacks: "My feedbacks",
     NewFeedback: "New feedback",
@@ -105,6 +112,9 @@ const en = {
     AdminColRegistered: "Registered",
     // month nav
     GoToToday: "Go to Today",
+    // habit page
+    MyHabit: "My Habit",
+    Home: "Home",
 };
 
 const ru: typeof en = {
@@ -140,6 +150,12 @@ const ru: typeof en = {
     SwitchToLight: "Светлая тема",
     SwitchToDark: "Тёмная тема",
     SwitchLanguage: "Переключить на английский",
+    Account: "Аккаунт",
+    Back: "Назад",
+    Profile: "Профиль",
+    Appearance: "Внешний вид",
+    Language: "Язык",
+    DarkMode: "Тёмная тема",
     // feedback
     MyFeedbacks: "Мои отзывы",
     NewFeedback: "Новый отзыв",
@@ -212,6 +228,9 @@ const ru: typeof en = {
     AdminColRegistered: "Зарегистрирован",
     // month nav
     GoToToday: "К сегодняшнему дню",
+    // habit page
+    MyHabit: "Мои привычки",
+    Home: "Главная",
 };
 
 export const translations: Record<Locale, typeof en> = { en, ru };

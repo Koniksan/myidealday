@@ -9,7 +9,6 @@ import { getUnreadFeedbacks, markFeedbackSeen } from "../../infrastructure/stora
 import { getUnreadFeedbacksForAdmin, markAdminFeedbackSeen } from "../../infrastructure/storages/admin-storage";
 import { AdminPanel } from "../admin-panel";
 import { FeedbackPanel } from "../feedback";
-import { SettingsPanel } from "../settings-panel";
 import { useUserLogoStyles } from "./user-logo-styles";
 
 export const UserLogo: React.FC = () => {
@@ -18,7 +17,6 @@ export const UserLogo: React.FC = () => {
     const { logout, user, profile } = useAuth();
     const rs = useLocalization();
     const { registerSource, unregisterSource, getCount, totalCount, refresh } = useNotificationBadge();
-    const [settingsOpen, setSettingsOpen] = useState(false);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [adminOpen, setAdminOpen] = useState(false);
 
@@ -86,7 +84,7 @@ export const UserLogo: React.FC = () => {
                                 </div>
                             </MenuItem>
                         )}
-                        <MenuItem icon={<SettingsRegular />} onClick={() => setSettingsOpen(true)}>
+                        <MenuItem icon={<SettingsRegular />} onClick={() => navigate("/settings")}>
                             {rs.Settings}
                         </MenuItem>
                         <MenuItem icon={<ChatRegular />} onClick={handleFeedbackOpen}>
@@ -106,7 +104,6 @@ export const UserLogo: React.FC = () => {
                 </MenuPopover>
             </Menu>
             <AdminPanel open={adminOpen} onClose={() => setAdminOpen(false)} />
-            <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
             <FeedbackPanel open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
         </>
     );
