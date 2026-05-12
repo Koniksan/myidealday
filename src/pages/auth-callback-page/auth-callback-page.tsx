@@ -10,7 +10,7 @@ export const AuthCallbackPage: React.FC = () => {
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             if (event === "SIGNED_IN" && session) {
-                navigate("/user", { replace: true });
+                navigate("/home", { replace: true });
             } else if (event === "PASSWORD_RECOVERY") {
                 navigate("/reset-password", { replace: true });
             }

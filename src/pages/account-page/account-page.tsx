@@ -2,7 +2,6 @@ import { Avatar, Badge, Text } from "@fluentui/react-components";
 import { ArrowExitRegular, ChatRegular, ChevronRightRegular, SettingsRegular, ShieldRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AdminPanel } from "../../components/admin-panel";
 import { FeedbackPanel } from "../../components/feedback";
 import { PageLayout } from "../../components/common/page-layout";
 import { PageShell, usePageShellStyles } from "../../components/common/page-shell";
@@ -19,7 +18,6 @@ export const AccountPage: React.FC = () => {
     const rs = useLocalization();
     const { getCount, refresh } = useNotificationBadge();
     const [feedbackOpen, setFeedbackOpen] = useState(false);
-    const [adminOpen, setAdminOpen] = useState(false);
 
     const feedbackCount = getCount("feedback");
     const adminFeedbackCount = getCount("admin-feedback");
@@ -38,7 +36,7 @@ export const AccountPage: React.FC = () => {
 
     return (
         <PageLayout>
-            <PageShell backTo="/user">
+            <PageShell backTo="/home">
                 <div className={styles.avatarSection}>
                     <Avatar name={displayName ?? user?.email} image={imageUrl ? { src: imageUrl } : undefined} color="colorful" size={64} />
                     {displayName && <Text className={styles.displayName}>{displayName}</Text>}
@@ -47,9 +45,9 @@ export const AccountPage: React.FC = () => {
 
                 <div className={shell.card}>
                     {profile?.isAdmin && (
-                        <button className={shell.row} onClick={() => { setAdminOpen(true); refresh("admin-feedback"); }}>
+                        <button className={shell.row} onClick={() => { navigate("/admin"); refresh("admin-feedback"); }}>
                             <ShieldRegular className={styles.rowIcon} />
-                            <span className={shell.rowLabel}>{rs.AdminPanel}</span>
+                            <span className={shell.rowLabel}>{rs.Admin}</span>
                             {adminFeedbackCount > 0 && <Badge color="danger" size="small" appearance="filled">{adminFeedbackCount}</Badge>}
                             <ChevronRightRegular className={styles.rowChevron} />
                         </button>
@@ -73,7 +71,6 @@ export const AccountPage: React.FC = () => {
                 </button>
             </PageShell>
 
-            <AdminPanel open={adminOpen} onClose={() => setAdminOpen(false)} />
             <FeedbackPanel open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
         </PageLayout>
     );

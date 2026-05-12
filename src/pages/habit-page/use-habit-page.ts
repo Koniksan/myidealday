@@ -86,12 +86,12 @@ export const useHabitPage = () => {
 
     const handleBack = () => {
         if (hasChanges) setConfirmDiscard(true);
-        else navigate("/user");
+        else navigate("/home");
     };
 
     const handleDiscard = () => {
         setConfirmDiscard(false);
-        navigate("/user");
+        navigate("/home");
     };
 
     const addItem = () => {
@@ -285,7 +285,7 @@ export const useHabitPage = () => {
             } else {
                 if (items.length > 0) await addPlanToAllDays(items);
             }
-            navigate("/user");
+            navigate("/home");
         } catch (e) {
             console.error(e);
         } finally {
@@ -301,7 +301,7 @@ export const useHabitPage = () => {
             console.error(e);
         }
         setConfirmReset(false);
-        navigate("/user");
+        navigate("/home");
     };
 
     return {

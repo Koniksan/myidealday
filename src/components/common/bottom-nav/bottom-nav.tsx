@@ -15,7 +15,7 @@ export const BottomNav: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const isHome = location.pathname === "/user";
+    const isHome = location.pathname === "/home";
     const isHabit = location.pathname === "/habit";
     const isAccount = location.pathname.startsWith("/account") || location.pathname === "/settings";
 
@@ -25,7 +25,7 @@ export const BottomNav: React.FC = () => {
         <nav className={styles.root}>
             <button
                 className={mergeClasses(styles.navButton, isHome && styles.navButtonActive)}
-                onClick={() => navigate("/user")}
+                onClick={() => navigate("/home")}
             >
                 <HomeRegular fontSize={22} />
                 <span className={styles.navLabel}>{rs.Home}</span>

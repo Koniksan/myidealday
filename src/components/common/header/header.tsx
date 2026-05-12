@@ -1,6 +1,7 @@
 import { Button, Divider, Text } from "@fluentui/react-components";
 import { DesktopTooltip } from "..";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../infrastructure/context/auth-context";
 import { useHeaderActions } from "../../../infrastructure/context/header-actions-context";
 import { UserLogo } from "../../user-logo";
@@ -11,10 +12,11 @@ export const Header: React.FC = () => {
     const { isLoggedIn } = useAuth();
     const { actions } = useHeaderActions();
     const styles = useHeaderStyles();
+    const navigate = useNavigate();
 
     return (
         <header className={styles.root}>
-            <div className={styles.brand}>
+            <div className={styles.brand} onClick={() => navigate(isLoggedIn ? "/home" : "/")} style={{ cursor: "pointer" }}>
                 <Logo />
                 <Text className={styles.title}>My Ideal Day</Text>
             </div>

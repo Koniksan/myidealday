@@ -6,7 +6,6 @@ const desktopOnly = "@media (min-width: 769px)";
 export const useDayCardListStyles = makeStyles({
     monthNav: {
         position: "sticky",
-        top: "calc(56px + env(safe-area-inset-top) + 8px)",
         zIndex: 10,
         display: "flex",
         justifyContent: "center",
@@ -14,6 +13,9 @@ export const useDayCardListStyles = makeStyles({
         marginBottom: "16px",
         paddingTop: "32px",
         [desktopOnly]: {
+            position: "relative",
+            top: "auto",
+            zIndex: "auto",
             paddingTop: "0px",
         },
     },
@@ -120,6 +122,7 @@ export const useDayCardListStyles = makeStyles({
     },
     desktopLayout: {
         display: "block",
+        width: "100%",
         [breakpoints.mobile]: {
             display: "none",
         },
@@ -140,6 +143,7 @@ export const useDayCardListStyles = makeStyles({
     },
     mobileLayout: {
         display: "none",
+        width: "100%",
         [breakpoints.mobile]: {
             display: "block",
         },
@@ -148,7 +152,6 @@ export const useDayCardListStyles = makeStyles({
         display: "flex",
         flexWrap: "nowrap",
         overflowX: "auto",
-        scrollSnapType: "x mandatory",
         justifyContent: "flex-start",
         padding: "4px 20px 16px",
         scrollbarWidth: "none",
