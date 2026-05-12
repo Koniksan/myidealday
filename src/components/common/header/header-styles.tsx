@@ -9,7 +9,7 @@ export const useHeaderStyles = makeStyles({
         justifyContent: "space-between",
         padding: "0 16px",
         paddingTop: "env(safe-area-inset-top)",
-        height: "calc(44px + env(safe-area-inset-top))",
+        height: "calc(56px + env(safe-area-inset-top))",
         borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
         background: tokens.colorNeutralBackground1,
         boxSizing: "border-box",
@@ -18,6 +18,7 @@ export const useHeaderStyles = makeStyles({
         left: 0,
         zIndex: 100,
         [breakpoints.mobile]: {
+            height: "calc(44px + env(safe-area-inset-top))",
             justifyContent: "center",
         },
     },
@@ -40,7 +41,10 @@ export const useHeaderStyles = makeStyles({
         },
     },
     userLogo: {
-        marginLeft: "16px",
+        marginLeft: "8px",
+        display: "flex",
+        alignItems: "center",
+        gap: "20px",
     },
     divider: {
         flexGrow: 0,

@@ -66,8 +66,19 @@ export const useDayCardList = (): UseDayCardListResult => {
     });
 
     const scrollToToday = () => {
+        const grid = gridRef.current;
+        if (grid && grid.scrollWidth > grid.clientWidth) {
+            const todayEl = grid.querySelector<HTMLElement>("[data-today]");
+            if (todayEl) {
+                const gridRect = grid.getBoundingClientRect();
+                const todayRect = todayEl.getBoundingClientRect();
+                const scrollTarget = grid.scrollLeft + (todayRect.left - gridRect.left) - (grid.clientWidth - todayRect.width) / 2;
+                grid.scrollTo({ left: Math.max(0, scrollTarget), behavior: "smooth" });
+                return;
+            }
+        }
         const el = [...document.querySelectorAll("[data-today]")].find(e => e.getBoundingClientRect().width > 0);
-        el?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     };
 
     const goToToday = () => {
@@ -283,7 +294,7 @@ export const useDayCardList = (): UseDayCardListResult => {
     useEffect(() => {
         if (loading) return;
         if (year === todayYear && month === todayMonth) {
-            scrollToToday();
+            requestAnimationFrame(() => scrollToToday());
         } else {
             window.scrollTo({ top: 0, behavior: "smooth" });
         }

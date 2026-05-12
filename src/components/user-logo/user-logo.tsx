@@ -1,4 +1,4 @@
-import { Avatar, Badge, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
+import { Avatar, Badge, Button, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
 import { ArrowExitRegular, ChatRegular, ShieldRegular, SettingsRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +7,6 @@ import { useLocalization } from "../../infrastructure/context/locale-context";
 import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
 import { getUnreadFeedbacks, markFeedbackSeen } from "../../infrastructure/storages/feedback-storage";
 import { getUnreadFeedbacksForAdmin, markAdminFeedbackSeen } from "../../infrastructure/storages/admin-storage";
-import { AdminPanel } from "../admin-panel";
 import { FeedbackPanel } from "../feedback";
 import { useUserLogoStyles } from "./user-logo-styles";
 
@@ -18,7 +17,6 @@ export const UserLogo: React.FC = () => {
     const rs = useLocalization();
     const { registerSource, unregisterSource, getCount, totalCount, refresh } = useNotificationBadge();
     const [feedbackOpen, setFeedbackOpen] = useState(false);
-    const [adminOpen, setAdminOpen] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -57,14 +55,30 @@ export const UserLogo: React.FC = () => {
 
     return (
         <>
+            {profile?.isAdmin && (
+                <div className={styles.adminButtonWrapper}>
+                    <Button
+                        appearance="subtle"
+                        icon={<ShieldRegular />}
+                        onClick={() => { navigate("/admin"); refresh("admin-feedback"); }}
+                    >
+                        {rs.Admin}
+                    </Button>
+                    {adminFeedbackCount > 0 && (
+                        <Badge className={styles.adminButtonBadge} color="danger" size="small" appearance="filled">
+                            {adminFeedbackCount}
+                        </Badge>
+                    )}
+                </div>
+            )}
             <Menu>
                 <MenuTrigger disableButtonEnhancement>
                     <button className={styles.avatarButton} aria-label="User menu">
                         <div className={styles.avatarWrapper}>
-                            <Avatar name={displayName} image={imageUrl ? { src: imageUrl } : undefined} color="colorful" size={32} />
-                            {totalCount > 0 && (
+                            <Avatar name={displayName} image={imageUrl ? { src: imageUrl } : undefined} color="colorful" size={40} />
+                            {feedbackCount > 0 && (
                                 <Badge className={styles.avatarBadge} color="danger" size="small" appearance="filled">
-                                    {totalCount}
+                                    {feedbackCount}
                                 </Badge>
                             )}
                         </div>
@@ -72,18 +86,6 @@ export const UserLogo: React.FC = () => {
                 </MenuTrigger>
                 <MenuPopover>
                     <MenuList>
-                        {profile?.isAdmin && (
-                            <MenuItem icon={<ShieldRegular />} onClick={() => { setAdminOpen(true); refresh("admin-feedback"); }}>
-                                <div className={styles.menuItemContent}>
-                                    {rs.AdminPanel}
-                                    {adminFeedbackCount > 0 && (
-                                        <Badge className={styles.menuItemBadge} color="danger" size="small" appearance="filled">
-                                            {adminFeedbackCount}
-                                        </Badge>
-                                    )}
-                                </div>
-                            </MenuItem>
-                        )}
                         <MenuItem icon={<SettingsRegular />} onClick={() => navigate("/settings")}>
                             {rs.Settings}
                         </MenuItem>
@@ -103,7 +105,6 @@ export const UserLogo: React.FC = () => {
                     </MenuList>
                 </MenuPopover>
             </Menu>
-            <AdminPanel open={adminOpen} onClose={() => setAdminOpen(false)} />
             <FeedbackPanel open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
         </>
     );

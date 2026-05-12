@@ -98,6 +98,7 @@ const en = {
     Feedback: "Feedback",
     LogOut: "Log out",
     // admin panel
+    Admin: "Admin",
     AdminPanel: "Admin Panel",
     AdminUsers: "Users",
     AdminFeedbacks: "Feedbacks",
@@ -214,6 +215,7 @@ const ru: typeof en = {
     Feedback: "Обратная связь",
     LogOut: "Выйти",
     // admin panel
+    Admin: "Админ",
     AdminPanel: "Панель администратора",
     AdminUsers: "Пользователи",
     AdminFeedbacks: "Отзывы",

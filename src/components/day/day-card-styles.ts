@@ -25,7 +25,6 @@ export const useDayCardStyles = makeStyles({
             width: "82vw",
             flexShrink: 0,
             minHeight: "340px",
-            scrollSnapAlign: "center",
             ":hover": {
                 boxShadow: "none",
             },

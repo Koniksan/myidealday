@@ -44,7 +44,7 @@ export const LoginPage: React.FC = () => {
         if (error) {
             setLoginError(error);
         } else {
-            navigate("/user");
+            navigate("/home");
         }
     };
 

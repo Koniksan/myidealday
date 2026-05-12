@@ -1,4 +1,5 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
+import { breakpoints } from "../common/styles/breakpoints";
 
 export const useUserLogoStyles = makeStyles({
     avatarButton: {
@@ -19,6 +20,20 @@ export const useUserLogoStyles = makeStyles({
         display: "inline-flex",
     },
     avatarBadge: {
+        position: "absolute",
+        top: "-4px",
+        right: "-4px",
+        pointerEvents: "none",
+    },
+    adminButtonWrapper: {
+        position: "relative",
+        display: "inline-flex",
+        alignItems: "center",
+        [breakpoints.mobile]: {
+            display: "none",
+        },
+    },
+    adminButtonBadge: {
         position: "absolute",
         top: "-4px",
         right: "-4px",
