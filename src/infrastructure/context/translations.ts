@@ -114,6 +114,7 @@ const en = {
     AdminColName: "Name",
     AdminColEmail: "Email",
     AdminColRegistered: "Registered",
+    AddCard: "Add card",
     // month nav
     GoToToday: "Go to Today",
     // habit page
@@ -234,6 +235,7 @@ const ru: typeof en = {
     AdminColName: "Имя",
     AdminColEmail: "Email",
     AdminColRegistered: "Зарегистрирован",
+    AddCard: "Добавить карточку",
     // month nav
     GoToToday: "К сегодняшнему дню",
     // habit page

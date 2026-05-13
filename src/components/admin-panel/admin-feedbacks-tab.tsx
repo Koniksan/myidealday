@@ -10,7 +10,7 @@ import {
     Textarea,
     mergeClasses,
 } from "@fluentui/react-components";
-import { ChatRegular, DismissRegular } from "@fluentui/react-icons";
+import { AddRegular, ChatRegular, DismissRegular, PersonRegular } from "@fluentui/react-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { AdminFeedback, FeedbackTag, getAllFeedbacks, setFeedbackTag, updateFeedback } from "../../infrastructure/storages/admin-storage";
@@ -151,29 +151,23 @@ const KanbanCard: React.FC<KanbanCardProps> = ({ feedback, onDragStart, onClick 
             onDragStart={onDragStart}
             onClick={onClick}
         >
-            <div className={styles.kanbanCardHeader}>
-                <span className={styles.kanbanCardEmail}>
+            {feedback.tag && (
+                <span className={mergeClasses(
+                    styles.kanbanTag,
+                    feedback.tag === "Feature" && styles.kanbanTagFeature,
+                    feedback.tag === "Bug" && styles.kanbanTagBug,
+                )}>
+                    {TAG_LABEL[feedback.tag]}
+                </span>
+            )}
+            <span className={styles.kanbanCardMessage}>{feedback.message}</span>
+            <div className={styles.kanbanCardFooter}>
+                <span className={styles.kanbanCardSource}>
+                    <PersonRegular className={styles.kanbanCardSourceIcon} />
                     {feedback.email ?? rs.AdminAnonymous}
                 </span>
                 <span className={styles.kanbanCardDate}>{dateStr}</span>
             </div>
-            <span className={styles.kanbanCardMessage}>{feedback.message}</span>
-            {(feedback.tag || feedback.answer) && (
-                <div className={styles.kanbanCardFooter}>
-                    {feedback.tag && (
-                        <span className={mergeClasses(
-                            styles.kanbanTag,
-                            feedback.tag === "Feature" && styles.kanbanTagFeature,
-                            feedback.tag === "Bug" && styles.kanbanTagBug,
-                        )}>
-                            {TAG_LABEL[feedback.tag]}
-                        </span>
-                    )}
-                    {feedback.answer && (
-                        <span className={styles.kanbanCardReplyBadge}>{rs.AdminReply}</span>
-                    )}
-                </div>
-            )}
         </div>
     );
 };
@@ -295,6 +289,11 @@ export const AdminFeedbacksTab: React.FC = () => {
 
     return (
         <>
+            <div className={styles.feedbackTabToolbar}>
+                <Button appearance="subtle" icon={<AddRegular />}>
+                    {rs.AddCard}
+                </Button>
+            </div>
             <div className={styles.kanbanBoard}>
                 {STATUSES.map(status => (
                     <KanbanColumn
