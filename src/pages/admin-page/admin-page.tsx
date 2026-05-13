@@ -34,7 +34,6 @@ export const AdminPage: React.FC = () => {
 
     return (
         <PageLayout>
-            <h1 className={pageStyles.title}>{rs.AdminPanel}</h1>
             <TabList
                 selectedValue={tab}
                 onTabSelect={(_, d) => setTab(d.value as AdminTab)}

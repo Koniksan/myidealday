@@ -1,6 +1,20 @@
 import { supabase } from "./supabase-client";
 import { FeedbackStatus } from "./feedback-storage";
 
+export type FeedbackTag = "Feature" | "Bug";
+
+const TAGS_KEY = "admin-feedback-tags";
+
+const getStoredTags = (): Record<string, FeedbackTag> => {
+    try { return JSON.parse(localStorage.getItem(TAGS_KEY) ?? "{}"); } catch { return {}; }
+};
+
+export const setFeedbackTag = (id: string, tag: FeedbackTag | null): void => {
+    const tags = getStoredTags();
+    if (tag === null) delete tags[id]; else tags[id] = tag;
+    localStorage.setItem(TAGS_KEY, JSON.stringify(tags));
+};
+
 export interface AdminUser {
     id: string;
     email: string | null;
@@ -18,6 +32,7 @@ export interface AdminFeedback {
     status: FeedbackStatus;
     answer: string | null;
     createdAt: string;
+    tag: FeedbackTag | null;
 }
 
 export const getAllUsers = async (): Promise<AdminUser[]> => {
@@ -45,6 +60,7 @@ export const updateFeedback = async (id: string, status: FeedbackStatus, answer:
 export const getAllFeedbacks = async (): Promise<AdminFeedback[]> => {
     const { data, error } = await supabase.rpc("get_all_feedbacks_for_admin");
     if (error) throw error;
+    const tags = getStoredTags();
     return (data ?? []).map((f: { id: string; user_id: string; email: string | null; message: string; status: string; answer: string | null; created_at: string }) => ({
         id: f.id,
         userId: f.user_id,
@@ -53,6 +69,7 @@ export const getAllFeedbacks = async (): Promise<AdminFeedback[]> => {
         status: f.status as FeedbackStatus,
         answer: f.answer ?? null,
         createdAt: f.created_at,
+        tag: tags[f.id] ?? null,
     }));
 };
 

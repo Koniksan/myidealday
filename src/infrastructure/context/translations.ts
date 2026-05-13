@@ -100,6 +100,9 @@ const en = {
     // admin panel
     Admin: "Admin",
     AdminPanel: "Admin Panel",
+    TagFeature: "Feature",
+    TagBug: "Bug",
+    FeedbackCategory: "Category",
     AdminUsers: "Users",
     AdminFeedbacks: "Feedbacks",
     AdminNoUsers: "No users found",
@@ -217,6 +220,9 @@ const ru: typeof en = {
     // admin panel
     Admin: "Админ",
     AdminPanel: "Панель администратора",
+    TagFeature: "Фича",
+    TagBug: "Баг",
+    FeedbackCategory: "Категория",
     AdminUsers: "Пользователи",
     AdminFeedbacks: "Отзывы",
     AdminNoUsers: "Пользователи не найдены",
