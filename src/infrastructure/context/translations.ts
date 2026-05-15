@@ -115,11 +115,9 @@ const en = {
     AdminColEmail: "Email",
     AdminColRegistered: "Registered",
     AddCard: "Add card",
-    // month nav
     GoToToday: "Go to Today",
-    // habit page
-    MyHabit: "My Habit",
     Home: "Home",
+    Performance: "Performance",
 };
 
 const ru: typeof en = {
@@ -236,11 +234,10 @@ const ru: typeof en = {
     AdminColEmail: "Email",
     AdminColRegistered: "Зарегистрирован",
     AddCard: "Добавить карточку",
-    // month nav
     GoToToday: "К сегодняшнему дню",
-    // habit page
     MyHabit: "Мои привычки",
     Home: "Главная",
+    Performance: "Производительность",
 };
 
 export const translations: Record<Locale, typeof en> = { en, ru };

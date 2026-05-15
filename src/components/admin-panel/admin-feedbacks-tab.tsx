@@ -13,10 +13,11 @@ import {
 import { AddRegular, ChatRegular, DismissRegular, PersonRegular } from "@fluentui/react-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
-import { AdminFeedback, FeedbackTag, getAllFeedbacks, setFeedbackTag, updateFeedback } from "../../infrastructure/storages/admin-storage";
+import { AdminFeedback, getAllFeedbacks, updateFeedback } from "../../infrastructure/storages/admin-storage";
 import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
 import { FeedbackStatus } from "../../infrastructure/storages/feedback-storage";
 import { useAdminPanelStyles } from "./admin-panel-styles";
+import { FeedbackType } from "../../infrastructure";
 
 const STATUSES: FeedbackStatus[] = ["New", "In Progress", "Completed"];
 
@@ -26,21 +27,17 @@ const DOT_COLOR: Record<FeedbackStatus, string> = {
     "Completed": "#16a34a",
 };
 
-// --- Edit drawer ---
-
-const TAGS: (FeedbackTag | "")[] = ["", "Feature", "Bug"];
-
 interface EditDrawerProps {
     feedback: AdminFeedback | null;
     onClose: () => void;
-    onSaved: (id: string, status: FeedbackStatus, answer: string | null, tag: FeedbackTag | null) => void;
+    onSaved: (id: string, status: FeedbackStatus, answer: string | null, type: FeedbackType | null) => void;
 }
 
 const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) => {
     const styles = useAdminPanelStyles();
     const rs = useLocalization();
     const [editStatus, setEditStatus] = useState<FeedbackStatus>("New");
-    const [editTag, setEditTag] = useState<FeedbackTag | "">("");
+    const [editType, setEditType] = useState<FeedbackType | "">("");
     const [editAnswer, setEditAnswer] = useState("");
     const [saving, setSaving] = useState(false);
 
@@ -50,16 +47,16 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
         "Completed": rs.StatusCompleted,
     };
 
-    const TAG_LABEL: Record<FeedbackTag | "", string> = {
-        "": "—",
-        "Feature": rs.TagFeature,
-        "Bug": rs.TagBug,
+    const TAG_LABELS: Record<FeedbackType, string> = {
+        [FeedbackType.Feature]: rs.TagFeature,
+        [FeedbackType.Bug]: rs.TagBug,
+        [FeedbackType.Performance]: rs.Performance,
     };
 
     useEffect(() => {
         if (feedback) {
             setEditStatus(feedback.status);
-            setEditTag(feedback.tag ?? "");
+            setEditType(feedback.type ?? "");
             setEditAnswer(feedback.answer ?? "");
         }
     }, [feedback?.id]);
@@ -68,10 +65,9 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
         if (!feedback) return;
         setSaving(true);
         try {
-            const tag = editTag || null;
-            await updateFeedback(feedback.id, editStatus, editAnswer || null);
-            setFeedbackTag(feedback.id, tag);
-            onSaved(feedback.id, editStatus, editAnswer || null, tag);
+            const type = editType || null;
+            await updateFeedback(feedback.id, editStatus, editAnswer || null, type);
+            onSaved(feedback.id, editStatus, editAnswer || null, type);
             onClose();
         } catch (e) {
             console.error(e);
@@ -97,11 +93,12 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
             <DrawerBody className={styles.feedbackPanelBody}>
                 <Text className={styles.feedbackDialogMessage}>{feedback?.message}</Text>
                 <Select
-                    value={editTag}
-                    onChange={(_, d) => setEditTag(d.value as FeedbackTag | "")}
+                    value={editType}
+                    onChange={(_, d) => setEditType(d.value as FeedbackType | "")}
                 >
-                    {TAGS.map(t => (
-                        <option key={t} value={t}>{TAG_LABEL[t]}</option>
+                    <option value="">—</option>
+                    {Object.values(FeedbackType).map(x => (
+                        <option key={x} value={x}>{TAG_LABELS[x as FeedbackType]}</option>
                     ))}
                 </Select>
                 <Select value={editStatus} onChange={(_, d) => setEditStatus(d.value as FeedbackStatus)}>
@@ -139,9 +136,16 @@ const KanbanCard: React.FC<KanbanCardProps> = ({ feedback, onDragStart, onClick 
         month: "short",
     });
 
-    const TAG_LABEL: Record<string, string> = {
-        Feature: rs.TagFeature,
-        Bug: rs.TagBug,
+    const TAG_LABELS: Record<FeedbackType, string> = {
+        [FeedbackType.Feature]: rs.TagFeature,
+        [FeedbackType.Bug]: rs.TagBug,
+        [FeedbackType.Performance]: rs.TagBug,
+    };
+
+    const TAG_STYLES: Record<FeedbackType, string> = {
+        [FeedbackType.Feature]: styles.kanbanTagFeature,
+        [FeedbackType.Bug]: styles.kanbanTagBug,
+        [FeedbackType.Performance]: styles.kanbanTagBug,
     };
 
     return (
@@ -151,13 +155,9 @@ const KanbanCard: React.FC<KanbanCardProps> = ({ feedback, onDragStart, onClick 
             onDragStart={onDragStart}
             onClick={onClick}
         >
-            {feedback.tag && (
-                <span className={mergeClasses(
-                    styles.kanbanTag,
-                    feedback.tag === "Feature" && styles.kanbanTagFeature,
-                    feedback.tag === "Bug" && styles.kanbanTagBug,
-                )}>
-                    {TAG_LABEL[feedback.tag]}
+            {feedback.type && (
+                <span className={mergeClasses(styles.kanbanTag, TAG_STYLES[feedback.type])}>
+                    {TAG_LABELS[feedback.type]}
                 </span>
             )}
             <span className={styles.kanbanCardMessage}>{feedback.message}</span>
@@ -250,8 +250,8 @@ export const AdminFeedbacksTab: React.FC = () => {
         return () => document.removeEventListener("dragend", clear);
     }, []);
 
-    const handleSaved = (id: string, status: FeedbackStatus, answer: string | null, tag: FeedbackTag | null) =>
-        setFeedbacks(prev => prev.map(f => f.id === id ? { ...f, status, answer, tag } : f));
+    const handleSaved = (id: string, status: FeedbackStatus, answer: string | null, type: FeedbackType | null) =>
+        setFeedbacks(prev => prev.map(f => f.id === id ? { ...f, status, answer, type } : f));
 
     const handleDrop = async (targetStatus: FeedbackStatus) => {
         setDragOver(null);
@@ -264,7 +264,7 @@ export const AdminFeedbacksTab: React.FC = () => {
 
         setFeedbacks(prev => prev.map(f => f.id === id ? { ...f, status: targetStatus } : f));
         try {
-            await updateFeedback(id, targetStatus, item.answer ?? null);
+            await updateFeedback(id, targetStatus, item.answer ?? null, item.type);
         } catch (e) {
             console.error(e);
             setFeedbacks(prev => prev.map(f => f.id === id ? { ...f, status: item.status } : f));

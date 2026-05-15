@@ -11,7 +11,10 @@ Plan your ideal day once, apply it to every day of the month, then track your pr
 - **Month plan** — add or edit a shared task template that applies to all days in a month
 - **Custom tasks** — add one-off tasks to any individual day
 - **Progress tracking** — animated circular progress per day card; turns green at 100 %
-- **Feedback panel** — submit and review in-app feedback
+- **Habits** — define and track recurring personal habits
+- **Feedback panel** — submit feedback and track its status with admin replies
+- **Admin panel** — kanban board for managing user feedback (drag & drop, status, type tagging)
+- **Settings** — appearance (light/dark mode) and language (EN/RU)
 - **Responsive layout** — desktop two-column view; mobile horizontal-scroll card list
 
 ## Project structure
@@ -20,25 +23,37 @@ Plan your ideal day once, apply it to every day of the month, then track your pr
 src/
 ├── app.tsx                          # Root — providers + router
 ├── infrastructure/
-│   ├── context/                     # Auth and theme React contexts
-│   └── storages/                    # Supabase helpers (day-storage, feedback-storage)
+│   ├── context/                     # React context providers (auth, theme, locale, notifications)
+│   ├── helpers/                     # Pure utility functions
+│   ├── hooks/                       # Shared custom React hooks
+│   ├── models/                      # Shared enums and domain types (e.g. FeedbackType)
+│   └── storages/                    # Supabase data access helpers
 ├── components/
-│   ├── day/                         # DayCard, DayCardMini, DayCardProgress, useDayCard
-│   ├── day-list/                    # DayCardList, useDayCardList
+│   ├── admin-panel/                 # Admin kanban board and user management
+│   ├── common/                      # Shared UI utilities and styles
+│   ├── day/                         # DayCard, DayCardMini, progress ring
+│   ├── day-list/                    # DayCardList + useDayCardList hook
 │   ├── day-plan-panel/              # Edit/Add month plan drawer
-│   ├── feedback/                    # Feedback panel and items
-│   ├── header/                      # App header with dynamic actions
-│   ├── page-layout/
-│   └── common/                      # Shared styles and utilities
+│   ├── feedback/                    # User-facing feedback panel and items
+│   ├── protected-route/             # Auth guard wrapper
+│   ├── settings-panel/              # Appearance and language settings drawer
+│   └── user-logo/
 └── pages/
+    ├── home-page/                   # Main page with the day grid
+    ├── habit-page/                  # Habit tracking page
+    ├── account-page/                # User account details
+    ├── settings-page/
+    ├── admin-page/
     ├── login-page/
-    └── user-page/                   # Main page
+    ├── signup-page/
+    ├── auth-callback-page/
+    └── not-found-page/
 ```
 
 ## Requirements
 
 - [Node.js](https://nodejs.org/) (includes `npm`)
-- A [Supabase](https://supabase.com/) project with the required tables (tasks, feedback)
+- A [Supabase](https://supabase.com/) project — run the SQL files in `supabase/migrations/` via the Supabase SQL editor
 
 ## Install
 
