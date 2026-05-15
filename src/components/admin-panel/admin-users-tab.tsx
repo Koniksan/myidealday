@@ -15,13 +15,14 @@ import {
 import { PeopleRegular } from "@fluentui/react-icons";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
-import { AdminUser, getAllUsers } from "../../infrastructure/storages/admin-storage";
+import { getAllUsers } from "../../infrastructure/storages/admin-storage";
 import { useAdminPanelStyles } from "./admin-panel-styles";
+import { User } from "../../infrastructure";
 
 export const AdminUsersTab: React.FC = () => {
     const styles = useAdminPanelStyles();
     const rs = useLocalization();
-    const [users, setUsers] = useState<AdminUser[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,8 +32,8 @@ export const AdminUsersTab: React.FC = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    const columns: TableColumnDefinition<AdminUser>[] = useMemo(() => [
-        createTableColumn<AdminUser>({
+    const columns: TableColumnDefinition<User>[] = useMemo(() => [
+        createTableColumn<User>({
             columnId: "user",
             compare: (a, b) => (a.fullName ?? a.email ?? "").localeCompare(b.fullName ?? b.email ?? ""),
             renderHeaderCell: () => rs.AdminColName,
@@ -53,14 +54,14 @@ export const AdminUsersTab: React.FC = () => {
                 </TableCellLayout>
             ),
         }),
-        createTableColumn<AdminUser>({
+        createTableColumn<User>({
             columnId: "email",
             renderHeaderCell: () => rs.AdminColEmail,
             renderCell: (user) => (
                 <Text className={styles.userId}>{user.email ?? "—"}</Text>
             ),
         }),
-        createTableColumn<AdminUser>({
+        createTableColumn<User>({
             columnId: "registered",
             compare: (a, b) => a.createdAt.localeCompare(b.createdAt),
             renderHeaderCell: () => rs.AdminColRegistered,
@@ -73,7 +74,7 @@ export const AdminUsersTab: React.FC = () => {
                 </Text>
             ),
         }),
-        createTableColumn<AdminUser>({
+        createTableColumn<User>({
             columnId: "lastLogin",
             compare: (a, b) => (a.lastSignInAt ?? "").localeCompare(b.lastSignInAt ?? ""),
             renderHeaderCell: () => rs.AdminLastLogin,
@@ -128,9 +129,9 @@ export const AdminUsersTab: React.FC = () => {
                     )}
                 </DataGridRow>
             </DataGridHeader>
-            <DataGridBody<AdminUser>>
+            <DataGridBody<User>>
                 {({ item, rowId }) => (
-                    <DataGridRow<AdminUser> className={styles.userGridRow} key={rowId}>
+                    <DataGridRow<User> className={styles.userGridRow} key={rowId}>
                         {({ renderCell }) => (
                             <DataGridCell>{renderCell(item)}</DataGridCell>
                         )}

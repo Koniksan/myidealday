@@ -100,6 +100,9 @@ const en = {
     // admin panel
     Admin: "Admin",
     AdminPanel: "Admin Panel",
+    TagFeature: "Feature",
+    TagBug: "Bug",
+    FeedbackCategory: "Category",
     AdminUsers: "Users",
     AdminFeedbacks: "Feedbacks",
     AdminNoUsers: "No users found",
@@ -111,11 +114,10 @@ const en = {
     AdminColName: "Name",
     AdminColEmail: "Email",
     AdminColRegistered: "Registered",
-    // month nav
+    AddCard: "Add card",
     GoToToday: "Go to Today",
-    // habit page
-    MyHabit: "My Habit",
     Home: "Home",
+    Performance: "Performance",
 };
 
 const ru: typeof en = {
@@ -217,6 +219,9 @@ const ru: typeof en = {
     // admin panel
     Admin: "Админ",
     AdminPanel: "Панель администратора",
+    TagFeature: "Фича",
+    TagBug: "Баг",
+    FeedbackCategory: "Категория",
     AdminUsers: "Пользователи",
     AdminFeedbacks: "Отзывы",
     AdminNoUsers: "Пользователи не найдены",
@@ -228,11 +233,11 @@ const ru: typeof en = {
     AdminColName: "Имя",
     AdminColEmail: "Email",
     AdminColRegistered: "Зарегистрирован",
-    // month nav
+    AddCard: "Добавить карточку",
     GoToToday: "К сегодняшнему дню",
-    // habit page
     MyHabit: "Мои привычки",
     Home: "Главная",
+    Performance: "Производительность",
 };
 
 export const translations: Record<Locale, typeof en> = { en, ru };
