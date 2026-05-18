@@ -1,8 +1,9 @@
 import { Badge, Button, Checkbox, Divider, Input, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, mergeClasses } from "@fluentui/react-components";
-import { AddRegular, DismissRegular, MoreHorizontalRegular } from "@fluentui/react-icons";
+import { AddRegular, ClockRegular, DismissRegular, MoreHorizontalRegular } from "@fluentui/react-icons";
 import React from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { StoredTask } from "../../infrastructure/storages/day-storage";
+import { formatTimeChip } from "../day-plan-panel/time-picker-panel";
 import { DayCardProgress } from "./day-card-progress";
 import { useDayCardStyles } from "./day-card-styles";
 import { useDayCard } from "./use-day-card";
@@ -74,8 +75,9 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
                 {tasks.filter(t => !t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
+                    const timeStr = formatTimeChip(task);
                     return (
-                        <div key={idx} className={mergeClasses(styles.taskRow, task.checked && styles.checkedTaskRow)} style={task.color ? { "--task-color": task.color } as React.CSSProperties : {}}>
+                        <div key={idx} className={mergeClasses(styles.taskRow, task.checked && styles.checkedTaskRow)}>
                             <Checkbox
                                 className={mergeClasses(styles.checkboxItem, isDetailView && styles.detailCheckboxItem)}
                                 label={<span className={mergeClasses(styles.checkboxItemLabel, task.checked && styles.checkedLabel)}>{task.label}</span>}
@@ -83,7 +85,12 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                                 disabled={isReadOnly}
                                 onChange={() => toggle(idx)}
                             />
-                            {task.color && <span className={styles.taskPriorityLine} />}
+                            {timeStr && (
+                                <span className={styles.taskTimeLabel}>
+                                    <ClockRegular fontSize={12} />
+                                    {timeStr}
+                                </span>
+                            )}
                         </div>
                     );
                 })}
@@ -94,8 +101,9 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
 
                 {tasks.filter(t => t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
+                    const timeStr = formatTimeChip(task);
                     return (
-                        <div key={`custom-${idx}`} className={mergeClasses(styles.customTaskRow, task.checked && styles.checkedTaskRow)} style={task.color ? { "--task-color": task.color } as React.CSSProperties : {}}>
+                        <div key={`custom-${idx}`} className={mergeClasses(styles.customTaskRow, task.checked && styles.checkedTaskRow)}>
                             <div className={styles.customTaskInner}>
                                 <Checkbox
                                     className={mergeClasses(styles.customTaskCheckbox, isDetailView && styles.detailCheckboxItem)}
@@ -108,13 +116,18 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                                     <button
                                         className={styles.deleteTaskButton}
                                         onClick={() => removeCustomTask(task.id!)}
-                                        onPointerDown={(e) => e.stopPropagation()}
+                                        onPointerDown={e => e.stopPropagation()}
                                     >
                                         <DismissRegular fontSize={12} />
                                     </button>
                                 )}
                             </div>
-                            {task.color && <span className={styles.taskPriorityLine} />}
+                            {timeStr && (
+                                <span className={styles.taskTimeLabel}>
+                                    <ClockRegular fontSize={10} />
+                                    {timeStr}
+                                </span>
+                            )}
                         </div>
                     );
                 })}

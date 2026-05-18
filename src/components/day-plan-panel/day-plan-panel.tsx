@@ -16,12 +16,13 @@ import {
     Subtitle2,
     mergeClasses,
 } from "@fluentui/react-components";
-import { AddRegular, ArrowSortFilled, CheckmarkRegular, ChevronDownRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
+import { AddRegular, ArrowSortFilled, CheckmarkRegular, ChevronDownRegular, ClockRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useMemo } from "react";
 import { DesktopTooltip } from "../common";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { PlanItem, TASK_COLORS } from "../../infrastructure/storages/day-storage";
 import { useDayPlanPanelStyles } from "./day-plan-panel-styles";
+import { TimePickerPanel, formatTimeChip } from "./time-picker-panel";
 import { useDayPlanPanel } from "./useDayPlanPanel";
 
 interface DayPlanPanelProps {
@@ -31,7 +32,7 @@ interface DayPlanPanelProps {
     planLabels: PlanItem[];
     onClose: () => void;
     addPlanToAllDays: (items: PlanItem[]) => Promise<void>;
-    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => Promise<void>;
+    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], fieldChanges: PlanItem[]) => Promise<void>;
     resetPlan: () => Promise<void>;
 }
 
@@ -73,6 +74,9 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
         openPickerIndex,
         togglePicker,
         setItemColor,
+        openTimePickerIndex,
+        toggleTimePicker,
+        setItemTime,
         editingIndex,
         editingValue,
         setEditingValue,
@@ -103,7 +107,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
     ], [rs]);
 
     const getOptionForColor = (color: string | null) =>
-        priorityOptions.find(o => o.color === color) ?? priorityOptions[0];
+        priorityOptions.find(x => x.color === color) ?? priorityOptions[0];
 
     return (
         <>
@@ -152,7 +156,11 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                         <div className={styles.list}>
                             {items.map((item, i) => {
                                 const opt = getOptionForColor(item.color ?? null);
-                                const isOpen = openPickerIndex === i;
+                                const isPriorityOpen = openPickerIndex === i;
+                                const isTimeOpen = openTimePickerIndex === i;
+                                const isAnyOpen = isPriorityOpen || isTimeOpen;
+                                const timeLabel = formatTimeChip(item);
+                                const hasTime = !!(item.time_mode && (item.time_exact || item.time_start));
                                 return (
                                     <div
                                         key={item.label}
@@ -166,9 +174,8 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                         onDragOver={e => handleDragOver(e, i)}
                                         onDragEnd={handleDragEnd}
                                     >
-                                        {/* Row */}
                                         <div
-                                            className={mergeClasses(styles.listItem, isOpen && styles.listItemOpen)}
+                                            className={mergeClasses(styles.listItem, isAnyOpen && styles.listItemOpen)}
                                             onClick={() => editingIndex !== i && togglePicker(i)}
                                         >
                                             <span
@@ -194,12 +201,22 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                                 <span className={styles.taskName}>{item.label}</span>
                                             )}
                                             {editingIndex !== i && (
-                                                <PriorityBadge
-                                                    color={item.color ?? null}
-                                                    label={opt.label}
-                                                    emptyText={rs.AddPriority}
-                                                    styles={styles}
-                                                />
+                                                <>
+                                                    <button
+                                                        className={mergeClasses(styles.timeChip, hasTime ? styles.timeChipSet : styles.timeChipEmpty)}
+                                                        onClick={e => { e.stopPropagation(); toggleTimePicker(i); }}
+                                                        onPointerDown={e => e.stopPropagation()}
+                                                    >
+                                                        <ClockRegular fontSize={16} />
+                                                        {timeLabel ? timeLabel : '-'}
+                                                    </button>
+                                                    <PriorityBadge
+                                                        color={item.color ?? null}
+                                                        label={opt.label}
+                                                        emptyText={rs.AddPriority}
+                                                        styles={styles}
+                                                    />
+                                                </>
                                             )}
                                             {editingIndex === i ? (
                                                 <button
@@ -211,7 +228,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                                 </button>
                                             ) : (
                                                 <>
-                                                    <span className={mergeClasses(styles.chevron, isOpen && styles.chevronOpen)}>
+                                                    <span className={mergeClasses(styles.chevron, isPriorityOpen && styles.chevronOpen)}>
                                                         <ChevronDownRegular fontSize={14} />
                                                     </span>
                                                     <button
@@ -232,14 +249,22 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                             </button>
                                         </div>
 
-                                        {/* Inline priority picker */}
-                                        <div className={mergeClasses(styles.priorityPicker, isOpen && styles.priorityPickerOpen)}>
-                                            {priorityOptions.map(opt => {
-                                                const isSelected = (item.color ?? null) === opt.color;
-                                                const isNone = opt.color === null;
+                                        <div className={mergeClasses(styles.timePicker, isTimeOpen && styles.timePickerOpen)}>
+                                            <TimePickerPanel
+                                                item={item}
+                                                onUpdate={patch => setItemTime(i, patch)}
+                                                panelStyles={styles}
+                                                rs={rs}
+                                            />
+                                        </div>
+
+                                        <div className={mergeClasses(styles.priorityPicker, isPriorityOpen && styles.priorityPickerOpen)}>
+                                            {priorityOptions.map(x => {
+                                                const isSelected = (item.color ?? null) === x.color;
+                                                const isNone = x.color === null;
                                                 return (
                                                     <button
-                                                        key={opt.label}
+                                                        key={x.label}
                                                         className={mergeClasses(
                                                             styles.priorityPill,
                                                             isNone && styles.priorityPillNone,
@@ -247,17 +272,17 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                                             !isNone && isSelected && styles.priorityPillSelected,
                                                         )}
                                                         style={!isNone ? {
-                                                            backgroundColor: `${opt.color}18`,
-                                                            borderColor: isSelected ? opt.color! : `${opt.color}50`,
-                                                            color: opt.color!,
+                                                            backgroundColor: `${x.color}18`,
+                                                            borderColor: isSelected ? x.color! : `${x.color}50`,
+                                                            color: x.color!,
                                                         } : undefined}
-                                                        onClick={e => { e.stopPropagation(); setItemColor(i, opt.color); }}
+                                                        onClick={e => { e.stopPropagation(); setItemColor(i, x.color); }}
                                                     >
                                                         <span
                                                             className={styles.priorityDot}
-                                                            style={{ backgroundColor: opt.color ?? "#888" }}
+                                                            style={{ backgroundColor: x.color ?? "#888" }}
                                                         />
-                                                        {opt.label}
+                                                        {x.label}
                                                     </button>
                                                 );
                                             })}
