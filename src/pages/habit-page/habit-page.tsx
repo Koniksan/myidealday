@@ -15,12 +15,14 @@ import {
     ArrowSortFilled,
     CheckmarkRegular,
     ChevronDownRegular,
+    ClockRegular,
     DeleteRegular,
     DismissRegular,
     EditRegular,
 } from "@fluentui/react-icons";
 import React, { useMemo } from "react";
 import { useDayPlanPanelStyles } from "../../components/day-plan-panel/day-plan-panel-styles";
+import { TimePickerPanel, formatTimeChip } from "../../components/day-plan-panel/time-picker-panel";
 import { PageLayout } from "../../components/common/page-layout";
 import { PageShell } from "../../components/common/page-shell";
 import { useLocalization } from "../../infrastructure/context/locale-context";
@@ -50,6 +52,7 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({ color, label, emptyText, 
     );
 };
 
+
 export const HabitPage: React.FC = () => {
     const styles = useHabitPageStyles();
     const panelStyles = useDayPlanPanelStyles();
@@ -64,6 +67,9 @@ export const HabitPage: React.FC = () => {
         openPickerIndex,
         togglePicker,
         setItemColor,
+        openTimePickerIndex,
+        toggleTimePicker,
+        setItemTime,
         editingIndex,
         editingValue,
         setEditingValue,
@@ -95,7 +101,7 @@ export const HabitPage: React.FC = () => {
     ], [rs]);
 
     const getOptionForColor = (color: string | null) =>
-        priorityOptions.find(o => o.color === color) ?? priorityOptions[0];
+        priorityOptions.find(x => x.color === color) ?? priorityOptions[0];
 
     return (
         <>
@@ -128,7 +134,11 @@ export const HabitPage: React.FC = () => {
                         <div className={panelStyles.list}>
                             {items.map((item, i) => {
                                 const opt = getOptionForColor(item.color ?? null);
-                                const isOpen = openPickerIndex === i;
+                                const isPriorityOpen = openPickerIndex === i;
+                                const isTimeOpen = openTimePickerIndex === i;
+                                const isAnyOpen = isPriorityOpen || isTimeOpen;
+                                const timeLabel = formatTimeChip(item);
+                                const hasTime = !!(item.time_mode && (item.time_exact || item.time_start));
                                 return (
                                     <div
                                         key={item.label}
@@ -143,7 +153,7 @@ export const HabitPage: React.FC = () => {
                                         onDragEnd={handleDragEnd}
                                     >
                                         <div
-                                            className={mergeClasses(panelStyles.listItem, isOpen && panelStyles.listItemOpen)}
+                                            className={mergeClasses(panelStyles.listItem, isAnyOpen && panelStyles.listItemOpen)}
                                             onClick={() => editingIndex !== i && togglePicker(i)}
                                         >
                                             <span
@@ -169,12 +179,22 @@ export const HabitPage: React.FC = () => {
                                                 <span className={panelStyles.taskName}>{item.label}</span>
                                             )}
                                             {editingIndex !== i && (
-                                                <PriorityBadge
-                                                    color={item.color ?? null}
-                                                    label={opt.label}
-                                                    emptyText={rs.AddPriority}
-                                                    panelStyles={panelStyles}
-                                                />
+                                                <>
+                                                    <button
+                                                        className={mergeClasses(panelStyles.timeChip, hasTime ? panelStyles.timeChipSet : panelStyles.timeChipEmpty)}
+                                                        onClick={e => { e.stopPropagation(); toggleTimePicker(i); }}
+                                                        onPointerDown={e => e.stopPropagation()}
+                                                    >
+                                                        <ClockRegular fontSize={16} />
+                                                        {timeLabel ? timeLabel : '-'}
+                                                    </button>
+                                                    <PriorityBadge
+                                                        color={item.color ?? null}
+                                                        label={opt.label}
+                                                        emptyText={rs.AddPriority}
+                                                        panelStyles={panelStyles}
+                                                    />
+                                                </>
                                             )}
                                             {editingIndex === i ? (
                                                 <button
@@ -186,7 +206,7 @@ export const HabitPage: React.FC = () => {
                                                 </button>
                                             ) : (
                                                 <>
-                                                    <span className={mergeClasses(panelStyles.chevron, isOpen && panelStyles.chevronOpen)}>
+                                                    <span className={mergeClasses(panelStyles.chevron, isPriorityOpen && panelStyles.chevronOpen)}>
                                                         <ChevronDownRegular fontSize={14} />
                                                     </span>
                                                     <button
@@ -207,7 +227,16 @@ export const HabitPage: React.FC = () => {
                                             </button>
                                         </div>
 
-                                        <div className={mergeClasses(panelStyles.priorityPicker, isOpen && panelStyles.priorityPickerOpen)}>
+                                        <div className={mergeClasses(panelStyles.timePicker, isTimeOpen && panelStyles.timePickerOpen)}>
+                                            <TimePickerPanel
+                                                item={item}
+                                                onUpdate={patch => setItemTime(i, patch)}
+                                                panelStyles={panelStyles}
+                                                rs={rs}
+                                            />
+                                        </div>
+
+                                        <div className={mergeClasses(panelStyles.priorityPicker, isPriorityOpen && panelStyles.priorityPickerOpen)}>
                                             {priorityOptions.map(option => {
                                                 const isSelected = (item.color ?? null) === option.color;
                                                 const isNone = option.color === null;

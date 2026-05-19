@@ -7,7 +7,7 @@ import {
     deleteTasksByLabelForMonth,
     deleteAllTasksFromDate,
     reorderTasksByLabelsForMonth,
-    updateTaskColorByLabel,
+    updateTaskFieldsByLabel,
     StoredDay,
     StoredTask,
     PlanItem,
@@ -27,7 +27,7 @@ interface UseDayCardListResult {
     loading: boolean;
     gridRef: RefObject<HTMLDivElement | null>;
     addPlanToAllDays: (items: PlanItem[]) => Promise<void>;
-    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => Promise<void>;
+    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], fieldChanges: PlanItem[]) => Promise<void>;
     resetPlan: () => Promise<void>;
     prevMonth: () => void;
     nextMonth: () => void;
@@ -165,7 +165,14 @@ export const useDayCardList = (): UseDayCardListResult => {
 
         return activeDays[0].tasks
             .filter(t => universalLabels.has(t.label))
-            .map(t => ({ label: t.label, color: t.color ?? null }));
+            .map(t => ({
+                label: t.label,
+                color: t.color ?? null,
+                time_mode: t.time_mode ?? null,
+                time_exact: t.time_exact ?? null,
+                time_start: t.time_start ?? null,
+                time_end: t.time_end ?? null,
+            }));
     }, [daysByDate]);
 
     const days: DayCardProps[] = Array.from({ length: daysInMonth }, (_, i) => {
@@ -217,8 +224,8 @@ export const useDayCardList = (): UseDayCardListResult => {
         });
     };
 
-    const editPlan = async (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => {
-        await Promise.all(labelsToRemove.map(label => deleteTasksByLabelForMonth(year, month, label, fromDay)));
+    const editPlan = async (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], fieldChanges: PlanItem[]) => {
+        await Promise.all(labelsToRemove.map(x => deleteTasksByLabelForMonth(year, month, x, fromDay)));
 
         if (labelsToRemove.length > 0) {
             setDaysByDate(prev => {
@@ -232,14 +239,23 @@ export const useDayCardList = (): UseDayCardListResult => {
             });
         }
 
-        if (colorChanges.length > 0) {
-            await Promise.all(colorChanges.map(item => updateTaskColorByLabel(year, month, item.label, item.color ?? null, fromDay)));
+        if (fieldChanges.length > 0) {
+            await Promise.all(fieldChanges.map(x => updateTaskFieldsByLabel(year, month, x.label, {
+                color: x.color ?? null,
+                time_mode: x.time_mode ?? null,
+                time_exact: x.time_exact ?? null,
+                time_start: x.time_start ?? null,
+                time_end: x.time_end ?? null,
+            }, fromDay)));
             setDaysByDate(prev => {
                 const updated = { ...prev };
-                const colorMap = new Map(colorChanges.map(i => [i.label, i.color ?? null]));
+                const fieldMap = new Map(fieldChanges.map(i => [i.label, i]));
                 for (const date of Object.keys(updated)) {
                     if (date >= toDateString(fromDay)) {
-                        updated[date] = { ...updated[date], tasks: updated[date].tasks.map(t => colorMap.has(t.label) ? { ...t, color: colorMap.get(t.label) } : t) };
+                        updated[date] = { ...updated[date], tasks: updated[date].tasks.map(t => {
+                            const c = fieldMap.get(t.label);
+                            return c ? { ...t, color: c.color ?? null, time_mode: c.time_mode ?? null, time_exact: c.time_exact ?? null, time_start: c.time_start ?? null, time_end: c.time_end ?? null } : t;
+                        })};
                     }
                 }
                 return updated;

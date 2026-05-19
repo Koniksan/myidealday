@@ -118,6 +118,16 @@ const en = {
     GoToToday: "Go to Today",
     Home: "Home",
     Performance: "Performance",
+    // time picker
+    AddTime: "+ time",
+    TimeExact: "Exact",
+    TimeInterval: "Interval",
+    TimeClear: "remove",
+    TimeDurationHour: "h",
+    TimeDurationMin: "min",
+    TimePresetsInterval: ["30 min", "1 h", "1.5 h", "2 h", "3 h"],
+    TimeStartPlaceholder: "Start",
+    TimeEndPlaceholder: "End",
 };
 
 const ru: typeof en = {
@@ -238,6 +248,16 @@ const ru: typeof en = {
     MyHabit: "Мои привычки",
     Home: "Главная",
     Performance: "Производительность",
+    // time picker
+    AddTime: "+ время",
+    TimeExact: "Точное",
+    TimeInterval: "Интервал",
+    TimeClear: "убрать",
+    TimeDurationHour: "ч",
+    TimeDurationMin: "мин",
+    TimePresetsInterval: ["30 мин", "1 ч", "1.5 ч", "2 ч", "3 ч"],
+    TimeStartPlaceholder: "Начало",
+    TimeEndPlaceholder: "Конец",
 };
 
 export const translations: Record<Locale, typeof en> = { en, ru };

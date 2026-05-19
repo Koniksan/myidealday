@@ -210,7 +210,7 @@ export const useDayPlanPanelStyles = makeStyles({
         color: tokens.colorNeutralForeground3,
         ":hover": {
             background: tokens.colorNeutralBackground2Hover,
-            borderStyle: "solid",
+            border: `1px solid ${tokens.colorNeutralStroke1}`,
         },
     },
     priorityPillNoneSelected: {
@@ -218,6 +218,177 @@ export const useDayPlanPanelStyles = makeStyles({
         background: tokens.colorNeutralBackground2,
     },
     priorityPillSelected: {
-        borderWidth: "1.5px",
+        borderTopWidth: "1.5px",
+        borderRightWidth: "1.5px",
+        borderBottomWidth: "1.5px",
+        borderLeftWidth: "1.5px",
+    },
+
+    // Time chip (task row inline)
+    timeChip: {
+        display: "flex",
+        alignItems: "center",
+        gap: "4px",
+        padding: "2px 7px",
+        borderRadius: "100px",
+        border: "1px solid",
+        fontSize: "11px",
+        flexShrink: 0,
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        background: "none",
+        fontFamily: "inherit",
+        transition: "background 0.1s, border-color 0.1s, color 0.1s",
+    },
+    timeChipEmpty: {
+        padding: "3px 6px",
+        backgroundColor: tokens.colorNeutralBackground3,
+        border: `1px solid ${tokens.colorNeutralStroke2}`,
+        color: tokens.colorNeutralForeground4,
+        ":hover": {
+            backgroundColor: tokens.colorNeutralBackground2Hover,
+        },
+    },
+    timeChipSet: {
+        backgroundColor: tokens.colorBrandBackground2,
+        border: `1px solid ${tokens.colorCompoundBrandStroke}`,
+        color: tokens.colorBrandForeground1,
+        ":hover": {
+            backgroundColor: tokens.colorBrandBackground2Hover,
+        },
+    },
+
+    // Time picker expand panel
+    timePicker: {
+        overflow: "hidden",
+        maxHeight: "0",
+        transition: "max-height 0.22s ease, padding 0.22s ease",
+        background: tokens.colorNeutralBackground2,
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        paddingTop: "0",
+        paddingBottom: "0",
+    },
+    timePickerOpen: {
+        maxHeight: "260px",
+        paddingBottom: "12px",
+    },
+
+    // Tab bar (border-top is inside the clipped container — only visible when open)
+    timeTabBar: {
+        display: "flex",
+        alignItems: "center",
+        gap: "2px",
+        paddingTop: "12px",
+        borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
+    },
+    timeTab: {
+        background: "none",
+        border: "none",
+        borderBottom: "1.5px solid transparent",
+        cursor: "pointer",
+        padding: "2px 6px 4px",
+        fontSize: "13px",
+        color: tokens.colorNeutralForeground4,
+        fontFamily: "inherit",
+        transition: "color 0.1s, border-color 0.1s",
+        ":hover": {
+            color: tokens.colorNeutralForeground2,
+        },
+    },
+    timeTabActive: {
+        color: tokens.colorNeutralForeground1,
+        borderBottomColor: tokens.colorCompoundBrandStroke,
+    },
+    timeClearBtn: {
+        marginLeft: "auto",
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        color: tokens.colorNeutralForeground3,
+        display: "flex",
+        alignItems: "center",
+        gap: "4px",
+        fontSize: "12px",
+        fontFamily: "inherit",
+        padding: "2px 4px",
+        borderRadius: tokens.borderRadiusMedium,
+        ":hover": {
+            color: tokens.colorNeutralForeground1,
+            background: tokens.colorNeutralBackground1Hover,
+        },
+    },
+
+    // Preset chips
+    timePresets: {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "6px",
+    },
+    timePreset: {
+        display: "flex",
+        alignItems: "center",
+        padding: "4px 10px",
+        borderRadius: "100px",
+        cursor: "pointer",
+        fontSize: "12px",
+        border: `1px solid ${tokens.colorNeutralStroke2}`,
+        background: tokens.colorNeutralBackground4,
+        color: tokens.colorNeutralForeground2,
+        fontFamily: "inherit",
+        transition: "background 0.1s, border-color 0.1s, color 0.1s",
+        ":hover": {
+            background: tokens.colorNeutralBackground2Hover,
+        },
+    },
+    timePresetActive: {
+        background: tokens.colorBrandBackground2,
+        border: `1px solid ${tokens.colorCompoundBrandStroke}`,
+        color: tokens.colorBrandForeground1,
+        ":hover": {
+            background: tokens.colorBrandBackground2Hover,
+        },
+    },
+
+    // Input row
+    timeInputRow: {
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+    },
+    timeInput: {
+        background: tokens.colorNeutralBackground3,
+        border: `1px solid ${tokens.colorNeutralStroke2}`,
+        color: tokens.colorBrandForeground1,
+        fontFamily: "monospace",
+        borderRadius: tokens.borderRadiusMedium,
+        padding: "4px 8px",
+        fontSize: "13px",
+        outline: "none",
+        minWidth: 0,
+        ":focus": {
+            borderTopColor: tokens.colorCompoundBrandStroke,
+            borderRightColor: tokens.colorCompoundBrandStroke,
+            borderBottomColor: tokens.colorCompoundBrandStroke,
+            borderLeftColor: tokens.colorCompoundBrandStroke,
+        },
+    },
+    timeArrow: {
+        color: tokens.colorNeutralForeground3,
+        fontSize: "12px",
+        flexShrink: 0,
+    },
+    timeDurationBadge: {
+        background: tokens.colorBrandBackground2,
+        color: tokens.colorBrandForeground1,
+        borderRadius: tokens.borderRadiusMedium,
+        padding: "3px 8px",
+        fontSize: "11px",
+        fontWeight: "500",
+        flexShrink: 0,
+        whiteSpace: "nowrap",
     },
 });

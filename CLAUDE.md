@@ -54,3 +54,4 @@ src/
 
 ## Rule
  - For each iteration like: map, forEach, reduce, filter, find end etc. use `x,y,z` method. Example arr.map(x => x.filter(y => y.find(z => z != null)))
+ - For events use always `e`. Example: <Component onClick={e => e.stopPropagation()}>

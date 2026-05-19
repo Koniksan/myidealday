@@ -26,6 +26,7 @@ export const useDayPlanPanel = ({
     const [items, setItems] = useState<PlanItem[]>(planLabels);
     const [draft, setDraft] = useState("");
     const [openPickerIndex, setOpenPickerIndex] = useState<number | null>(null);
+    const [openTimePickerIndex, setOpenTimePickerIndex] = useState<number | null>(null);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [editingValue, setEditingValue] = useState("");
     const [confirmDiscard, setConfirmDiscard] = useState(false);
@@ -40,6 +41,7 @@ export const useDayPlanPanel = ({
         setItems(planLabels);
         setDraft("");
         setOpenPickerIndex(null);
+        setOpenTimePickerIndex(null);
         setEditingIndex(null);
         setEditingValue("");
         setConfirmDiscard(false);
@@ -73,15 +75,27 @@ export const useDayPlanPanel = ({
     const removeItem = (index: number) => {
         setItems(prev => prev.filter((_, i) => i !== index));
         if (openPickerIndex === index) setOpenPickerIndex(null);
+        if (openTimePickerIndex === index) setOpenTimePickerIndex(null);
     };
 
     const setItemColor = (index: number, color: string | null) => {
-        setItems(prev => prev.map((item, i) => i === index ? { ...item, color } : item));
+        setItems(prev => prev.map((x, i) => i === index ? { ...x, color } : x));
         setOpenPickerIndex(null);
     };
 
-    const togglePicker = (index: number) =>
+    const setItemTime = (index: number, patch: Partial<Pick<PlanItem, "time_mode" | "time_exact" | "time_start" | "time_end">>) => {
+        setItems(prev => prev.map((x, i) => i === index ? { ...x, ...patch } : x));
+    };
+
+    const togglePicker = (index: number) => {
         setOpenPickerIndex(prev => prev === index ? null : index);
+        setOpenTimePickerIndex(null);
+    };
+
+    const toggleTimePicker = (index: number) => {
+        setOpenTimePickerIndex(prev => prev === index ? null : index);
+        setOpenPickerIndex(null);
+    };
 
     const startEditing = (index: number) => {
         setEditingIndex(index);
@@ -167,13 +181,19 @@ export const useDayPlanPanel = ({
             if (isEditMode) {
                 const origLabels = originalItems.current.map(i => i.label);
                 const currentLabels = items.map(i => i.label);
-                const labelsToRemove = origLabels.filter(l => !currentLabels.includes(l));
-                const itemsToAdd = items.filter(item => !origLabels.includes(item.label));
-                const colorChanges = items.filter(item => {
-                    const orig = originalItems.current.find(o => o.label === item.label);
-                    return orig && orig.color !== item.color;
+                const labelsToRemove = origLabels.filter(x => !currentLabels.includes(x));
+                const itemsToAdd = items.filter(x => !origLabels.includes(x.label));
+                const fieldChanges = items.filter(x => {
+                    const orig = originalItems.current.find(o => o.label === x.label);
+                    return orig && (
+                        orig.color !== x.color ||
+                        orig.time_mode !== x.time_mode ||
+                        orig.time_exact !== x.time_exact ||
+                        orig.time_start !== x.time_start ||
+                        orig.time_end !== x.time_end
+                    );
                 });
-                await editPlan(itemsToAdd, labelsToRemove, currentLabels, colorChanges);
+                await editPlan(itemsToAdd, labelsToRemove, currentLabels, fieldChanges);
             } else {
                 if (items.length > 0) await addPlanToAllDays(items);
             }
@@ -199,6 +219,9 @@ export const useDayPlanPanel = ({
         openPickerIndex,
         togglePicker,
         setItemColor,
+        openTimePickerIndex,
+        toggleTimePicker,
+        setItemTime,
         editingIndex,
         editingValue,
         setEditingValue,
