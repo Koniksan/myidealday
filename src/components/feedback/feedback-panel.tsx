@@ -4,15 +4,15 @@ import {
     OverlayDrawer,
     Spinner,
     Text,
-    Textarea,
 } from "@fluentui/react-components";
-import { AddRegular, ArrowLeftRegular, ChatRegular, DismissRegular } from "@fluentui/react-icons";
+import { AddRegular, ChatRegular, DismissRegular } from "@fluentui/react-icons";
 import React from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
 import { FeedbackItem } from "./feedback-item";
 import { useFeedbackPanelStyles } from "./feedback-panel-styles";
 import { useFeedbackPanel } from "./use-feedback-panel";
+import { AddFeedbackPanel } from "./add-feedback-panel";
 
 interface FeedbackPanelProps {
     open: boolean;
@@ -30,17 +30,14 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
         loading,
         composing,
         setComposing,
-        draft,
-        setDraft,
-        sending,
         handleDelete,
-        handleSubmit,
         handleClose,
+        prependFeedback,
     } = useFeedbackPanel(open, onClose);
 
     return (
         <>
-            <OverlayDrawer position="end" open={open} onOpenChange={(_, { open: isOpen }) => !isOpen && handleClose()}>
+            <OverlayDrawer size="medium" position="end" open={open} onOpenChange={(_, { open: isOpen }) => !isOpen && handleClose()}>
                 <DrawerHeader>
                     <DrawerHeaderTitle
                         action={<Button appearance="subtle" icon={<DismissRegular />} onClick={handleClose} />}
@@ -49,7 +46,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                     </DrawerHeaderTitle>
                 </DrawerHeader>
                 <DrawerBody className={styles.body}>
-                    <Button appearance="primary" icon={<AddRegular />} onClick={() => setComposing(true)}>
+                    <Button appearance="primary" className={styles.addFeedbackButton} icon={<AddRegular />} onClick={() => setComposing(true)}>
                         {rs.NewFeedback}
                     </Button>
 
@@ -75,34 +72,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                     )}
                 </DrawerBody>
             </OverlayDrawer>
-
-            <OverlayDrawer position="end" open={composing} onOpenChange={(_, { open: isOpen }) => !isOpen && setComposing(false)}>
-                <DrawerHeader>
-                    <DrawerHeaderTitle
-                        action={<Button appearance="subtle" icon={<DismissRegular />} onClick={() => setComposing(false)} />}
-                    >
-                        <Button appearance="subtle" icon={<ArrowLeftRegular />} onClick={() => setComposing(false)} />
-                        {rs.NewFeedback}
-                    </DrawerHeaderTitle>
-                </DrawerHeader>
-                <DrawerBody className={styles.composeBody}>
-                    <Textarea
-                        className={styles.textarea}
-                        placeholder={rs.FeedbackPlaceholder}
-                        value={draft}
-                        onChange={(_, d) => setDraft(d.value)}
-                        resize="vertical"
-                    />
-                    <Button
-                        appearance="primary"
-                        disabled={!draft.trim() || sending}
-                        icon={sending ? <Spinner size="tiny" /> : undefined}
-                        onClick={handleSubmit}
-                    >
-                        {rs.Send}
-                    </Button>
-                </DrawerBody>
-            </OverlayDrawer>
+            <AddFeedbackPanel open={composing} onClose={() => setComposing(false)} onSuccess={prependFeedback} />
         </>
     );
 };

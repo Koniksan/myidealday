@@ -4,7 +4,7 @@ import { useLocalization } from "../../infrastructure/context/locale-context";
 import { useNotification } from "../../infrastructure/context/notification-context";
 import { createFeedback, deleteFeedback, getFeedbacks, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
 
-export const useFeedbackPanel = (open: boolean, onClose: () => void) => {
+export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?: (feedback: StoredFeedback) => void) => {
     const rs = useLocalization();
     const { user } = useAuth();
     const { notify } = useNotification();
@@ -34,9 +34,9 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void) => {
         setSending(true);
         try {
             const saved = await createFeedback(user.id, draft.trim(), user.email ?? "");
-            setFeedbacks(prev => [saved, ...prev]);
             setDraft("");
-            setComposing(false);
+            onClose();
+            onSuccess?.(saved);
             notify(rs.FeedbackSent);
         } catch {
             // no-op
@@ -51,6 +51,8 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void) => {
         onClose();
     };
 
+    const prependFeedback = (feedback: StoredFeedback) => setFeedbacks(x => [feedback, ...x]);
+
     return {
         feedbacks,
         loading,
@@ -62,5 +64,6 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void) => {
         handleDelete,
         handleSubmit,
         handleClose,
+        prependFeedback,
     };
 };
