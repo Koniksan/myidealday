@@ -20,6 +20,11 @@ export const useFeedbackPanelStyles = makeStyles({
         padding: "40px 0",
         color: tokens.colorNeutralForeground3,
     },
+    addFeedbackButton: {
+        maxWidth: "200px",
+        marginTop: "16px",
+        alignSelf: "start",
+    },
     list: {
         display: "flex",
         flexDirection: "column",
