@@ -230,7 +230,7 @@ export const useDayPlanPanelStyles = makeStyles({
         alignItems: "center",
         gap: "4px",
         padding: "2px 7px",
-        borderRadius: "100px",
+        borderRadius: "8px",
         border: "1px solid",
         fontSize: "11px",
         flexShrink: 0,
@@ -241,7 +241,7 @@ export const useDayPlanPanelStyles = makeStyles({
         transition: "background 0.1s, border-color 0.1s, color 0.1s",
     },
     timeChipEmpty: {
-        padding: "3px 6px",
+        padding: "2px 6px",
         backgroundColor: tokens.colorNeutralBackground3,
         border: `1px solid ${tokens.colorNeutralStroke2}`,
         color: tokens.colorNeutralForeground4,
