@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../infrastructure/context/auth-context";
-import { useLocalization } from "../../infrastructure/context/locale-context";
-import { useNotification } from "../../infrastructure/context/notification-context";
-import { createFeedback, deleteFeedback, getFeedbacks, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
+import { compressImage, createFeedback, deleteFeedback, getFeedbacks, StoredFeedback, uploadFeedbackImage, useLocalization, useAuth, useNotification } from "../../infrastructure";
 
 export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?: (feedback: StoredFeedback) => void) => {
     const rs = useLocalization();
@@ -14,6 +11,10 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?:
     const [composing, setComposing] = useState(false);
     const [draft, setDraft] = useState("");
     const [sending, setSending] = useState(false);
+    const [compressedBlob, setCompressedBlob] = useState<Blob | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [imageOriginalSize, setImageOriginalSize] = useState<number | null>(null);
+    const [imageCompressedSize, setImageCompressedSize] = useState<number | null>(null);
 
     useEffect(() => {
         if (!open || !user) return;
@@ -29,12 +30,34 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?:
         deleteFeedback(id).catch(console.error);
     };
 
+    const handleImageSelect = async (file: File) => {
+        if (imagePreview) URL.revokeObjectURL(imagePreview);
+        const blob = await compressImage(file);
+        setCompressedBlob(blob);
+        setImagePreview(URL.createObjectURL(blob));
+        setImageOriginalSize(file.size);
+        setImageCompressedSize(blob.size);
+    };
+
+    const handleRemoveImage = () => {
+        if (imagePreview) URL.revokeObjectURL(imagePreview);
+        setCompressedBlob(null);
+        setImagePreview(null);
+        setImageOriginalSize(null);
+        setImageCompressedSize(null);
+    };
+
     const handleSubmit = async () => {
         if (!draft.trim() || !user) return;
         setSending(true);
         try {
-            const saved = await createFeedback(user.id, draft.trim(), user.email ?? "");
+            let imageUrl: string | undefined;
+            if (compressedBlob) {
+                imageUrl = await uploadFeedbackImage(compressedBlob, user.id);
+            }
+            const saved = await createFeedback(user.id, draft.trim(), user.email ?? "", imageUrl);
             setDraft("");
+            handleRemoveImage();
             onClose();
             onSuccess?.(saved);
             notify(rs.FeedbackSent);
@@ -48,6 +71,7 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?:
     const handleClose = () => {
         setComposing(false);
         setDraft("");
+        handleRemoveImage();
         onClose();
     };
 
@@ -61,6 +85,11 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?:
         draft,
         setDraft,
         sending,
+        imagePreview,
+        imageOriginalSize,
+        imageCompressedSize,
+        handleImageSelect,
+        handleRemoveImage,
         handleDelete,
         handleSubmit,
         handleClose,

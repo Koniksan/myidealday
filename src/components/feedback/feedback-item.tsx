@@ -1,5 +1,5 @@
 import { Badge, Button, Text } from "@fluentui/react-components";
-import { ChatRegular, DeleteRegular } from "@fluentui/react-icons";
+import { ChatRegular, ChevronDownRegular, DeleteRegular, ImageRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { FeedbackStatus, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
@@ -51,10 +51,18 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete, 
                             {STATUS_LABEL[feedback.status]}
                         </Badge>
                     )}
+                    {feedback.image_url && (
+                        <Badge appearance="tint" color="subtle" size="small" icon={<ImageRegular />} className={styles.badge} />
+                    )}
                     {feedback.answer && (
                         <Badge appearance="tint" color="brand" size="small" icon={<ChatRegular />} className={styles.badge} />
                     )}
                 </div>
+                {(feedback.image_url || feedback.answer) && (
+                    <span className={mergeClasses(styles.chevron, expanded && styles.chevronExpanded)}>
+                        <ChevronDownRegular />
+                    </span>
+                )}
                 <Button
                     appearance="subtle"
                     size="small"
@@ -65,6 +73,9 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete, 
             <Text className={expanded ? undefined : styles.message}>
                 {feedback.message}
             </Text>
+            {expanded && feedback.image_url && (
+                <img src={feedback.image_url} className={styles.attachedImage} />
+            )}
             {expanded && feedback.answer && (
                 <div className={styles.answer}>
                     <Text className={styles.answerLabel}>{rs.AdminReply}</Text>
