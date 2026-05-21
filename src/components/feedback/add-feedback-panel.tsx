@@ -1,6 +1,6 @@
-import { OverlayDrawer, DrawerHeader, DrawerHeaderTitle, Button, DrawerBody, DrawerFooter, Textarea, Spinner } from "@fluentui/react-components";
-import React from "react";
-import { ArrowLeftRegular, DismissRegular } from "@fluentui/react-icons";
+import { OverlayDrawer, DrawerHeader, DrawerHeaderTitle, Button, DrawerBody, DrawerFooter, Textarea, Spinner, Text, Tooltip } from "@fluentui/react-components";
+import React, { useRef } from "react";
+import { ArrowLeftRegular, DismissRegular, DismissCircleRegular, Image24Regular } from "@fluentui/react-icons";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { useFeedbackPanelStyles } from "./feedback-panel-styles";
 import { useFeedbackPanel } from "./use-feedback-panel";
@@ -15,12 +15,21 @@ interface Props {
 export const AddFeedbackPanel: React.FC<Props> = ({ open, onClose, onSuccess }) => {
     const styles = useFeedbackPanelStyles();
     const rs = useLocalization();
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const {
         draft,
         setDraft,
         sending,
+        imagePreview,
+        imageOriginalSize,
+        imageCompressedSize,
+        handleImageSelect,
+        handleRemoveImage,
         handleSubmit,
     } = useFeedbackPanel(open, onClose, onSuccess);
+
+    const formatBytes = (bytes: number) =>
+        bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
 
     return (
         <OverlayDrawer size="medium" position="end" open={open} onOpenChange={(_, { open: isOpen }) => !isOpen && onClose()}>
@@ -33,12 +42,55 @@ export const AddFeedbackPanel: React.FC<Props> = ({ open, onClose, onSuccess }) 
                 </DrawerHeaderTitle>
             </DrawerHeader>
             <DrawerBody className={styles.composeBody}>
-                <Textarea
-                    className={styles.textarea}
-                    placeholder={rs.FeedbackPlaceholder}
-                    value={draft}
-                    onChange={(_, d) => setDraft(d.value)}
-                    resize="vertical"
+                <Text className={styles.feedbackDescription}>{rs.FeedbackDescription}</Text>
+                <div className={styles.textareaWrapper}>
+                    <Textarea
+                        className={styles.textarea}
+                        placeholder={rs.FeedbackPlaceholder}
+                        value={draft}
+                        onChange={(_, d) => setDraft(d.value)}
+                        resize="vertical"
+                        appearance="outline"
+                    />
+                    <div className={styles.textareaToolbar}>
+                        <Tooltip content={rs.AttachImage} relationship="label">
+                            <Button
+                                appearance="subtle"
+                                size="large"
+                                icon={<Image24Regular />}
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={sending}
+                            />
+                        </Tooltip>
+                    </div>
+                </div>
+                {imagePreview && (
+                    <>
+                        <div className={styles.imagePreviewWrapper}>
+                            <img src={imagePreview} className={styles.imagePreview} />
+                            <Tooltip content={rs.RemoveImage} relationship="label">
+                                <Button
+                                    className={styles.removeImageButton}
+                                    appearance="subtle"
+                                    size="small"
+                                    icon={<DismissCircleRegular />}
+                                    onClick={handleRemoveImage}
+                                />
+                            </Tooltip>
+                        </div>
+                        {imageOriginalSize != null && imageCompressedSize != null && (
+                            <Text className={styles.imageSizeInfo}>
+                                {formatBytes(imageOriginalSize)} → {formatBytes(imageCompressedSize)}
+                            </Text>
+                        )}
+                    </>
+                )}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handleImageSelect(f); e.target.value = ""; }}
                 />
             </DrawerBody>
             <DrawerFooter>

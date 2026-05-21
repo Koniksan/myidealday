@@ -63,4 +63,25 @@ export const useFeedbackItemStyles = makeStyles({
         fontSize: tokens.fontSizeBase300,
         color: tokens.colorNeutralForeground1,
     },
+    chevron: {
+        color: tokens.colorNeutralForeground3,
+        display: "flex",
+        alignItems: "center",
+        fontSize: "16px",
+        transition: "transform 0.15s, color 0.1s",
+        marginLeft: "auto",
+    },
+    chevronExpanded: {
+        transform: "rotate(180deg)",
+        color: tokens.colorNeutralForeground2,
+    },
+    attachedImage: {
+        maxWidth: "100%",
+        maxHeight: "240px",
+        objectFit: "contain",
+        borderRadius: tokens.borderRadiusMedium,
+        border: `1px solid ${tokens.colorNeutralStroke2}`,
+        marginTop: "4px",
+        display: "block",
+    },
 });
