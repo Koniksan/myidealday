@@ -1,6 +1,6 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
 
-export const useAdminPanelStyles = makeStyles({
+export const useAdminStyles = makeStyles({
     body: {
         display: "flex",
         flexDirection: "column",
@@ -69,6 +69,11 @@ export const useAdminPanelStyles = makeStyles({
     userGridRow: {
         padding: '10px 0',
     },
+    tabBadge: {
+        position: "absolute",
+        top: "4px",
+        right: "0px",
+    },
     // feedback item (legacy list view — kept for drawer reuse)
     feedbackAnswerLabel: {
         fontSize: tokens.fontSizeBase100,
@@ -82,6 +87,14 @@ export const useAdminPanelStyles = makeStyles({
         flexDirection: "column",
         gap: "12px",
         paddingBottom: "24px",
+    },
+    feedbackImage: {
+        maxWidth: "100%",
+        maxHeight: "320px",
+        objectFit: "contain",
+        borderRadius: tokens.borderRadiusMedium,
+        border: `1px solid ${tokens.colorNeutralStroke2}`,
+        display: "block",
     },
     feedbackDialogMessage: {
         padding: "10px 12px",
@@ -109,7 +122,7 @@ export const useAdminPanelStyles = makeStyles({
     },
     kanbanColumnDragOver: {
         background: tokens.colorNeutralBackground3,
-        borderColor: tokens.colorBrandForeground1,
+        border: `1px solid ${tokens.colorBrandForeground1}`,
     },
     kanbanColumnHeader: {
         display: "flex",
@@ -162,11 +175,29 @@ export const useAdminPanelStyles = makeStyles({
         userSelect: "none",
         ":hover": {
             background: tokens.colorNeutralBackground1Hover,
-            borderColor: tokens.colorNeutralStroke1Hover,
+            border: `1px solid ${tokens.colorNeutralStroke1Hover}`,
         },
         ":active": {
             background: tokens.colorNeutralBackground1Pressed,
         },
+    },
+    kanbanCardNew: {
+        border: `2px solid ${tokens.colorBrandBackground}`,
+    },
+    kanbanNewBadge: {
+        alignSelf: "flex-start",
+        fontSize: tokens.fontSizeBase100,
+        fontWeight: tokens.fontWeightSemibold,
+        borderRadius: tokens.borderRadiusMedium,
+        padding: "2px 8px",
+        color: tokens.colorNeutralForegroundOnBrand,
+        background: tokens.colorBrandBackground,
+    },
+    kanbanCardHeader: {
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        flexWrap: "wrap",
     },
     kanbanCardMessage: {
         fontSize: tokens.fontSizeBase300,
@@ -212,20 +243,23 @@ export const useAdminPanelStyles = makeStyles({
         padding: "2px 8px",
     },
     kanbanTagFeature: {
-        color: tokens.colorPaletteTealForeground2,
-        background: tokens.colorPaletteTealBackground2,
+        color: tokens.colorPaletteLavenderForeground2,
+        background: tokens.colorPaletteLavenderBackground2,
+        border: `1px solid ${tokens.colorPaletteLavenderBorderActive}`,
     },
     kanbanTagBug: {
-        color: tokens.colorPaletteRedForeground1,
-        background: tokens.colorPaletteRedBackground2,
+        color: tokens.colorNeutralForegroundOnBrand,
+        background: tokens.colorStatusDangerBackground3,
+        border: `1px solid ${tokens.colorStatusDangerBorderActive}`,
     },
     kanbanTagPerformance: {
-        color: tokens.colorPaletteMarigoldForeground2,
-        background: tokens.colorPaletteMarigoldBackground2,
+        color: tokens.colorNeutralForegroundOnBrand,
+        background: tokens.colorStatusWarningBackground3,
+        border: `1px solid ${tokens.colorStatusWarningBorderActive}`,
     },
     kanbanTagUX: {
-        color: tokens.colorPalettePurpleForeground2,
-        background: tokens.colorPalettePurpleBackground2,
+        color: tokens.colorNeutralForegroundOnBrand,
+        background: tokens.colorPalettePurpleForeground2,
     },
     feedbackTabToolbar: {
         display: "flex",

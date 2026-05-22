@@ -5,7 +5,7 @@ export const useStyles = makeStyles({
     root: {
         maxWidth: "1400px",
         minHeight: "100dvh",
-        background: tokens.colorNeutralBackground1,
+        background: tokens.colorNeutralBackground3,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

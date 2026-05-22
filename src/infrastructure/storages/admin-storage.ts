@@ -11,6 +11,7 @@ export interface AdminFeedback {
     answer: string | null;
     createdAt: string;
     type: FeedbackType | null;
+    imageUrl: string | null;
 }
 
 export const getAllUsers = async (): Promise<User[]> => {
@@ -45,7 +46,7 @@ export const updateFeedback = async (
 export const getAllFeedbacks = async (): Promise<AdminFeedback[]> => {
     const { data, error } = await supabase.rpc("get_all_feedbacks_for_admin");
     if (error) throw error;
-    return (data ?? []).map((f: { id: string; user_id: string; email: string | null; message: string; status: string; answer: string | null; created_at: string; type: FeedbackType | null }) => ({
+    return (data ?? []).map((f: { id: string; user_id: string; email: string | null; message: string; status: string; answer: string | null; created_at: string; type: FeedbackType | null; image_url: string | null }) => ({
         id: f.id,
         userId: f.user_id,
         email: f.email ?? null,
@@ -54,6 +55,7 @@ export const getAllFeedbacks = async (): Promise<AdminFeedback[]> => {
         answer: f.answer ?? null,
         createdAt: f.created_at,
         type: (f.type as FeedbackType) ?? null,
+        imageUrl: f.image_url ?? null,
     }));
 };
 

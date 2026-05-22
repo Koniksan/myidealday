@@ -1,8 +1,8 @@
-import { Tab, TabList, makeStyles, tokens } from "@fluentui/react-components";
+import { CounterBadge, Tab, TabList, makeStyles, tokens } from "@fluentui/react-components";
 import React, { useState } from "react";
-import { AdminFeedbacksTab } from "../../components/admin-panel/admin-feedbacks-tab";
-import { AdminUsersTab } from "../../components/admin-panel/admin-users-tab";
-import { useAdminPanelStyles } from "../../components/admin-panel/admin-panel-styles";
+import { AdminFeedbacksTab } from "../../components/admin/admin-feedbacks-tab";
+import { AdminUsersTab } from "../../components/admin/admin-users-tab";
+import { useAdminStyles } from "../../components/admin/admin-styles";
 import { PageLayout } from "../../components/common";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
@@ -23,9 +23,10 @@ enum AdminTab {
 
 export const AdminPage: React.FC = () => {
     const rs = useLocalization();
-    const styles = useAdminPanelStyles();
+    const styles = useAdminStyles();
     const pageStyles = usePageStyles();
-    const { refresh } = useNotificationBadge();
+    const { refresh, getCount } = useNotificationBadge();
+    const newFeedbackCount = getCount("admin-feedback");
     const [tab, setTab] = useState<AdminTab>(AdminTab.Users);
 
     React.useEffect(() => {
@@ -39,7 +40,10 @@ export const AdminPage: React.FC = () => {
                 onTabSelect={(_, d) => setTab(d.value as AdminTab)}
             >
                 <Tab value={AdminTab.Users}>{rs.AdminUsers}</Tab>
-                <Tab value={AdminTab.Feedbacks}>{rs.AdminFeedbacks}</Tab>
+                <Tab value={AdminTab.Feedbacks}>
+                    {rs.AdminFeedbacks}
+                    {newFeedbackCount > 0 && <CounterBadge className={styles.tabBadge} count={newFeedbackCount} color="brand" size="small" />}
+                </Tab>
             </TabList>
             <div className={styles.tabContent}>
                 {tab === AdminTab.Users && <AdminUsersTab />}

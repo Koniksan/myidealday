@@ -16,11 +16,11 @@ import { PeopleRegular } from "@fluentui/react-icons";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { getAllUsers } from "../../infrastructure/storages/admin-storage";
-import { useAdminPanelStyles } from "./admin-panel-styles";
+import { useAdminStyles } from "./admin-styles";
 import { User } from "../../infrastructure";
 
 export const AdminUsersTab: React.FC = () => {
-    const styles = useAdminPanelStyles();
+    const styles = useAdminStyles();
     const rs = useLocalization();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
