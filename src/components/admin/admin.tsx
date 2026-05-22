@@ -1,5 +1,6 @@
 import {
     Button,
+    CounterBadge,
     DrawerBody,
     DrawerHeader,
     DrawerHeaderTitle,
@@ -10,25 +11,28 @@ import {
 import { DismissRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
-import { useAdminPanelStyles } from "./admin-panel-styles";
+import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
+import { useAdminStyles } from "./admin-styles";
 import { AdminFeedbacksTab } from "./admin-feedbacks-tab";
 import { AdminUsersTab } from "./admin-users-tab";
 
 
-enum AdminPanelTab {
+enum AdminTab {
     Users = "users",
     Feedbacks = "feedbacks",
 }
 
-interface AdminPanelProps {
+interface AdminProps {
     open: boolean;
     onClose: () => void;
 }
 
-export const AdminPanel: React.FC<AdminPanelProps> = ({ open, onClose }) => {
-    const styles = useAdminPanelStyles();
+export const Admin: React.FC<AdminProps> = ({ open, onClose }) => {
+    const styles = useAdminStyles();
     const rs = useLocalization();
-    const [tab, setTab] = useState<AdminPanelTab>(AdminPanelTab.Users);
+    const { getCount } = useNotificationBadge();
+    const newFeedbackCount = getCount("admin-feedback");
+    const [tab, setTab] = useState<AdminTab>(AdminTab.Users);
 
     return (
         <OverlayDrawer
@@ -55,15 +59,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ open, onClose }) => {
             <DrawerBody className={styles.body}>
                 <TabList
                     selectedValue={tab}
-                    onTabSelect={(_, d) => setTab(d.value as AdminPanelTab)}
+                    onTabSelect={(_, d) => setTab(d.value as AdminTab)}
                 >
-                    <Tab value={AdminPanelTab.Users}>{rs.AdminUsers}</Tab>
-                    <Tab value={AdminPanelTab.Feedbacks}>{rs.AdminFeedbacks}</Tab>
+                    <Tab value={AdminTab.Users}>{rs.AdminUsers}</Tab>
+                    <Tab value={AdminTab.Feedbacks}>
+                        {rs.AdminFeedbacks}
+                        {newFeedbackCount > 0 && <CounterBadge count={newFeedbackCount} color="brand" size="small" />}
+                    </Tab>
                 </TabList>
 
                 <div className={styles.tabContent}>
-                    {tab === AdminPanelTab.Users && <AdminUsersTab />}
-                    {tab === AdminPanelTab.Feedbacks && <AdminFeedbacksTab />}
+                    {tab === AdminTab.Users && <AdminUsersTab />}
+                    {tab === AdminTab.Feedbacks && <AdminFeedbacksTab />}
                 </div>
             </DrawerBody>
         </OverlayDrawer>

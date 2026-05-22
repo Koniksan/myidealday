@@ -16,7 +16,7 @@ import { useLocalization } from "../../infrastructure/context/locale-context";
 import { AdminFeedback, getAllFeedbacks, updateFeedback } from "../../infrastructure/storages/admin-storage";
 import { useNotificationBadge } from "../../infrastructure/context/notification-badge-context";
 import { FeedbackStatus } from "../../infrastructure/storages/feedback-storage";
-import { useAdminPanelStyles } from "./admin-panel-styles";
+import { useAdminStyles } from "./admin-styles";
 import { FeedbackType } from "../../infrastructure";
 
 const STATUSES: FeedbackStatus[] = ["New", "In Progress", "Completed"];
@@ -30,14 +30,14 @@ const DOT_COLOR: Record<FeedbackStatus, string> = {
 interface EditDrawerProps {
     feedback: AdminFeedback | null;
     onClose: () => void;
-    onSaved: (id: string, status: FeedbackStatus, answer: string | null, type: FeedbackType | null) => void;
+    onSaved: (id: string, status: FeedbackStatus, answer: string | null, type: FeedbackType) => void;
 }
 
 const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) => {
-    const styles = useAdminPanelStyles();
+    const styles = useAdminStyles();
     const rs = useLocalization();
     const [editStatus, setEditStatus] = useState<FeedbackStatus>("New");
-    const [editType, setEditType] = useState<FeedbackType | "">("");
+    const [editType, setEditType] = useState<FeedbackType>(FeedbackType.Unassign);
     const [editAnswer, setEditAnswer] = useState("");
     const [saving, setSaving] = useState(false);
 
@@ -48,6 +48,7 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
     };
 
     const TAG_LABELS: Record<FeedbackType, string> = {
+        [FeedbackType.Unassign]: "—",
         [FeedbackType.Feature]: rs.TagFeature,
         [FeedbackType.Bug]: rs.TagBug,
         [FeedbackType.Performance]: rs.Performance,
@@ -56,7 +57,7 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
     useEffect(() => {
         if (feedback) {
             setEditStatus(feedback.status);
-            setEditType(feedback.type ?? "");
+            setEditType(feedback.type ?? FeedbackType.Unassign);
             setEditAnswer(feedback.answer ?? "");
         }
     }, [feedback?.id]);
@@ -65,9 +66,9 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
         if (!feedback) return;
         setSaving(true);
         try {
-            const type = editType || null;
+            const type = editType === FeedbackType.Unassign ? null : editType;
             await updateFeedback(feedback.id, editStatus, editAnswer || null, type);
-            onSaved(feedback.id, editStatus, editAnswer || null, type);
+            onSaved(feedback.id, editStatus, editAnswer || null, editType);
             onClose();
         } catch (e) {
             console.error(e);
@@ -92,14 +93,19 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
             </DrawerHeader>
             <DrawerBody className={styles.feedbackPanelBody}>
                 <Text className={styles.feedbackDialogMessage}>{feedback?.message}</Text>
+                {feedback?.imageUrl && (
+                    <img src={feedback.imageUrl} className={styles.feedbackImage} />
+                )}
                 <Select
                     value={editType}
-                    onChange={(_, d) => setEditType(d.value as FeedbackType | "")}
+                    onChange={(_, d) => setEditType(Number(d.value) as FeedbackType)}
                 >
-                    <option value="">—</option>
-                    {Object.values(FeedbackType).map(x => (
-                        <option key={x} value={x}>{TAG_LABELS[x as FeedbackType]}</option>
-                    ))}
+                    {Object.values(FeedbackType).map(x => {
+                        if (typeof x == "number") {
+                            return <option key={x} value={x}>{TAG_LABELS[x as FeedbackType]}</option>;
+                        }
+                        return null;
+                    })}
                 </Select>
                 <Select value={editStatus} onChange={(_, d) => setEditStatus(d.value as FeedbackStatus)}>
                     {STATUSES.map(s => (
@@ -124,12 +130,13 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
 
 interface KanbanCardProps {
     feedback: AdminFeedback;
+    isNew: boolean;
     onDragStart: () => void;
     onClick: () => void;
 }
 
-const KanbanCard: React.FC<KanbanCardProps> = ({ feedback, onDragStart, onClick }) => {
-    const styles = useAdminPanelStyles();
+const KanbanCard: React.FC<KanbanCardProps> = ({ feedback, isNew, onDragStart, onClick }) => {
+    const styles = useAdminStyles();
     const rs = useLocalization();
     const dateStr = new Date(feedback.createdAt).toLocaleDateString(rs.DateLocale, {
         day: "numeric",
@@ -137,28 +144,35 @@ const KanbanCard: React.FC<KanbanCardProps> = ({ feedback, onDragStart, onClick 
     });
 
     const TAG_LABELS: Record<FeedbackType, string> = {
+        [FeedbackType.Unassign]: "",
         [FeedbackType.Feature]: rs.TagFeature,
         [FeedbackType.Bug]: rs.TagBug,
-        [FeedbackType.Performance]: rs.TagBug,
+        [FeedbackType.Performance]: rs.Performance,
     };
 
     const TAG_STYLES: Record<FeedbackType, string> = {
+        [FeedbackType.Unassign]: "",
         [FeedbackType.Feature]: styles.kanbanTagFeature,
         [FeedbackType.Bug]: styles.kanbanTagBug,
-        [FeedbackType.Performance]: styles.kanbanTagBug,
+        [FeedbackType.Performance]: styles.kanbanTagPerformance,
     };
 
     return (
         <div
-            className={styles.kanbanCard}
+            className={mergeClasses(styles.kanbanCard, isNew && styles.kanbanCardNew)}
             draggable
             onDragStart={onDragStart}
             onClick={onClick}
         >
-            {feedback.type && (
-                <span className={mergeClasses(styles.kanbanTag, TAG_STYLES[feedback.type])}>
-                    {TAG_LABELS[feedback.type]}
-                </span>
+            {(!!feedback.type || isNew) && (
+                <div className={styles.kanbanCardHeader}>
+                    {isNew && <span className={styles.kanbanNewBadge}>{rs.StatusNew}</span>}
+                    {!!feedback.type && (
+                        <span className={mergeClasses(styles.kanbanTag, TAG_STYLES[feedback.type])}>
+                            {TAG_LABELS[feedback.type]}
+                        </span>
+                    )}
+                </div>
             )}
             <span className={styles.kanbanCardMessage}>{feedback.message}</span>
             <div className={styles.kanbanCardFooter}>
@@ -178,6 +192,7 @@ interface KanbanColumnProps {
     status: FeedbackStatus;
     label: string;
     feedbacks: AdminFeedback[];
+    unreadIds: Set<string>;
     isDragOver: boolean;
     onDragOver: (e: React.DragEvent) => void;
     onDragLeave: (e: React.DragEvent) => void;
@@ -187,11 +202,11 @@ interface KanbanColumnProps {
 }
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
-    status, label, feedbacks, isDragOver,
+    status, label, feedbacks, unreadIds, isDragOver,
     onDragOver, onDragLeave, onDrop,
     onCardDragStart, onCardClick,
 }) => {
-    const styles = useAdminPanelStyles();
+    const styles = useAdminStyles();
 
     return (
         <div
@@ -210,6 +225,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                     <KanbanCard
                         key={f.id}
                         feedback={f}
+                        isNew={unreadIds.has(f.id)}
                         onDragStart={() => onCardDragStart(f.id)}
                         onClick={() => onCardClick(f)}
                     />
@@ -222,9 +238,10 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
 // --- Main tab ---
 
 export const AdminFeedbacksTab: React.FC = () => {
-    const styles = useAdminPanelStyles();
+    const styles = useAdminStyles();
     const rs = useLocalization();
-    const { markSeen } = useNotificationBadge();
+    const { markSeen, getUnreadIds } = useNotificationBadge();
+    const unreadIds = getUnreadIds("admin-feedback");
     const [feedbacks, setFeedbacks] = useState<AdminFeedback[]>([]);
     const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState<AdminFeedback | null>(null);
@@ -250,7 +267,7 @@ export const AdminFeedbacksTab: React.FC = () => {
         return () => document.removeEventListener("dragend", clear);
     }, []);
 
-    const handleSaved = (id: string, status: FeedbackStatus, answer: string | null, type: FeedbackType | null) =>
+    const handleSaved = (id: string, status: FeedbackStatus, answer: string | null, type: FeedbackType) =>
         setFeedbacks(prev => prev.map(f => f.id === id ? { ...f, status, answer, type } : f));
 
     const handleDrop = async (targetStatus: FeedbackStatus) => {
@@ -301,6 +318,7 @@ export const AdminFeedbacksTab: React.FC = () => {
                         status={status}
                         label={STATUS_LABEL[status]}
                         feedbacks={grouped[status]}
+                        unreadIds={unreadIds}
                         isDragOver={dragOver === status}
                         onDragOver={e => { e.preventDefault(); setDragOver(status); }}
                         onDragLeave={e => {
