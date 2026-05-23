@@ -106,10 +106,8 @@ export const useAdminStyles = makeStyles({
     },
     // kanban board
     kanbanBoard: {
-        display: "grid",
-        gridTemplateColumns: "repeat(3, minmax(180px, 1fr))",
+        display: "flex",
         gap: "12px",
-        alignItems: "start",
     },
     kanbanColumn: {
         display: "flex",
@@ -119,6 +117,35 @@ export const useAdminStyles = makeStyles({
         background: tokens.colorNeutralBackground2,
         overflow: "hidden",
         transition: "border-color 0.15s, background 0.15s",
+    },
+    kanbanColumnExpanded: {
+        flex: 1,
+        minWidth: "180px",
+    },
+    kanbanColumnCollapsed: {
+        width: "44px",
+        flexShrink: 0,
+        alignItems: "center",
+        height: "210px",
+        paddingTop: "12px",
+    },
+    kanbanCollapsedBody: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: "8px",
+        padding: "8px 0",
+        flex: 1,
+    },
+    kanbanColumnTitleVertical: {
+        fontSize: tokens.fontSizeBase200,
+        fontWeight: tokens.fontWeightBold,
+        textTransform: "uppercase",
+        letterSpacing: "0.06em",
+        color: tokens.colorNeutralForeground2,
+        writingMode: "vertical-rl",
+        transform: "rotate(180deg)",
     },
     kanbanColumnDragOver: {
         background: tokens.colorNeutralBackground3,
@@ -183,6 +210,9 @@ export const useAdminStyles = makeStyles({
     },
     kanbanCardNew: {
         border: `1px solid ${tokens.colorBrandBackground}`,
+    },
+    feedbackAnswer: {
+        minHeight: "120px",
     },
     kanbanNewBadge: {
         alignSelf: "flex-start",
