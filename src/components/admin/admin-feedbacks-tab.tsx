@@ -10,7 +10,7 @@ import {
     Textarea,
     mergeClasses,
 } from "@fluentui/react-components";
-import { AddRegular, ChatRegular, DismissRegular, PersonRegular } from "@fluentui/react-icons";
+import { AddRegular, ChatRegular, ChevronLeftRegular, ChevronRightRegular, DismissRegular, PersonRegular } from "@fluentui/react-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { AdminFeedback, getAllFeedbacks, updateFeedback } from "../../infrastructure/storages/admin-storage";
@@ -113,6 +113,7 @@ const EditDrawer: React.FC<EditDrawerProps> = ({ feedback, onClose, onSaved }) =
                     ))}
                 </Select>
                 <Textarea
+                    className={styles.feedbackAnswer}
                     resize="vertical"
                     placeholder={rs.AdminReplyPlaceholder}
                     value={editAnswer}
@@ -194,23 +195,44 @@ interface KanbanColumnProps {
     feedbacks: AdminFeedback[];
     unreadIds: Set<string>;
     isDragOver: boolean;
+    isCollapsed: boolean;
     onDragOver: (e: React.DragEvent) => void;
     onDragLeave: (e: React.DragEvent) => void;
     onDrop: () => void;
     onCardDragStart: (id: string) => void;
     onCardClick: (feedback: AdminFeedback) => void;
+    onToggleCollapse: () => void;
 }
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
     status, label, feedbacks, unreadIds, isDragOver,
     onDragOver, onDragLeave, onDrop,
-    onCardDragStart, onCardClick,
+    onCardDragStart, onCardClick, isCollapsed, onToggleCollapse,
 }) => {
     const styles = useAdminStyles();
 
+    if (isCollapsed) {
+        return (
+            <div
+                className={mergeClasses(styles.kanbanColumn, styles.kanbanColumnCollapsed, isDragOver && styles.kanbanColumnDragOver)}
+                onDragOver={onDragOver}
+                onDragLeave={onDragLeave}
+                onDrop={onDrop}
+                onClick={onToggleCollapse}
+            >
+                <Button appearance="subtle" size="small" icon={<ChevronRightRegular />} />
+                <div className={styles.kanbanCollapsedBody}>
+                    <span className={styles.kanbanDot} style={{ backgroundColor: DOT_COLOR[status] }} />
+                    <span className={styles.kanbanColumnTitleVertical}>{label}</span>
+                    <span className={styles.kanbanColumnCount}>{feedbacks.length}</span>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div
-            className={mergeClasses(styles.kanbanColumn, isDragOver && styles.kanbanColumnDragOver)}
+            className={mergeClasses(styles.kanbanColumn, styles.kanbanColumnExpanded, isDragOver && styles.kanbanColumnDragOver)}
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
@@ -219,6 +241,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 <span className={styles.kanbanDot} style={{ backgroundColor: DOT_COLOR[status] }} />
                 <span className={styles.kanbanColumnTitle}>{label}</span>
                 <span className={styles.kanbanColumnCount}>{feedbacks.length}</span>
+                <Button appearance="subtle" size="small" icon={<ChevronLeftRegular />} onClick={onToggleCollapse} />
             </div>
             <div className={styles.kanbanCards}>
                 {feedbacks.map(f => (
@@ -247,6 +270,15 @@ export const AdminFeedbacksTab: React.FC = () => {
     const [selected, setSelected] = useState<AdminFeedback | null>(null);
     const dragId = useRef<string | null>(null);
     const [dragOver, setDragOver] = useState<FeedbackStatus | null>(null);
+    const [collapsedColumns, setCollapsedColumns] = useState<Set<FeedbackStatus>>(new Set());
+
+    const toggleCollapse = (status: FeedbackStatus) =>
+        setCollapsedColumns(prev => {
+            const next = new Set(prev);
+            if (next.has(status)) next.delete(status);
+            else next.add(status);
+            return next;
+        });
 
     const STATUS_LABEL: Record<FeedbackStatus, string> = {
         "New": rs.StatusNew,
@@ -320,6 +352,7 @@ export const AdminFeedbacksTab: React.FC = () => {
                         feedbacks={grouped[status]}
                         unreadIds={unreadIds}
                         isDragOver={dragOver === status}
+                        isCollapsed={collapsedColumns.has(status)}
                         onDragOver={e => { e.preventDefault(); setDragOver(status); }}
                         onDragLeave={e => {
                             if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOver(null);
@@ -327,6 +360,7 @@ export const AdminFeedbacksTab: React.FC = () => {
                         onDrop={() => handleDrop(status)}
                         onCardDragStart={id => { dragId.current = id; }}
                         onCardClick={f => { setSelected(f); markSeen("admin-feedback", f.id); }}
+                        onToggleCollapse={() => toggleCollapse(status)}
                     />
                 ))}
             </div>
