@@ -182,7 +182,7 @@ export const useAdminStyles = makeStyles({
         },
     },
     kanbanCardNew: {
-        border: `2px solid ${tokens.colorBrandBackground}`,
+        border: `1px solid ${tokens.colorBrandBackground}`,
     },
     kanbanNewBadge: {
         alignSelf: "flex-start",
