@@ -30,7 +30,6 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
         loading,
         composing,
         setComposing,
-        handleDelete,
         handleClose,
         prependFeedback,
     } = useFeedbackPanel(open, onClose);
@@ -63,7 +62,6 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ open, onClose }) =
                                 <FeedbackItem
                                     key={f.id}
                                     feedback={f}
-                                    onDelete={handleDelete}
                                     isUnread={unreadIds.has(f.id)}
                                     onSeen={() => markSeen("feedback", f.id)}
                                 />

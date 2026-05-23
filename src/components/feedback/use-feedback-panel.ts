@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { compressImage, createFeedback, deleteFeedback, getFeedbacks, StoredFeedback, uploadFeedbackImage, useLocalization, useAuth, useNotification } from "../../infrastructure";
+import { compressImage, createFeedback, getFeedbacks, StoredFeedback, uploadFeedbackImage, useLocalization, useAuth, useNotification } from "../../infrastructure";
 
 export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?: (feedback: StoredFeedback) => void) => {
     const rs = useLocalization();
@@ -24,11 +24,6 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?:
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [open, user]);
-
-    const handleDelete = (id: string) => {
-        setFeedbacks(prev => prev.filter(f => f.id !== id));
-        deleteFeedback(id).catch(console.error);
-    };
 
     const handleImageSelect = async (file: File) => {
         if (imagePreview) URL.revokeObjectURL(imagePreview);
@@ -90,7 +85,6 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?:
         imageCompressedSize,
         handleImageSelect,
         handleRemoveImage,
-        handleDelete,
         handleSubmit,
         handleClose,
         prependFeedback,

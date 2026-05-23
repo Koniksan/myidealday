@@ -1,5 +1,5 @@
-import { Badge, Button, Text } from "@fluentui/react-components";
-import { ChatRegular, ChevronDownRegular, DeleteRegular, ImageRegular } from "@fluentui/react-icons";
+import { Badge, Text } from "@fluentui/react-components";
+import { ChatRegular, ChevronDownRegular, ImageRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { FeedbackStatus, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
@@ -14,12 +14,11 @@ const STATUS_COLOR: Record<FeedbackStatus, "informative" | "warning" | "success"
 
 interface FeedbackItemProps {
     feedback: StoredFeedback;
-    onDelete: (id: string) => void;
     isUnread?: boolean;
     onSeen?: () => void;
 }
 
-export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete, isUnread, onSeen }) => {
+export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, isUnread, onSeen }) => {
     const styles = useFeedbackItemStyles();
     const rs = useLocalization();
     const [expanded, setExpanded] = useState(false);
@@ -63,12 +62,6 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, onDelete, 
                         <ChevronDownRegular />
                     </span>
                 )}
-                <Button
-                    appearance="subtle"
-                    size="small"
-                    icon={<DeleteRegular />}
-                    onClick={e => { e.stopPropagation(); onDelete(feedback.id); }}
-                />
             </div>
             <Text className={expanded ? undefined : styles.message}>
                 {feedback.message}
