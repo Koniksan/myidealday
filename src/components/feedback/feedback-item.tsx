@@ -1,16 +1,9 @@
-import { Badge, Text } from "@fluentui/react-components";
+import { Badge, Text, mergeClasses } from "@fluentui/react-components";
 import { ChatRegular, ChevronDownRegular, ImageRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
-import { useLocalization } from "../../infrastructure/context/locale-context";
-import { FeedbackStatus, StoredFeedback } from "../../infrastructure/storages/feedback-storage";
+import { StoredFeedback, useLocalization } from "../../infrastructure";
+import { StatusBadge } from "../common";
 import { useFeedbackItemStyles } from "./feedback-item-styles";
-import { mergeClasses } from "@fluentui/react-components";
-
-const STATUS_COLOR: Record<FeedbackStatus, "informative" | "warning" | "success"> = {
-    "New": "informative",
-    "In Progress": "warning",
-    "Completed": "success",
-};
 
 interface FeedbackItemProps {
     feedback: StoredFeedback;
@@ -22,12 +15,6 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, isUnread, 
     const styles = useFeedbackItemStyles();
     const rs = useLocalization();
     const [expanded, setExpanded] = useState(false);
-
-    const STATUS_LABEL: Record<FeedbackStatus, string> = {
-        "New": rs.StatusNew,
-        "In Progress": rs.StatusInProgress,
-        "Completed": rs.StatusCompleted,
-    };
 
     const handleClick = () => {
         setExpanded(v => !v);
@@ -45,11 +32,7 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback, isUnread, 
                             year: "numeric",
                         })}
                     </Text>
-                    {feedback.status && STATUS_COLOR[feedback.status] && (
-                        <Badge appearance="tint" color={STATUS_COLOR[feedback.status]} size="small" className={styles.badge}>
-                            {STATUS_LABEL[feedback.status]}
-                        </Badge>
-                    )}
+                    {feedback.status && <StatusBadge status={feedback.status} />}
                     {feedback.image_url && (
                         <Badge appearance="tint" color="subtle" size="small" icon={<ImageRegular />} className={styles.badge} />
                     )}

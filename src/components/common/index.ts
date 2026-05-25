@@ -5,3 +5,5 @@ export * from "./header";
 export * from "./bottom-nav";
 export * from "./styles";
 export * from "./language-switcher";
+export * from "./type-badge";
+export * from "./status-badge";
