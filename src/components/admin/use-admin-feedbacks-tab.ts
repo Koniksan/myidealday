@@ -45,6 +45,9 @@ export const useAdminFeedbacksTab = () => {
     const handleSaved = (id: string, status: FeedbackStatus, answer: string | null, type: FeedbackType) =>
         setFeedbacks(prev => prev.map(x => x.id === id ? { ...x, status, answer, type } : x));
 
+    const handleCreated = (feedback: AdminFeedback) =>
+        setFeedbacks(prev => [feedback, ...prev]);
+
     const handleDrop = async (targetStatus: FeedbackStatus) => {
         setDragOver(null);
         const id = dragId.current;
@@ -84,6 +87,7 @@ export const useAdminFeedbacksTab = () => {
         markSeen,
         toggleCollapse,
         handleSaved,
+        handleCreated,
         handleDrop,
     };
 };

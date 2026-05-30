@@ -12,7 +12,8 @@
       "PowerShell(Get-ChildItem D:\\\\dev\\\\myidealday\\\\node_modules\\\\@fluentui\\\\react-icons\\\\lib\\\\icons | Where-Object { $_.Name -match \"Repeat|Star|Task|Notebook|Calendar|Reload|Loop\" } | Select-Object -First 20)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(git -C /Users/dimakisel/dev/myIdealDayApp/myidealday show HEAD:supabase/schema.sql)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }

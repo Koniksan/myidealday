@@ -1,7 +1,8 @@
 import { OverlayDrawer, DrawerHeader, DrawerHeaderTitle, Button, DrawerBody, DrawerFooter, Textarea, Spinner, Text, Tooltip } from "@fluentui/react-components";
 import React, { useRef } from "react";
-import { ArrowLeftRegular, DismissRegular, DismissCircleRegular, Image24Regular } from "@fluentui/react-icons";
-import { useLocalization } from "../../infrastructure/context/locale-context";
+import { ArrowLeftRegular, DismissRegular, Image24Regular } from "@fluentui/react-icons";
+import { useLocalization } from "../../infrastructure";
+import { ImageUploadPreview } from "../common";
 import { useFeedbackPanelStyles } from "./feedback-panel-styles";
 import { useFeedbackPanel } from "./use-feedback-panel";
 import { StoredFeedback } from "../../infrastructure/storages/feedback-storage";
@@ -27,9 +28,6 @@ export const AddFeedbackPanel: React.FC<Props> = ({ open, onClose, onSuccess }) 
         handleRemoveImage,
         handleSubmit,
     } = useFeedbackPanel(open, onClose, onSuccess);
-
-    const formatBytes = (bytes: number) =>
-        bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
 
     return (
         <OverlayDrawer size="medium" position="end" open={open} onOpenChange={(_, { open: isOpen }) => !isOpen && onClose()}>
@@ -65,25 +63,12 @@ export const AddFeedbackPanel: React.FC<Props> = ({ open, onClose, onSuccess }) 
                     </div>
                 </div>
                 {imagePreview && (
-                    <>
-                        <div className={styles.imagePreviewWrapper}>
-                            <img src={imagePreview} className={styles.imagePreview} />
-                            <Tooltip content={rs.RemoveImage} relationship="label">
-                                <Button
-                                    className={styles.removeImageButton}
-                                    appearance="subtle"
-                                    size="small"
-                                    icon={<DismissCircleRegular />}
-                                    onClick={handleRemoveImage}
-                                />
-                            </Tooltip>
-                        </div>
-                        {imageOriginalSize != null && imageCompressedSize != null && (
-                            <Text className={styles.imageSizeInfo}>
-                                {formatBytes(imageOriginalSize)} → {formatBytes(imageCompressedSize)}
-                            </Text>
-                        )}
-                    </>
+                    <ImageUploadPreview
+                        imagePreview={imagePreview}
+                        imageOriginalSize={imageOriginalSize}
+                        imageCompressedSize={imageCompressedSize}
+                        onRemove={handleRemoveImage}
+                    />
                 )}
                 <input
                     ref={fileInputRef}

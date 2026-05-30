@@ -7,3 +7,5 @@ export * from "./styles";
 export * from "./language-switcher";
 export * from "./type-badge";
 export * from "./status-badge";
+export * from "./kanban-item-panel";
+export * from "./image-upload-preview";
