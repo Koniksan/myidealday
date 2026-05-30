@@ -1,6 +1,6 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
 
-export const useEditKanbanItemPanelStyles = makeStyles({
+export const useKanbanItemPanelStyles = makeStyles({
     feedbackPanelBody: {
         display: "flex",
         flexDirection: "column",
@@ -25,6 +25,9 @@ export const useEditKanbanItemPanelStyles = makeStyles({
     },
     feedbackAnswer: {
         minHeight: "120px",
+    },
+    feedbackMessage: {
+        minHeight: "80px",
     },
     feedbackAnswerLabel: {
         fontSize: tokens.fontSizeBase100,
@@ -74,6 +77,46 @@ export const useEditKanbanItemPanelStyles = makeStyles({
         color: tokens.colorNeutralForeground3,
         background: tokens.colorNeutralBackground3,
         border: `1px solid ${tokens.colorNeutralStroke2}`,
+    },
+    textareaWrapper: {
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+    },
+    textareaToolbar: {
+        display: "flex",
+        justifyContent: "flex-end",
+        paddingTop: "4px",
+    },
+    imagePreviewWrapper: {
+        position: "relative",
+        display: "inline-block",
+        alignSelf: "flex-start",
+    },
+    imagePreview: {
+        maxWidth: "100%",
+        maxHeight: "200px",
+        objectFit: "contain",
+        borderRadius: tokens.borderRadiusMedium,
+        border: `1px solid ${tokens.colorNeutralStroke2}`,
+        display: "block",
+    },
+    removeImageButton: {
+        position: "absolute",
+        top: "4px",
+        right: "4px",
+    },
+    panelHeaderTitle: {
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+    },
+    panelHeaderAvatar: {
+        width: "24px",
+        height: "24px",
+        borderRadius: tokens.borderRadiusCircular,
+        objectFit: "cover",
+        flexShrink: 0,
     },
     drawerFooter: {
         display: "flex",

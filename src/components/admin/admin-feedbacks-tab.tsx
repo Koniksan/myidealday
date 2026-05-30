@@ -1,8 +1,9 @@
 import { Button, Spinner, Text } from "@fluentui/react-components";
 import { AddRegular, ChatRegular } from "@fluentui/react-icons";
-import React from "react";
+import React, { useState } from "react";
+import { AdminFeedback } from "../../infrastructure";
+import { KanbanItemPanel } from "../common";
 import { useAdminStyles } from "./admin-styles";
-import { EditKanbanItemPanel } from "./edit-kanban-item-panel";
 import { KanbanColumn } from "./kanban-column";
 import { STATUSES, useAdminFeedbacksTab } from "./use-admin-feedbacks-tab";
 
@@ -24,8 +25,10 @@ export const AdminFeedbacksTab: React.FC = () => {
         markSeen,
         toggleCollapse,
         handleSaved,
+        handleCreated,
         handleDrop,
     } = useAdminFeedbacksTab();
+    const [createOpen, setCreateOpen] = useState(false);
 
     if (loading) return <div className={styles.center}><Spinner size="medium" /></div>;
 
@@ -41,7 +44,7 @@ export const AdminFeedbacksTab: React.FC = () => {
     return (
         <>
             <div className={styles.feedbackTabToolbar}>
-                <Button appearance="subtle" icon={<AddRegular />}>
+                <Button appearance="subtle" icon={<AddRegular />} onClick={() => setCreateOpen(true)}>
                     {rs.AddCard}
                 </Button>
             </div>
@@ -67,10 +70,17 @@ export const AdminFeedbacksTab: React.FC = () => {
                 ))}
             </div>
 
-            <EditKanbanItemPanel
+            <KanbanItemPanel
+                mode="Edit"
                 feedback={selected}
                 onClose={() => setSelected(null)}
                 onSaved={handleSaved}
+            />
+            <KanbanItemPanel
+                mode="Create"
+                open={createOpen}
+                onClose={() => setCreateOpen(false)}
+                onCreated={(x: AdminFeedback) => { handleCreated(x); setCreateOpen(false); }}
             />
         </>
     );

@@ -13,16 +13,16 @@ export interface StoredFeedback {
 }
 
 const FEEDBACK_BUCKET = "feedback-images";
-const MAX_IMAGE_SIZE = 1200;
+const DEFAULT_MAX_IMAGE_SIZE = 1200;
 const IMAGE_QUALITY = 0.8;
 
-export const compressImage = (file: File): Promise<Blob> =>
+export const compressImage = (file: File, maxSize: number = DEFAULT_MAX_IMAGE_SIZE): Promise<Blob> =>
     new Promise((resolve, reject) => {
         const img = new Image();
         const url = URL.createObjectURL(file);
         img.onload = () => {
             URL.revokeObjectURL(url);
-            const scale = Math.min(1, MAX_IMAGE_SIZE / Math.max(img.width, img.height));
+            const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
             const canvas = document.createElement("canvas");
             canvas.width = Math.round(img.width * scale);
             canvas.height = Math.round(img.height * scale);

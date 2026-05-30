@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
-import { compressImage, createFeedback, getFeedbacks, StoredFeedback, uploadFeedbackImage, useLocalization, useAuth, useNotification } from "../../infrastructure";
+import { createFeedback, getFeedbacks, StoredFeedback, uploadFeedbackImage, useImageUpload, useLocalization, useAuth, useNotification } from "../../infrastructure";
 
 export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?: (feedback: StoredFeedback) => void) => {
     const rs = useLocalization();
     const { user } = useAuth();
     const { notify } = useNotification();
 
+    const { compressedBlob, imagePreview, imageOriginalSize, imageCompressedSize, handleImageSelect, handleRemoveImage } = useImageUpload(1200);
     const [feedbacks, setFeedbacks] = useState<StoredFeedback[]>([]);
     const [loading, setLoading] = useState(false);
     const [composing, setComposing] = useState(false);
     const [draft, setDraft] = useState("");
     const [sending, setSending] = useState(false);
-    const [compressedBlob, setCompressedBlob] = useState<Blob | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [imageOriginalSize, setImageOriginalSize] = useState<number | null>(null);
-    const [imageCompressedSize, setImageCompressedSize] = useState<number | null>(null);
 
     useEffect(() => {
         if (!open || !user) return;
@@ -24,23 +21,6 @@ export const useFeedbackPanel = (open: boolean, onClose: () => void, onSuccess?:
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [open, user]);
-
-    const handleImageSelect = async (file: File) => {
-        if (imagePreview) URL.revokeObjectURL(imagePreview);
-        const blob = await compressImage(file);
-        setCompressedBlob(blob);
-        setImagePreview(URL.createObjectURL(blob));
-        setImageOriginalSize(file.size);
-        setImageCompressedSize(blob.size);
-    };
-
-    const handleRemoveImage = () => {
-        if (imagePreview) URL.revokeObjectURL(imagePreview);
-        setCompressedBlob(null);
-        setImagePreview(null);
-        setImageOriginalSize(null);
-        setImageCompressedSize(null);
-    };
 
     const handleSubmit = async () => {
         if (!draft.trim() || !user) return;

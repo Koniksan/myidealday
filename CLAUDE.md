@@ -56,3 +56,4 @@ src/
  - For each iteration like: map, forEach, reduce, filter, find end etc. use `x,y,z` method. Example arr.map(x => x.filter(y => y.find(z => z != null)))
  - For events use always `e`. Example: <Component onClick={e => e.stopPropagation()}>
  - Always import from the nearest barrel index `(e.g. ../../infrastructure) instead of deep internal paths (e.g. ../../infrastructure/context/auth-context)`.
+ - If a component contains any logic (state, effects, handlers, derived data), extract it into a dedicated hook named `use<ComponentName>` co-located in the same folder.

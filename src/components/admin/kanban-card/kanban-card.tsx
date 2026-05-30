@@ -36,8 +36,11 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ feedback, isNew, onDragS
             <span className={styles.kanbanCardMessage}>{feedback.message}</span>
             <div className={styles.kanbanCardFooter}>
                 <span className={styles.kanbanCardSource}>
-                    <PersonRegular className={styles.kanbanCardSourceIcon} />
-                    {feedback.email ?? rs.AdminAnonymous}
+                    {feedback.avatarUrl
+                        ? <img src={feedback.avatarUrl} className={styles.kanbanCardAvatar} />
+                        : <PersonRegular className={styles.kanbanCardSourceIcon} />
+                    }
+                    {feedback.displayName ?? feedback.email ?? rs.AdminAnonymous}
                 </span>
                 <span className={styles.kanbanCardDate}>{dateStr}</span>
             </div>

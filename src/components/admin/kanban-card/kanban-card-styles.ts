@@ -67,6 +67,13 @@ export const useKanbanCardStyles = makeStyles({
         fontSize: "12px",
         flexShrink: 0,
     },
+    kanbanCardAvatar: {
+        width: "16px",
+        height: "16px",
+        borderRadius: tokens.borderRadiusCircular,
+        objectFit: "cover",
+        flexShrink: 0,
+    },
     kanbanCardDate: {
         flexShrink: 0,
         fontSize: tokens.fontSizeBase100,
