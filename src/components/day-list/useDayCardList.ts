@@ -135,7 +135,34 @@ export const useDayCardList = (): UseDayCardListResult => {
     useEffect(() => {
         setLoading(true);
         loadTasksForMonth(year, month)
-            .then(setDaysByDate)
+            .then(async data => {
+                const hasPlanTasks = Object.values(data).some(x => x.tasks.some(y => !y.is_custom));
+                if (!hasPlanTasks) {
+                    const prevY = month === 0 ? year - 1 : year;
+                    const prevM = month === 0 ? 11 : month - 1;
+                    const prevData = await loadTasksForMonth(prevY, prevM);
+                    const prevDays = Object.values(prevData)
+                        .filter(x => x.tasks.some(y => !y.is_custom))
+                        .sort((a, b) => b.date.localeCompare(a.date));
+                    if (prevDays.length > 0) {
+                        const planItems: PlanItem[] = prevDays[0].tasks
+                            .filter(x => !x.is_custom)
+                            .sort((a, b) => a.position - b.position)
+                            .map(x => ({
+                                label: x.label,
+                                color: x.color ?? null,
+                                time_mode: x.time_mode ?? null,
+                                time_exact: x.time_exact ?? null,
+                                time_start: x.time_start ?? null,
+                                time_end: x.time_end ?? null,
+                            }));
+                        const migrated = await bulkSaveTasksForMonth(year, month, planItems, 0, 1);
+                        setDaysByDate({ ...data, ...migrated });
+                        return;
+                    }
+                }
+                setDaysByDate(data);
+            })
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [year, month]);
