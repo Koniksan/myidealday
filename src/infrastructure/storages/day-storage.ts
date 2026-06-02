@@ -173,3 +173,59 @@ export const deleteAllTasksFromDate = async (fromDate: string): Promise<void> =>
 
     if (error) throw error;
 };
+
+export const deleteTasksByLabelFromDate = async (fromDate: string, label: string): Promise<void> => {
+    const { error } = await supabase
+        .from("tasks")
+        .delete()
+        .gte("date", fromDate)
+        .eq("label", label);
+    if (error) throw error;
+};
+
+export const updateTaskFieldsByLabelFromDate = async (
+    fromDate: string,
+    label: string,
+    patch: Partial<Pick<StoredTask, "color" | "time_mode" | "time_exact" | "time_start" | "time_end">>,
+): Promise<void> => {
+    const { error } = await supabase
+        .from("tasks")
+        .update(patch)
+        .eq("label", label)
+        .gte("date", fromDate);
+    if (error) throw error;
+};
+
+export const reorderTasksByLabelsFromDate = async (fromDate: string, orderedLabels: string[]): Promise<void> => {
+    await Promise.all(
+        orderedLabels.map((label, position) =>
+            supabase.from("tasks").update({ position }).eq("label", label).gte("date", fromDate)
+        )
+    );
+};
+
+export const loadLatestPlanTemplate = async (beforeDate: string): Promise<PlanItem[]> => {
+    const { data, error } = await supabase
+        .from("tasks")
+        .select("date, label, color, time_mode, time_exact, time_start, time_end, position")
+        .lt("date", beforeDate)
+        .or("is_custom.eq.false,is_custom.is.null")
+        .order("date", { ascending: false })
+        .order("position", { ascending: true })
+        .limit(100);
+
+    if (error) throw error;
+    if (!data || data.length === 0) return [];
+
+    const latestDate = data[0].date;
+    return data
+        .filter(x => x.date === latestDate)
+        .map(x => ({
+            label: x.label,
+            color: x.color ?? null,
+            time_mode: x.time_mode ?? null,
+            time_exact: x.time_exact ?? null,
+            time_start: x.time_start ?? null,
+            time_end: x.time_end ?? null,
+        }));
+};

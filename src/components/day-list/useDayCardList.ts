@@ -4,14 +4,17 @@ import { DayCardProps } from "../day";
 import {
     loadTasksForMonth,
     bulkSaveTasksForMonth,
-    deleteTasksByLabelForMonth,
     deleteAllTasksFromDate,
-    reorderTasksByLabelsForMonth,
-    updateTaskFieldsByLabel,
+    deleteTasksByLabelFromDate,
+    updateTaskFieldsByLabelFromDate,
+    reorderTasksByLabelsFromDate,
+    loadLatestPlanTemplate,
     StoredDay,
     StoredTask,
     PlanItem,
 } from "../../infrastructure/storages/day-storage";
+
+const FUTURE_MONTHS = 12;
 
 interface UseDayCardListResult {
     days: DayCardProps[];
@@ -138,24 +141,9 @@ export const useDayCardList = (): UseDayCardListResult => {
             .then(async data => {
                 const hasPlanTasks = Object.values(data).some(x => x.tasks.some(y => !y.is_custom));
                 if (!hasPlanTasks) {
-                    const prevY = month === 0 ? year - 1 : year;
-                    const prevM = month === 0 ? 11 : month - 1;
-                    const prevData = await loadTasksForMonth(prevY, prevM);
-                    const prevDays = Object.values(prevData)
-                        .filter(x => x.tasks.some(y => !y.is_custom))
-                        .sort((a, b) => b.date.localeCompare(a.date));
-                    if (prevDays.length > 0) {
-                        const planItems: PlanItem[] = prevDays[0].tasks
-                            .filter(x => !x.is_custom)
-                            .sort((a, b) => a.position - b.position)
-                            .map(x => ({
-                                label: x.label,
-                                color: x.color ?? null,
-                                time_mode: x.time_mode ?? null,
-                                time_exact: x.time_exact ?? null,
-                                time_start: x.time_start ?? null,
-                                time_end: x.time_end ?? null,
-                            }));
+                    const beforeDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+                    const planItems = await loadLatestPlanTemplate(beforeDate);
+                    if (planItems.length > 0) {
                         const migrated = await bulkSaveTasksForMonth(year, month, planItems, 0, 1);
                         setDaysByDate({ ...data, ...migrated });
                         return;
@@ -237,10 +225,14 @@ export const useDayCardList = (): UseDayCardListResult => {
     });
 
     const addPlanToAllDays = async (items: PlanItem[]) => {
-        const newByDate = await bulkSaveTasksForMonth(year, month, items, 0, fromDay);
+        const saves = Array.from({ length: FUTURE_MONTHS + 1 }, (_, i) => {
+            const d = new Date(year, month + i, 1);
+            return bulkSaveTasksForMonth(d.getFullYear(), d.getMonth(), items, 0, i === 0 ? fromDay : 1);
+        });
+        const [currentMonthData] = await Promise.all(saves);
         setDaysByDate(prev => {
             const updated = { ...prev };
-            for (const [date, newDay] of Object.entries(newByDate)) {
+            for (const [date, newDay] of Object.entries(currentMonthData)) {
                 if (updated[date]) {
                     updated[date] = { ...updated[date], tasks: [...updated[date].tasks, ...newDay.tasks] };
                 } else {
@@ -252,14 +244,16 @@ export const useDayCardList = (): UseDayCardListResult => {
     };
 
     const editPlan = async (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], fieldChanges: PlanItem[]) => {
-        await Promise.all(labelsToRemove.map(x => deleteTasksByLabelForMonth(year, month, x, fromDay)));
+        const fromStr = toDateString(fromDay);
+
+        await Promise.all(labelsToRemove.map(x => deleteTasksByLabelFromDate(fromStr, x)));
 
         if (labelsToRemove.length > 0) {
             setDaysByDate(prev => {
                 const updated = { ...prev };
                 for (const date of Object.keys(updated)) {
-                    if (date >= toDateString(fromDay)) {
-                        updated[date] = { ...updated[date], tasks: updated[date].tasks.filter(t => !labelsToRemove.includes(t.label)) };
+                    if (date >= fromStr) {
+                        updated[date] = { ...updated[date], tasks: updated[date].tasks.filter(x => !labelsToRemove.includes(x.label)) };
                     }
                 }
                 return updated;
@@ -267,21 +261,21 @@ export const useDayCardList = (): UseDayCardListResult => {
         }
 
         if (fieldChanges.length > 0) {
-            await Promise.all(fieldChanges.map(x => updateTaskFieldsByLabel(year, month, x.label, {
+            await Promise.all(fieldChanges.map(x => updateTaskFieldsByLabelFromDate(fromStr, x.label, {
                 color: x.color ?? null,
                 time_mode: x.time_mode ?? null,
                 time_exact: x.time_exact ?? null,
                 time_start: x.time_start ?? null,
                 time_end: x.time_end ?? null,
-            }, fromDay)));
+            })));
             setDaysByDate(prev => {
                 const updated = { ...prev };
-                const fieldMap = new Map(fieldChanges.map(i => [i.label, i]));
+                const fieldMap = new Map(fieldChanges.map(x => [x.label, x]));
                 for (const date of Object.keys(updated)) {
-                    if (date >= toDateString(fromDay)) {
-                        updated[date] = { ...updated[date], tasks: updated[date].tasks.map(t => {
-                            const c = fieldMap.get(t.label);
-                            return c ? { ...t, color: c.color ?? null, time_mode: c.time_mode ?? null, time_exact: c.time_exact ?? null, time_start: c.time_start ?? null, time_end: c.time_end ?? null } : t;
+                    if (date >= fromStr) {
+                        updated[date] = { ...updated[date], tasks: updated[date].tasks.map(x => {
+                            const c = fieldMap.get(x.label);
+                            return c ? { ...x, color: c.color ?? null, time_mode: c.time_mode ?? null, time_exact: c.time_exact ?? null, time_start: c.time_start ?? null, time_end: c.time_end ?? null } : x;
                         })};
                     }
                 }
@@ -290,10 +284,14 @@ export const useDayCardList = (): UseDayCardListResult => {
         }
 
         if (itemsToAdd.length > 0) {
-            const newByDate = await bulkSaveTasksForMonth(year, month, itemsToAdd, planLabels.length, fromDay);
+            const saves = Array.from({ length: FUTURE_MONTHS + 1 }, (_, i) => {
+                const d = new Date(year, month + i, 1);
+                return bulkSaveTasksForMonth(d.getFullYear(), d.getMonth(), itemsToAdd, planLabels.length, i === 0 ? fromDay : 1);
+            });
+            const [currentMonthData] = await Promise.all(saves);
             setDaysByDate(prev => {
                 const updated = { ...prev };
-                for (const [date, newDay] of Object.entries(newByDate)) {
+                for (const [date, newDay] of Object.entries(currentMonthData)) {
                     if (updated[date]) {
                         updated[date] = { ...updated[date], tasks: [...updated[date].tasks, ...newDay.tasks] };
                     } else {
@@ -304,15 +302,15 @@ export const useDayCardList = (): UseDayCardListResult => {
             });
         }
 
-        await reorderTasksByLabelsForMonth(year, month, orderedLabels, fromDay);
+        await reorderTasksByLabelsFromDate(fromStr, orderedLabels);
         setDaysByDate(prev => {
             const updated = { ...prev };
             for (const date of Object.keys(updated)) {
-                if (date >= toDateString(fromDay)) {
+                if (date >= fromStr) {
                     const reordered = orderedLabels
-                        .map(label => updated[date].tasks.find(t => t.label === label))
-                        .filter((t): t is NonNullable<typeof t> => t !== undefined);
-                    const rest = updated[date].tasks.filter(t => !orderedLabels.includes(t.label));
+                        .map(x => updated[date].tasks.find(y => y.label === x))
+                        .filter((x): x is NonNullable<typeof x> => x !== undefined);
+                    const rest = updated[date].tasks.filter(x => !orderedLabels.includes(x.label));
                     updated[date] = { ...updated[date], tasks: [...reordered, ...rest] };
                 }
             }
