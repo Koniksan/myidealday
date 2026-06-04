@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { saveTask, updateTask, deleteTask, StoredTask } from "../../infrastructure/storages/day-storage";
+import { saveDay, StoredTask } from "../../infrastructure/storages/day-storage";
 
 interface UseDayCardOptions {
     year: number;
@@ -8,6 +8,9 @@ interface UseDayCardOptions {
     initialTasks: StoredTask[];
     onTasksChange?: (tasks: StoredTask[]) => void;
 }
+
+const toDateStr = (year: number, month: number, day: number) =>
+    `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
 export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: UseDayCardOptions) => {
     const [tasks, setTasks] = useState<StoredTask[]>(initialTasks);
@@ -36,36 +39,37 @@ export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: Us
         ? (tasks.filter(t => t.checked).length / tasks.length) * 100
         : 0;
 
-    const toggle = (i: number) => {
-        const task = tasks[i];
-        if (!task.id) return;
-        const checked = !task.checked;
-        updateTask(task.id, { checked }).catch(console.error);
-        const newTasks = tasks.map((t, idx) => idx === i ? { ...t, checked } : t);
+    const persist = (newTasks: StoredTask[]) => {
         setTasks(newTasks);
         onTasksChange?.(newTasks);
+        saveDay(toDateStr(year, month, day), newTasks).catch(console.error);
+    };
+
+    const toggle = (i: number) => {
+        persist(tasks.map((x, idx) => idx === i ? { ...x, checked: !x.checked } : x));
     };
 
     const removeCustomTask = (id: string) => {
-        const newTasks = tasks.filter(t => t.id !== id);
-        setTasks(newTasks);
-        deleteTask(id).catch(console.error);
-        onTasksChange?.(newTasks);
+        persist(tasks.filter(x => x.id !== id));
     };
 
     const persistDraft = (label: string, currentTasks: StoredTask[]) => {
         setSaving(true);
-        saveTask(year, month, day, { label, checked: false, position: currentTasks.length, is_custom: true })
-            .then(saved => {
-                const newTasks = [...currentTasks, saved];
-                setTasks(newTasks);
-                onTasksChange?.(newTasks);
-            })
+        const newTask: StoredTask = {
+            label,
+            checked: false,
+            position: currentTasks.length,
+            is_custom: true,
+            id: crypto.randomUUID(),
+        };
+        const newTasks = [...currentTasks, newTask];
+        setTasks(newTasks);
+        onTasksChange?.(newTasks);
+        saveDay(toDateStr(year, month, day), newTasks)
             .catch(console.error)
             .finally(() => setSaving(false));
     };
 
-    // Enter: save current draft but keep input open for the next task
     const submitDraft = () => {
         const label = draft.trim();
         setDraft("");
@@ -73,7 +77,6 @@ export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: Us
         inputRef.current?.focus();
     };
 
-    // Blur: save any pending draft and close the input
     const commitDraft = () => {
         const label = draft.trim();
         setDraft("");

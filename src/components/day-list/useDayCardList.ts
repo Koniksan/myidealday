@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useRef, useState, RefObject } from "react";
+import { useEffect, useRef, useState, RefObject } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { DayCardProps } from "../day";
 import {
-    loadTasksForMonth,
-    bulkSaveTasksForMonth,
-    deleteTasksByLabelForMonth,
-    deleteAllTasksFromDate,
-    reorderTasksByLabelsForMonth,
-    updateTaskFieldsByLabel,
+    loadPlan,
+    savePlan,
+    loadAllDays,
+    deleteDaysFromDate,
     StoredDay,
     StoredTask,
     PlanItem,
@@ -100,8 +98,8 @@ export const useDayCardList = (): UseDayCardListResult => {
     }, [year, month]);
 
     const gridRef = useRef<HTMLDivElement>(null);
+    const [planItems, setPlanItems] = useState<PlanItem[]>([]);
     const [daysByDate, setDaysByDate] = useState<Record<string, StoredDay>>({});
-    const [prevMonthDaysByDate, setPrevMonthDaysByDate] = useState<Record<string, StoredDay>>({});
     const [loading, setLoading] = useState(true);
 
     const [isTodayInView, setIsTodayInView] = useState(true);
@@ -111,10 +109,8 @@ export const useDayCardList = (): UseDayCardListResult => {
             setIsTodayInView(true);
             return;
         }
-
         const todayEls = Array.from(document.querySelectorAll<Element>("[data-today]"));
         if (todayEls.length === 0) return;
-
         const intersecting = new Set<Element>();
         const observer = new IntersectionObserver((entries) => {
             for (const entry of entries) {
@@ -123,8 +119,7 @@ export const useDayCardList = (): UseDayCardListResult => {
             }
             setIsTodayInView(intersecting.size > 0);
         }, { threshold: 0.5 });
-
-        todayEls.forEach(el => observer.observe(el));
+        todayEls.forEach(x => observer.observe(x));
         return () => observer.disconnect();
     }, [isViewingToday, loading]);
 
@@ -134,46 +129,52 @@ export const useDayCardList = (): UseDayCardListResult => {
 
     useEffect(() => {
         setLoading(true);
-        loadTasksForMonth(year, month)
-            .then(setDaysByDate)
+        Promise.all([loadPlan(), loadAllDays()])
+            .then(([plan, days]) => {
+                setPlanItems(plan);
+                setDaysByDate(days);
+            })
             .catch(console.error)
             .finally(() => setLoading(false));
-    }, [year, month]);
+    }, []);
 
     useEffect(() => {
-        if (firstDayOffset === 0) { setPrevMonthDaysByDate({}); return; }
-        loadTasksForMonth(prevYear, prevMonthIndex)
-            .then(setPrevMonthDaysByDate)
-            .catch(console.error);
-    }, [prevYear, prevMonthIndex, firstDayOffset]);
+        if (loading) return;
+        if (year === todayYear && month === todayMonth) {
+            requestAnimationFrame(() => scrollToToday());
+        } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, [loading]);
 
     const toDateString = (day: number) =>
         `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-    const planLabels = useMemo(() => {
-        const todayStr = toDateString(today);
-        const activeDays = Object.values(daysByDate)
-            .filter(d => d.date >= todayStr && d.tasks.length > 0)
-            .sort((a, b) => a.date.localeCompare(b.date));
+    const toPrevDateString = (day: number) =>
+        `${prevYear}-${String(prevMonthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-        if (activeDays.length === 0) return [];
-
-        const universalLabels = new Set(
-            [...new Set(activeDays.flatMap(d => d.tasks.map(t => t.label)))]
-                .filter(label => activeDays.every(d => d.tasks.some(t => t.label === label)))
-        );
-
-        return activeDays[0].tasks
-            .filter(t => universalLabels.has(t.label))
-            .map(t => ({
-                label: t.label,
-                color: t.color ?? null,
-                time_mode: t.time_mode ?? null,
-                time_exact: t.time_exact ?? null,
-                time_start: t.time_start ?? null,
-                time_end: t.time_end ?? null,
-            }));
-    }, [daysByDate]);
+    // Merge the global plan with a day's snapshot: plan defines what tasks exist and their
+    // metadata; the snapshot only contributes each task's checked state and custom tasks.
+    const getEffectiveTasks = (dateStr: string): StoredTask[] => {
+        const planTasks: StoredTask[] = planItems.map((x, i) => ({
+            label: x.label,
+            checked: false,
+            position: i,
+            is_custom: false,
+            color: x.color ?? null,
+            time_mode: x.time_mode ?? null,
+            time_exact: x.time_exact ?? null,
+            time_start: x.time_start ?? null,
+            time_end: x.time_end ?? null,
+        }));
+        const snapshot = daysByDate[dateStr];
+        if (!snapshot) return planTasks;
+        const merged = planTasks.map(x => {
+            const snap = snapshot.tasks.find(y => y.label === x.label && !y.is_custom);
+            return { ...x, checked: snap?.checked ?? false };
+        });
+        return [...merged, ...snapshot.tasks.filter(x => x.is_custom)];
+    };
 
     const days: DayCardProps[] = Array.from({ length: daysInMonth }, (_, i) => {
         const date = new Date(year, month, i + 1);
@@ -186,13 +187,11 @@ export const useDayCardList = (): UseDayCardListResult => {
             shortName: date.toLocaleString(rs.DateLocale, { weekday: "short" }),
             isToday: year === todayYear && month === todayMonth && day === today,
             isWeekend: dow === 0 || dow === 6,
-            initialTasks: daysByDate[toDateString(day)]?.tasks ?? [],
+            initialTasks: getEffectiveTasks(toDateString(day)),
         };
     });
 
     const prevMonthLastDay = new Date(year, month, 0).getDate();
-    const toPrevDateString = (day: number) =>
-        `${prevYear}-${String(prevMonthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
     const offsetDays: DayCardProps[] = Array.from({ length: firstDayOffset }, (_, i) => {
         const day = prevMonthLastDay - firstDayOffset + 1 + i;
@@ -205,116 +204,46 @@ export const useDayCardList = (): UseDayCardListResult => {
             shortName: date.toLocaleString(rs.DateLocale, { weekday: "short" }),
             isToday: false,
             isWeekend: dow === 0 || dow === 6,
-            initialTasks: prevMonthDaysByDate[toPrevDateString(day)]?.tasks ?? [],
+            initialTasks: daysByDate[toPrevDateString(day)]?.tasks ?? [],
         };
     });
 
+    const planLabels = planItems;
+
     const addPlanToAllDays = async (items: PlanItem[]) => {
-        const newByDate = await bulkSaveTasksForMonth(year, month, items, 0, fromDay);
-        setDaysByDate(prev => {
-            const updated = { ...prev };
-            for (const [date, newDay] of Object.entries(newByDate)) {
-                if (updated[date]) {
-                    updated[date] = { ...updated[date], tasks: [...updated[date].tasks, ...newDay.tasks] };
-                } else {
-                    updated[date] = newDay;
-                }
-            }
-            return updated;
-        });
+        const newPlan = [...planItems, ...items];
+        await savePlan(newPlan);
+        setPlanItems(newPlan);
     };
 
     const editPlan = async (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], fieldChanges: PlanItem[]) => {
-        await Promise.all(labelsToRemove.map(x => deleteTasksByLabelForMonth(year, month, x, fromDay)));
-
-        if (labelsToRemove.length > 0) {
-            setDaysByDate(prev => {
-                const updated = { ...prev };
-                for (const date of Object.keys(updated)) {
-                    if (date >= toDateString(fromDay)) {
-                        updated[date] = { ...updated[date], tasks: updated[date].tasks.filter(t => !labelsToRemove.includes(t.label)) };
-                    }
-                }
-                return updated;
+        let newPlan = planItems
+            .filter(x => !labelsToRemove.includes(x.label))
+            .concat(itemsToAdd)
+            .map(x => {
+                const change = fieldChanges.find(c => c.label === x.label);
+                return change ? { ...x, ...change } : x;
             });
-        }
-
-        if (fieldChanges.length > 0) {
-            await Promise.all(fieldChanges.map(x => updateTaskFieldsByLabel(year, month, x.label, {
-                color: x.color ?? null,
-                time_mode: x.time_mode ?? null,
-                time_exact: x.time_exact ?? null,
-                time_start: x.time_start ?? null,
-                time_end: x.time_end ?? null,
-            }, fromDay)));
-            setDaysByDate(prev => {
-                const updated = { ...prev };
-                const fieldMap = new Map(fieldChanges.map(i => [i.label, i]));
-                for (const date of Object.keys(updated)) {
-                    if (date >= toDateString(fromDay)) {
-                        updated[date] = { ...updated[date], tasks: updated[date].tasks.map(t => {
-                            const c = fieldMap.get(t.label);
-                            return c ? { ...t, color: c.color ?? null, time_mode: c.time_mode ?? null, time_exact: c.time_exact ?? null, time_start: c.time_start ?? null, time_end: c.time_end ?? null } : t;
-                        })};
-                    }
-                }
-                return updated;
-            });
-        }
-
-        if (itemsToAdd.length > 0) {
-            const newByDate = await bulkSaveTasksForMonth(year, month, itemsToAdd, planLabels.length, fromDay);
-            setDaysByDate(prev => {
-                const updated = { ...prev };
-                for (const [date, newDay] of Object.entries(newByDate)) {
-                    if (updated[date]) {
-                        updated[date] = { ...updated[date], tasks: [...updated[date].tasks, ...newDay.tasks] };
-                    } else {
-                        updated[date] = newDay;
-                    }
-                }
-                return updated;
-            });
-        }
-
-        await reorderTasksByLabelsForMonth(year, month, orderedLabels, fromDay);
-        setDaysByDate(prev => {
-            const updated = { ...prev };
-            for (const date of Object.keys(updated)) {
-                if (date >= toDateString(fromDay)) {
-                    const reordered = orderedLabels
-                        .map(label => updated[date].tasks.find(t => t.label === label))
-                        .filter((t): t is NonNullable<typeof t> => t !== undefined);
-                    const rest = updated[date].tasks.filter(t => !orderedLabels.includes(t.label));
-                    updated[date] = { ...updated[date], tasks: [...reordered, ...rest] };
-                }
-            }
-            return updated;
-        });
+        newPlan = orderedLabels
+            .map(label => newPlan.find(x => x.label === label))
+            .filter((x): x is PlanItem => x !== undefined)
+            .concat(newPlan.filter(x => !orderedLabels.includes(x.label)));
+        await savePlan(newPlan);
+        setPlanItems(newPlan);
     };
 
     const resetPlan = async () => {
         const fromStr = toDateString(fromDay);
-        await deleteAllTasksFromDate(fromStr);
+        await Promise.all([savePlan([]), deleteDaysFromDate(fromStr)]);
+        setPlanItems([]);
         setDaysByDate(prev => {
             const updated = { ...prev };
             for (const date of Object.keys(updated)) {
-                if (date >= fromStr) {
-                    updated[date] = { ...updated[date], tasks: [] };
-                }
+                if (date >= fromStr) delete updated[date];
             }
             return updated;
         });
     };
-
-    useEffect(() => {
-        if (loading) return;
-        if (year === todayYear && month === todayMonth) {
-            requestAnimationFrame(() => scrollToToday());
-        } else {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-    }, [loading]);
 
     const selectedDayDate = new Date(year, month, selectedDay);
     const selectedDayProps: DayCardProps = {
@@ -324,14 +253,14 @@ export const useDayCardList = (): UseDayCardListResult => {
         shortName: selectedDayDate.toLocaleString(rs.DateLocale, { weekday: "short" }),
         isToday: year === todayYear && month === todayMonth && selectedDay === today,
         isWeekend: [0, 6].includes(selectedDayDate.getDay()),
-        initialTasks: daysByDate[toDateString(selectedDay)]?.tasks ?? [],
+        initialTasks: getEffectiveTasks(toDateString(selectedDay)),
     };
 
     const updateDayTasks = (day: number, tasks: StoredTask[]) => {
         const dateStr = toDateString(day);
         setDaysByDate(prev => ({
             ...prev,
-            [dateStr]: { ...(prev[dateStr] ?? { date: dateStr }), tasks },
+            [dateStr]: { date: dateStr, tasks },
         }));
     };
 
