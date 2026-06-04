@@ -12,11 +12,11 @@ export interface PlanItem {
 }
 
 export interface StoredTask {
-    id?: string;
     label: string;
     checked: boolean;
     position: number;
     is_custom?: boolean;
+    id?: string;
     color?: string | null;
     time_mode?: "exact" | "interval" | null;
     time_exact?: string | null;
@@ -29,147 +29,43 @@ export interface StoredDay {
     tasks: StoredTask[];
 }
 
-const toDateString = (year: number, month: number, day: number): string =>
-    `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+export const loadPlan = async (): Promise<PlanItem[]> => {
+    const { data, error } = await supabase.from("plan").select("tasks").single();
+    if (error) {
+        if (error.code === "PGRST116") return [];
+        throw error;
+    }
+    return (data?.tasks ?? []) as PlanItem[];
+};
 
-export const loadTasksForMonth = async (year: number, month: number): Promise<Record<string, StoredDay>> => {
-    const from = toDateString(year, month, 1);
-    const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
-
-    const { data, error } = await supabase
-        .from("tasks")
-        .select("id, date, label, checked, position, is_custom, color, time_mode, time_exact, time_start, time_end")
-        .gte("date", from)
-        .lte("date", to)
-        .order("position");
-
+export const savePlan = async (tasks: PlanItem[]): Promise<void> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Not authenticated");
+    const { error } = await supabase
+        .from("plan")
+        .upsert({ user_id: session.user.id, tasks }, { onConflict: "user_id" });
     if (error) throw error;
+};
 
-    return (data ?? []).reduce<Record<string, StoredDay>>((acc, { date, ...task }) => {
-        if (!acc[date]) acc[date] = { date, tasks: [] };
-        acc[date].tasks.push(task as StoredTask);
+export const loadAllDays = async (): Promise<Record<string, StoredDay>> => {
+    const { data, error } = await supabase.from("days").select("date, tasks").order("date");
+    if (error) throw error;
+    return (data ?? []).reduce<Record<string, StoredDay>>((acc, x) => {
+        acc[x.date] = { date: x.date, tasks: x.tasks as StoredTask[] };
         return acc;
     }, {});
 };
 
-export const bulkSaveTasksForMonth = async (
-    year: number,
-    month: number,
-    items: PlanItem[],
-    positionOffset = 0,
-    fromDay = 1,
-): Promise<Record<string, StoredDay>> => {
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const taskRows = Array.from({ length: daysInMonth }, (_, i) => i + 1)
-        .filter(d => d >= fromDay)
-        .map(d => toDateString(year, month, d))
-        .flatMap(date => items.map((item, idx) => ({
-            date,
-            label: item.label,
-            color: item.color ?? null,
-            time_mode: item.time_mode ?? null,
-            time_exact: item.time_exact ?? null,
-            time_start: item.time_start ?? null,
-            time_end: item.time_end ?? null,
-            checked: false,
-            position: positionOffset + idx,
-        })));
-
-    const { data, error } = await supabase
-        .from("tasks")
-        .insert(taskRows)
-        .select("id, date, label, checked, position, color, time_mode, time_exact, time_start, time_end");
-
-    if (error) throw error;
-
-    return (data ?? []).reduce<Record<string, StoredDay>>((acc, { date, ...task }) => {
-        if (!acc[date]) acc[date] = { date, tasks: [] };
-        acc[date].tasks.push(task as StoredTask);
-        return acc;
-    }, {});
-};
-
-export const saveTask = async (
-    year: number,
-    month: number,
-    day: number,
-    task: Omit<StoredTask, "id">,
-): Promise<StoredTask> => {
-    const date = toDateString(year, month, day);
-
-    const { data, error } = await supabase
-        .from("tasks")
-        .insert({ date, ...task })
-        .select("id, label, checked, position, is_custom, color, time_mode, time_exact, time_start, time_end")
-        .single();
-
-    if (error) throw error;
-    return data;
-};
-
-export const updateTask = async (id: string, patch: Partial<Pick<StoredTask, "checked" | "label" | "color">>): Promise<void> => {
-    const { error } = await supabase.from("tasks").update(patch).eq("id", id);
-    if (error) throw error;
-};
-
-export const updateTaskFieldsByLabel = async (
-    year: number,
-    month: number,
-    label: string,
-    patch: Partial<Pick<StoredTask, "color" | "time_mode" | "time_exact" | "time_start" | "time_end">>,
-    fromDay = 1,
-): Promise<void> => {
-    const from = toDateString(year, month, fromDay);
-    const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
+export const saveDay = async (date: string, tasks: StoredTask[]): Promise<void> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Not authenticated");
     const { error } = await supabase
-        .from("tasks")
-        .update(patch)
-        .eq("label", label)
-        .gte("date", from)
-        .lte("date", to);
+        .from("days")
+        .upsert({ user_id: session.user.id, date, tasks }, { onConflict: "user_id,date" });
     if (error) throw error;
 };
 
-export const deleteTask = async (id: string): Promise<void> => {
-    const { error } = await supabase.from("tasks").delete().eq("id", id);
-    if (error) throw error;
-};
-
-export const reorderTasksByLabelsForMonth = async (
-    year: number,
-    month: number,
-    orderedLabels: string[],
-    fromDay = 1,
-): Promise<void> => {
-    const from = toDateString(year, month, fromDay);
-    const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
-
-    await Promise.all(
-        orderedLabels.map((label, position) =>
-            supabase.from("tasks").update({ position }).eq("label", label).gte("date", from).lte("date", to)
-        )
-    );
-};
-
-export const deleteTasksByLabelForMonth = async (year: number, month: number, label: string, fromDay = 1): Promise<void> => {
-    const from = toDateString(year, month, fromDay);
-    const to = toDateString(year, month, new Date(year, month + 1, 0).getDate());
-
-    const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .gte("date", from)
-        .lte("date", to)
-        .eq("label", label);
-
-    if (error) throw error;
-};
-
-export const deleteAllTasksFromDate = async (fromDate: string): Promise<void> => {
-    const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .gte("date", fromDate);
-
+export const deleteDaysFromDate = async (fromDate: string): Promise<void> => {
+    const { error } = await supabase.from("days").delete().gte("date", fromDate);
     if (error) throw error;
 };
