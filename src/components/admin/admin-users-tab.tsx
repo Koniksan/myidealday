@@ -1,145 +1,73 @@
-import {
-    Avatar,
-    DataGrid,
-    DataGridBody,
-    DataGridCell,
-    DataGridHeader,
-    DataGridHeaderCell,
-    DataGridRow,
-    Spinner,
-    TableCellLayout,
-    TableColumnDefinition,
-    Text,
-    createTableColumn,
-} from "@fluentui/react-components";
+import { Avatar, SearchBox, Spinner, Text } from "@fluentui/react-components";
 import { PeopleRegular } from "@fluentui/react-icons";
-import React, { useEffect, useMemo, useState } from "react";
-import { useLocalization } from "../../infrastructure/context/locale-context";
-import { getAllUsers } from "../../infrastructure/storages/admin-storage";
+import React from "react";
+import { UserDetailPanel } from "./user-detail-panel";
 import { useAdminStyles } from "./admin-styles";
-import { User } from "../../infrastructure";
+import { useAdminUsersTab } from "./use-admin-users-tab";
 
 export const AdminUsersTab: React.FC = () => {
     const styles = useAdminStyles();
-    const rs = useLocalization();
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        getAllUsers()
-            .then(setUsers)
-            .catch(console.error)
-            .finally(() => setLoading(false));
-    }, []);
-
-    const columns: TableColumnDefinition<User>[] = useMemo(() => [
-        createTableColumn<User>({
-            columnId: "user",
-            compare: (a, b) => (a.fullName ?? a.email ?? "").localeCompare(b.fullName ?? b.email ?? ""),
-            renderHeaderCell: () => rs.AdminColName,
-            renderCell: (user) => (
-                <TableCellLayout
-                    media={
-                        <Avatar
-                            name={user.fullName ?? user.email ?? undefined}
-                            image={user.avatarUrl ? { src: user.avatarUrl } : undefined}
-                            color="colorful"
-                            size={32}
-                        />
-                    }
-                >
-                    <Text className={styles.userName}>
-                        {user.fullName ?? user.email ?? rs.AdminAnonymous}
-                    </Text>
-                </TableCellLayout>
-            ),
-        }),
-        createTableColumn<User>({
-            columnId: "email",
-            renderHeaderCell: () => rs.AdminColEmail,
-            renderCell: (user) => (
-                <Text className={styles.userId}>{user.email ?? "—"}</Text>
-            ),
-        }),
-        createTableColumn<User>({
-            columnId: "registered",
-            compare: (a, b) => a.createdAt.localeCompare(b.createdAt),
-            renderHeaderCell: () => rs.AdminColRegistered,
-            renderCell: (user) => (
-                <Text className={styles.userId}>
-                    {new Date(user.createdAt).toLocaleString(rs.DateLocale, {
-                        day: "numeric", month: "short", year: "numeric",
-                        hour: "2-digit", minute: "2-digit",
-                    })}
-                </Text>
-            ),
-        }),
-        createTableColumn<User>({
-            columnId: "lastLogin",
-            compare: (a, b) => (a.lastSignInAt ?? "").localeCompare(b.lastSignInAt ?? ""),
-            renderHeaderCell: () => rs.AdminLastLogin,
-            renderCell: (user) => (
-                <Text className={styles.userId}>
-                    {user.lastSignInAt
-                        ? new Date(user.lastSignInAt).toLocaleString(rs.DateLocale, {
-                            day: "numeric", month: "short", year: "numeric",
-                            hour: "2-digit", minute: "2-digit",
-                        })
-                        : rs.AdminNeverLoggedIn}
-                </Text>
-            ),
-        }),
-    ], [rs]);
+    const { rs, loading, filteredUsers, searchQuery, selectedUser, setSearchQuery, setSelectedUser } = useAdminUsersTab();
 
     if (loading) {
-        return <div className={styles.center}><Spinner size="medium" /></div>;
-    }
-
-    if (users.length === 0) {
-        return (
-            <div className={styles.emptyState}>
-                <PeopleRegular fontSize={32} />
-                <Text>{rs.AdminNoUsers}</Text>
-            </div>
-        );
+        return <div className={styles.usersTabContainer}><div className={styles.center}><Spinner size="medium" /></div></div>;
     }
 
     return (
-        <div className={styles.dataGridWrapper}>
-        <div className={styles.dataGrid}>
-        <DataGrid
-            items={users}
-            columns={columns}
-            sortable
-            defaultSortState={{ sortColumn: "lastLogin", sortDirection: "descending" }}
-            getRowId={(user) => user.id}
-            size="small"
-            resizableColumns
-            columnSizingOptions={{
-                user: { defaultWidth: 400, minWidth: 150 },
-                email: { defaultWidth: 250, minWidth: 120 },
-                registered: { defaultWidth: 175, minWidth: 140 },
-                lastLogin: { defaultWidth: 195, minWidth: 140 },
-            }}
-        >
-            <DataGridHeader>
-                <DataGridRow>
-                    {({ renderHeaderCell }) => (
-                        <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>
-                    )}
-                </DataGridRow>
-            </DataGridHeader>
-            <DataGridBody<User>>
-                {({ item, rowId }) => (
-                    <DataGridRow<User> className={styles.userGridRow} key={rowId}>
-                        {({ renderCell }) => (
-                            <DataGridCell>{renderCell(item)}</DataGridCell>
-                        )}
-                    </DataGridRow>
-                )}
-            </DataGridBody>
-        </DataGrid>
-        </div>
+        <div className={styles.usersTabContainer}>
+            <SearchBox
+                className={styles.searchBar}
+                placeholder={rs.AdminSearchPlaceholder}
+                value={searchQuery}
+                dismiss={searchQuery ? undefined : null}
+                onChange={(e, d) => setSearchQuery(d.value)}
+            />
+
+            {filteredUsers.length === 0 ? (
+                <div className={styles.emptyState}>
+                    <PeopleRegular fontSize={32} />
+                    <Text>{rs.AdminNoUsers}</Text>
+                </div>
+            ) : (
+                <div className={styles.userList}>
+                    {filteredUsers.map(x => (
+                        <div
+                            key={x.id}
+                            className={styles.userListRow}
+                            onClick={e => setSelectedUser(x)}
+                        >
+                            <div className={styles.userListCol1}>
+                                <Avatar
+                                    name={x.fullName ?? x.email ?? undefined}
+                                    image={x.avatarUrl ? { src: x.avatarUrl } : undefined}
+                                    color="colorful"
+                                    size={32}
+                                />
+                                <div className={styles.userInfo}>
+                                    <Text className={styles.userName}>
+                                        {x.fullName ?? x.email ?? rs.AdminAnonymous}
+                                    </Text>
+                                    {x.fullName && x.email && (
+                                        <Text className={styles.userListSubtitle}>{x.email}</Text>
+                                    )}
+                                </div>
+                            </div>
+                            <Text className={styles.userListCol2}>
+                                {x.lastSignInAt
+                                    ? new Date(x.lastSignInAt).toLocaleString(rs.DateLocale, {
+                                        day: "numeric", month: "short", year: "numeric",
+                                    })
+                                    : rs.AdminNeverLoggedIn}
+                            </Text>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            <UserDetailPanel
+                user={selectedUser}
+                onClose={() => setSelectedUser(null)}
+            />
         </div>
     );
 };
