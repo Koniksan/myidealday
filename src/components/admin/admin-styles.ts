@@ -1,4 +1,5 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
+import { breakpoints } from "../common/styles";
 
 export const useAdminStyles = makeStyles({
     body: {
@@ -15,6 +16,11 @@ export const useAdminStyles = makeStyles({
         gap: "8px",
         overflowY: "auto",
         flex: 1,
+        width: "100%",
+        [breakpoints.mobile]: {
+            paddingLeft: "16px",
+            paddingRight: "16px",
+        },
     },
     center: {
         display: "flex",
@@ -31,15 +37,6 @@ export const useAdminStyles = makeStyles({
         color: tokens.colorNeutralForeground3,
     },
     // user item
-    userItem: {
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        padding: "10px 12px",
-        borderRadius: tokens.borderRadiusMedium,
-        background: tokens.colorNeutralBackground2,
-        border: `1px solid ${tokens.colorNeutralStroke2}`,
-    },
     userInfo: {
         display: "flex",
         flexDirection: "column",
@@ -60,14 +57,53 @@ export const useAdminStyles = makeStyles({
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
     },
-    dataGridWrapper: {
-        overflowX: "auto",
+    // user list
+    usersTabContainer: {
+        minWidth: "360px",
+        paddingTop: "12px",
+        width: "100%",
     },
-    dataGrid: {
-        minWidth: "1000px",
+    searchBar: {
+        marginBottom: "12px",
+        width: "300px",
     },
-    userGridRow: {
-        padding: '10px 0',
+    userList: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px",
+    },
+    userListRow: {
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        alignItems: "center",
+        padding: "10px 12px",
+        borderRadius: tokens.borderRadiusMedium,
+        cursor: "pointer",
+        ":hover": {
+            backgroundColor: tokens.colorNeutralBackground2Hover,
+        },
+    },
+    userListCol1: {
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        overflow: "hidden",
+    },
+    userListCol2: {
+        textAlign: "right",
+        flexShrink: 0,
+        color: tokens.colorNeutralForeground3,
+        fontSize: tokens.fontSizeBase200,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+    },
+    userListSubtitle: {
+        fontSize: tokens.fontSizeBase100,
+        color: tokens.colorNeutralForeground3,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
     },
     tabBadge: {
         position: "absolute",
