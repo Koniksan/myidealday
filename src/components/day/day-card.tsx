@@ -2,8 +2,9 @@ import { Badge, Button, Checkbox, Divider, Input, Menu, MenuItem, MenuList, Menu
 import { AddRegular, ClockRegular, DismissRegular, MoreHorizontalRegular } from "@fluentui/react-icons";
 import React from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
-import { StoredTask } from "../../infrastructure/storages/day-storage";
+import { StoredTask, TASK_COLORS } from "../../infrastructure";
 import { formatTimeChip } from "../day-plan-panel/time-picker-panel";
+import { PriorityBadge } from "../common";
 import { DayCardProgress } from "./day-card-progress";
 import { useDayCardStyles } from "./day-card-styles";
 import { useDayCard } from "./use-day-card";
@@ -76,6 +77,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 {tasks.filter(t => !t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     const timeStr = formatTimeChip(task);
+                    const priorityLabel = task.color ? rs.TaskColorNames[TASK_COLORS.indexOf(task.color) + 1] : undefined;
                     return (
                         <div key={idx} className={mergeClasses(styles.taskRow, task.checked && styles.checkedTaskRow)}>
                             <Checkbox
@@ -85,11 +87,18 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                                 disabled={isReadOnly}
                                 onChange={() => toggle(idx)}
                             />
-                            {timeStr && (
-                                <span className={styles.taskTimeLabel}>
-                                    <ClockRegular fontSize={12} />
-                                    {timeStr}
-                                </span>
+                            {(timeStr || task.color) && (
+                                <div className={styles.taskMeta}>
+                                    {timeStr && (
+                                        <span className={styles.taskTimeLabel}>
+                                            <ClockRegular fontSize={12} />
+                                            {timeStr}
+                                        </span>
+                                    )}
+                                    {task.color && priorityLabel && (
+                                        <PriorityBadge size="small" color={task.color} label={priorityLabel} />
+                                    )}
+                                </div>
                             )}
                         </div>
                     );
@@ -102,6 +111,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 {tasks.filter(t => t.is_custom).map((task) => {
                     const idx = tasks.indexOf(task);
                     const timeStr = formatTimeChip(task);
+                    const priorityLabel = task.color ? rs.TaskColorNames[TASK_COLORS.indexOf(task.color) + 1] : undefined;
                     return (
                         <div key={`custom-${idx}`} className={mergeClasses(styles.customTaskRow, task.checked && styles.checkedTaskRow)}>
                             <div className={styles.customTaskInner}>
@@ -122,11 +132,18 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                                     </button>
                                 )}
                             </div>
-                            {timeStr && (
-                                <span className={styles.taskTimeLabel}>
-                                    <ClockRegular fontSize={10} />
-                                    {timeStr}
-                                </span>
+                            {(timeStr || task.color) && (
+                                <div className={styles.taskMeta}>
+                                    {timeStr && (
+                                        <span className={styles.taskTimeLabel}>
+                                            <ClockRegular fontSize={10} />
+                                            {timeStr}
+                                        </span>
+                                    )}
+                                    {task.color && priorityLabel && (
+                                        <PriorityBadge color={task.color} label={priorityLabel} />
+                                    )}
+                                </div>
                             )}
                         </div>
                     );

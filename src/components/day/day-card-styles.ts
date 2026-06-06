@@ -250,15 +250,21 @@ export const useDayCardStyles = makeStyles({
     checkedLabel: {
         textDecorationLine: "line-through",
     },
+    taskMeta: {
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        flexWrap: "wrap",
+        marginLeft: "35px",
+        marginTop: "-2px",
+        marginBottom: "2px",
+    },
     taskTimeLabel: {
         display: "flex",
         alignItems: "center",
         gap: "3px",
         fontSize: "12px",
         color: tokens.colorBrandForeground2,
-        marginLeft: "35px",
-        marginTop: "-2px",
-        marginBottom: "2px",
         lineHeight: "1.2",
     },
 });
