@@ -23,34 +23,11 @@ import {
 import React, { useMemo } from "react";
 import { useDayPlanPanelStyles } from "../../components/day-plan-panel/day-plan-panel-styles";
 import { TimePickerPanel, formatTimeChip } from "../../components/day-plan-panel/time-picker-panel";
-import { PageLayout } from "../../components/common/page-layout";
-import { PageShell } from "../../components/common/page-shell";
+import { PageLayout, PageShell, PriorityBadge } from "../../components/common";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { PlanItem, TASK_COLORS } from "../../infrastructure/storages/day-storage";
 import { useHabitPageStyles } from "./habit-page-styles";
 import { useHabitPage } from "./use-habit-page";
-
-interface PriorityBadgeProps {
-    color: string | null;
-    label: string;
-    emptyText: string;
-    panelStyles: ReturnType<typeof useDayPlanPanelStyles>;
-}
-
-const PriorityBadge: React.FC<PriorityBadgeProps> = ({ color, label, emptyText, panelStyles }) => {
-    if (!color) {
-        return <span className={panelStyles.priorityBadgeEmpty}>{emptyText}</span>;
-    }
-    return (
-        <span
-            className={panelStyles.priorityBadge}
-            style={{ backgroundColor: `${color}18`, borderColor: `${color}70`, color }}
-        >
-            <span className={panelStyles.priorityDot} style={{ backgroundColor: color }} />
-            {label}
-        </span>
-    );
-};
 
 
 export const HabitPage: React.FC = () => {
@@ -192,7 +169,6 @@ export const HabitPage: React.FC = () => {
                                                         color={item.color ?? null}
                                                         label={opt.label}
                                                         emptyText={rs.AddPriority}
-                                                        panelStyles={panelStyles}
                                                     />
                                                 </>
                                             )}

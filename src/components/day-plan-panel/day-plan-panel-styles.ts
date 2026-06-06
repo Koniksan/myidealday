@@ -109,30 +109,6 @@ export const useDayPlanPanelStyles = makeStyles({
         fontSize: "14px",
     },
 
-    // Priority badge on task row
-    priorityBadgeEmpty: {
-        display: "flex",
-        alignItems: "center",
-        padding: "3px 8px",
-        borderRadius: "100px",
-        border: `1px dashed ${tokens.colorNeutralStroke1}`,
-        color: tokens.colorNeutralForeground3,
-        fontSize: "11px",
-        flexShrink: 0,
-        whiteSpace: "nowrap",
-    },
-    priorityBadge: {
-        display: "flex",
-        alignItems: "center",
-        gap: "5px",
-        padding: "3px 8px",
-        borderRadius: "100px",
-        fontSize: "11px",
-        fontWeight: "500",
-        flexShrink: 0,
-        whiteSpace: "nowrap",
-        border: "1px solid transparent",
-    },
     priorityDot: {
         width: "6px",
         height: "6px",

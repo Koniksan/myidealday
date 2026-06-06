@@ -57,3 +57,5 @@ src/
  - For events use always `e`. Example: <Component onClick={e => e.stopPropagation()}>
  - Always import from the nearest barrel index `(e.g. ../../infrastructure) instead of deep internal paths (e.g. ../../infrastructure/context/auth-context)`.
  - If a component contains any logic (state, effects, handlers, derived data), extract it into a dedicated hook named `use<ComponentName>` co-located in the same folder.
+ - Component files must be named as the kebab-case of the exported component name. Example: `export const AnyComponentName` → file is `any-component-name.tsx`.
+ - Each component that has its own styles must live in its own folder containing: the component file (`component-name.tsx`), a styles file (`component-name-styles.ts`), and an `index.ts` barrel that re-exports the component.

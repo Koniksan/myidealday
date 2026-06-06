@@ -18,7 +18,7 @@ import {
 } from "@fluentui/react-components";
 import { AddRegular, ArrowSortFilled, CheckmarkRegular, ChevronDownRegular, ClockRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
 import React, { useMemo } from "react";
-import { DesktopTooltip } from "../common";
+import { DesktopTooltip, PriorityBadge } from "../common";
 import { useLocalization } from "../../infrastructure/context/locale-context";
 import { PlanItem, TASK_COLORS } from "../../infrastructure/storages/day-storage";
 import { useDayPlanPanelStyles } from "./day-plan-panel-styles";
@@ -40,28 +40,6 @@ interface PriorityOption {
     label: string;
     color: string | null;
 }
-
-interface PriorityBadgeProps {
-    color: string | null;
-    label: string;
-    emptyText: string;
-    styles: ReturnType<typeof useDayPlanPanelStyles>;
-}
-
-const PriorityBadge: React.FC<PriorityBadgeProps> = ({ color, label, emptyText, styles }) => {
-    if (!color) {
-        return <span className={styles.priorityBadgeEmpty}>{emptyText}</span>;
-    }
-    return (
-        <span
-            className={styles.priorityBadge}
-            style={{ backgroundColor: `${color}18`, borderColor: `${color}70`, color }}
-        >
-            <span className={styles.priorityDot} style={{ backgroundColor: color }} />
-            {label}
-        </span>
-    );
-};
 
 export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
     const styles = useDayPlanPanelStyles();
@@ -214,7 +192,6 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                                         color={item.color ?? null}
                                                         label={opt.label}
                                                         emptyText={rs.AddPriority}
-                                                        styles={styles}
                                                     />
                                                 </>
                                             )}
