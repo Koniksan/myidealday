@@ -13,7 +13,7 @@ export const useAdminFeedbacksTab = () => {
     const [selected, setSelected] = useState<AdminFeedback | null>(null);
     const dragId = useRef<string | null>(null);
     const [dragOver, setDragOver] = useState<FeedbackStatus | null>(null);
-    const [collapsedColumns, setCollapsedColumns] = useState<Set<FeedbackStatus>>(new Set());
+    const [collapsedColumns, setCollapsedColumns] = useState<Set<FeedbackStatus>>(new Set(["Completed"]));
 
     const STATUS_LABEL: Record<FeedbackStatus, string> = {
         "New": rs.StatusNew,
