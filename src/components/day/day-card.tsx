@@ -74,33 +74,36 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             )}
 
             <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
-                {tasks.filter(t => !t.is_custom).map((task) => {
-                    const idx = tasks.indexOf(task);
-                    const timeStr = formatTimeChip(task);
-                    const priorityLabel = task.color ? rs.TaskColorNames[TASK_COLORS.indexOf(task.color) + 1] : undefined;
+                {tasks.filter(x => !x.is_custom).map((x, i, arr) => {
+                    const idx = tasks.indexOf(x);
+                    const timeStr = formatTimeChip(x);
+                    const priorityLabel = x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined;
                     return (
-                        <div key={idx} className={mergeClasses(styles.taskRow, task.checked && styles.checkedTaskRow)}>
-                            <Checkbox
-                                className={mergeClasses(styles.checkboxItem, isDetailView && styles.detailCheckboxItem)}
-                                label={<span className={mergeClasses(styles.checkboxItemLabel, task.checked && styles.checkedLabel)}>{task.label}</span>}
-                                checked={task.checked}
-                                disabled={isReadOnly}
-                                onChange={() => toggle(idx)}
-                            />
-                            {(timeStr || task.color) && (
-                                <div className={styles.taskMeta}>
+                        <React.Fragment key={idx}>
+                            <div className={mergeClasses(styles.taskRow, x.checked && styles.checkedTaskRow)}>
+                                <div className={styles.taskRowContent}>
+                                    <Checkbox
+                                        className={mergeClasses(styles.checkboxItem, isDetailView && styles.detailCheckboxItem)}
+                                        label={<span className={mergeClasses(styles.checkboxItemLabel, x.checked && styles.checkedLabel)}>{x.label}</span>}
+                                        checked={x.checked}
+                                        disabled={isReadOnly}
+                                        onChange={() => toggle(idx)}
+                                    />
                                     {timeStr && (
-                                        <span className={styles.taskTimeLabel}>
-                                            <ClockRegular fontSize={12} />
-                                            {timeStr}
-                                        </span>
-                                    )}
-                                    {task.color && priorityLabel && (
-                                        <PriorityBadge size="small" color={task.color} label={priorityLabel} />
+                                        <div className={styles.taskMeta}>
+                                            <span className={styles.taskTimeLabel}>
+                                                <ClockRegular fontSize={12} />
+                                                {timeStr}
+                                            </span>
+                                        </div>
                                     )}
                                 </div>
-                            )}
-                        </div>
+                                {x.color && priorityLabel && (
+                                    <PriorityBadge size="small" color={x.color} label={priorityLabel} />
+                                )}
+                            </div>
+                            {i < arr.length - 1 && <div className={styles.taskDivider} />}
+                        </React.Fragment>
                     );
                 })}
 
@@ -108,44 +111,47 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     <Divider className={styles.customDivider}>{rs.Custom}</Divider>
                 )}
 
-                {tasks.filter(t => t.is_custom).map((task) => {
-                    const idx = tasks.indexOf(task);
-                    const timeStr = formatTimeChip(task);
-                    const priorityLabel = task.color ? rs.TaskColorNames[TASK_COLORS.indexOf(task.color) + 1] : undefined;
+                {tasks.filter(x => x.is_custom).map((x, i, arr) => {
+                    const idx = tasks.indexOf(x);
+                    const timeStr = formatTimeChip(x);
+                    const priorityLabel = x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined;
                     return (
-                        <div key={`custom-${idx}`} className={mergeClasses(styles.customTaskRow, task.checked && styles.checkedTaskRow)}>
-                            <div className={styles.customTaskInner}>
-                                <Checkbox
-                                    className={mergeClasses(styles.customTaskCheckbox, isDetailView && styles.detailCheckboxItem)}
-                                    label={<span className={task.checked ? styles.checkedLabel : undefined}>{task.label}</span>}
-                                    checked={task.checked}
-                                    disabled={isReadOnly}
-                                    onChange={() => toggle(idx)}
-                                />
-                                {task.id && (
-                                    <button
-                                        className={styles.deleteTaskButton}
-                                        onClick={() => removeCustomTask(task.id!)}
-                                        onPointerDown={e => e.stopPropagation()}
-                                    >
-                                        <DismissRegular fontSize={12} />
-                                    </button>
-                                )}
-                            </div>
-                            {(timeStr || task.color) && (
-                                <div className={styles.taskMeta}>
-                                    {timeStr && (
-                                        <span className={styles.taskTimeLabel}>
-                                            <ClockRegular fontSize={10} />
-                                            {timeStr}
-                                        </span>
+                        <React.Fragment key={`custom-${idx}`}>
+                            <div className={mergeClasses(styles.customTaskRow, x.checked && styles.checkedTaskRow)}>
+                                <div className={styles.customTaskInner}>
+                                    <div className={styles.taskRowContent}>
+                                        <Checkbox
+                                            className={mergeClasses(styles.customTaskCheckbox, isDetailView && styles.detailCheckboxItem)}
+                                            label={<span className={x.checked ? styles.checkedLabel : undefined}>{x.label}</span>}
+                                            checked={x.checked}
+                                            disabled={isReadOnly}
+                                            onChange={() => toggle(idx)}
+                                        />
+                                        {timeStr && (
+                                            <div className={styles.taskMeta}>
+                                                <span className={styles.taskTimeLabel}>
+                                                    <ClockRegular fontSize={10} />
+                                                    {timeStr}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {x.color && priorityLabel && (
+                                        <PriorityBadge color={x.color} label={priorityLabel} />
                                     )}
-                                    {task.color && priorityLabel && (
-                                        <PriorityBadge color={task.color} label={priorityLabel} />
+                                    {x.id && (
+                                        <button
+                                            className={styles.deleteTaskButton}
+                                            onClick={() => removeCustomTask(x.id!)}
+                                            onPointerDown={e => e.stopPropagation()}
+                                        >
+                                            <DismissRegular fontSize={12} />
+                                        </button>
                                     )}
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                            {i < arr.length - 1 && <div className={styles.taskDivider} />}
+                        </React.Fragment>
                     );
                 })}
 

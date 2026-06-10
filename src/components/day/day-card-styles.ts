@@ -210,7 +210,7 @@ export const useDayCardStyles = makeStyles({
         width: "100%",
     },
     customTaskCheckbox: {
-        flex: 1,
+        width: "100%",
         fontSize: "12px",
         minWidth: 0,
     },
@@ -228,11 +228,11 @@ export const useDayCardStyles = makeStyles({
     },
     taskRow: {
         display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
+        flexDirection: "row",
+        alignItems: "center",
         transition: "opacity 0.2s, background 0.1s",
         borderRadius: "4px",
-        padding: "2px 0",
+        padding: "2px 4px 2px 0",
         cursor: "pointer",
         ":hover": {
             background: tokens.colorNeutralBackground1Hover,
@@ -243,6 +243,17 @@ export const useDayCardStyles = makeStyles({
                 background: "transparent",
             },
         },
+    },
+    taskRowContent: {
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        minWidth: 0,
+    },
+    taskDivider: {
+        height: "1px",
+        background: tokens.colorNeutralStroke2,
+        margin: "1px 4px",
     },
     checkedTaskRow: {
         opacity: "0.45",
