@@ -34,20 +34,6 @@ export const useDayPlanPanelStyles = makeStyles({
             background: tokens.colorPaletteRedBackground1,
         },
     },
-    confirmSurface: {
-        [breakpoints.mobile]: {
-            width: "calc(100% - 64px)",
-            maxWidth: "none",
-            margin: "auto 32px 25vh",
-            boxSizing: "border-box",
-        },
-    },
-    confirmActions: {
-        "& > button": {
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-        },
-    },
     description: {
         marginTop: "4px",
         fontSize: "14px",
