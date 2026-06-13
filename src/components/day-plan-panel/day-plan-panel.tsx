@@ -16,7 +16,7 @@ import {
     Subtitle2,
     mergeClasses,
 } from "@fluentui/react-components";
-import { AddRegular, ArrowSortFilled, CheckmarkRegular, ChevronDownRegular, ClockRegular, DeleteRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
+import { AddRegular, ArrowSortFilled, CheckmarkRegular, ChevronDownRegular, ClockRegular, DeleteRegular, DismissRegular, EditRegular, TimerRegular } from "@fluentui/react-icons";
 import React, { useMemo } from "react";
 import { DesktopTooltip, PriorityBadge } from "../common";
 import { useLocalization } from "../../infrastructure/context/locale-context";
@@ -190,13 +190,12 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                                         onClick={e => { e.stopPropagation(); toggleTimePicker(i); }}
                                                         onPointerDown={e => e.stopPropagation()}
                                                     >
-                                                        <ClockRegular fontSize={16} />
-                                                        {timeLabel ? timeLabel : '-'}
+                                                        {item.time_mode === "interval" ? <TimerRegular fontSize={16} /> : <ClockRegular fontSize={16} />}
                                                     </button>
                                                     <PriorityBadge
                                                         color={item.color ?? null}
                                                         label={opt.label}
-                                                        emptyText={rs.AddPriority}
+                                                        size="mini"
                                                     />
                                                 </>
                                             )}

@@ -1,5 +1,5 @@
 import { Checkbox, mergeClasses } from "@fluentui/react-components";
-import { ClockRegular } from "@fluentui/react-icons";
+import { ClockRegular, TimerRegular } from "@fluentui/react-icons";
 import React from "react";
 import { StoredTask } from "../../infrastructure";
 import { PriorityBadge } from "../common";
@@ -41,7 +41,10 @@ export const DayTaskItem: React.FC<DayTaskItemProps> = ({ task, isCustom, isDeta
                 {timeStr && (
                     <div className={styles.taskMeta}>
                         <span className={styles.taskTimeLabel}>
-                            <ClockRegular fontSize={isCustom ? 10 : 12} />
+                            {task.time_mode === "interval"
+                                ? <TimerRegular fontSize={isCustom ? 10 : 12} />
+                                : <ClockRegular fontSize={isCustom ? 10 : 12} />
+                            }
                             {timeStr}
                         </span>
                     </div>
