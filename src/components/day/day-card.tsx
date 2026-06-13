@@ -1,12 +1,13 @@
-import { Badge, Button, Checkbox, Divider, Input, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, mergeClasses } from "@fluentui/react-components";
-import { AddRegular, ClockRegular, DismissRegular, MoreHorizontalRegular } from "@fluentui/react-icons";
+import { Badge, Button, Divider, mergeClasses } from "@fluentui/react-components";
+import { EditRegular } from "@fluentui/react-icons";
 import React from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
-import { StoredTask, TASK_COLORS } from "../../infrastructure";
+import { PlanItem, StoredTask, TASK_COLORS } from "../../infrastructure";
+import { DayPlanPanel } from "../day-plan-panel";
 import { formatTimeChip } from "../day-plan-panel/time-picker-panel";
-import { PriorityBadge } from "../common";
 import { DayCardProgress } from "./day-card-progress";
 import { useDayCardStyles } from "./day-card-styles";
+import { DayTaskItem } from "./day-task-item";
 import { useDayCard } from "./use-day-card";
 
 export interface DayCardProps {
@@ -28,22 +29,17 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
     const fullDate = new Date(year, month, day).toLocaleString(rs.DateLocale, { weekday: "long", day: "numeric", month: "long" });
     const {
         tasks,
-        adding,
-        setAdding,
-        draft,
-        setDraft,
-        saving,
         isPast,
         isReadOnly,
         progress,
         toggle,
-        removeCustomTask,
-        inputRef,
-        commitDraft,
-        onKeyDown,
+        editPanelOpen,
+        setEditPanelOpen,
+        onSaveFromPanel,
     } = useDayCard({ year, month, day, initialTasks, onTasksChange });
 
     return (
+        <>
         <div
             className={mergeClasses(
                 styles.card,
@@ -60,7 +56,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                 </Badge>
             )}
 
-            <DayCardProgress progress={progress} saving={saving} hasTasks={tasks.length > 0} isPast={isPast} />
+            <DayCardProgress progress={progress} saving={false} hasTasks={tasks.length > 0} isPast={isPast} />
 
             {isDetailView ? (
                 <div className={styles.detailHeader}>
@@ -76,118 +72,60 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
             <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
                 {tasks.filter(x => !x.is_custom).map((x, i, arr) => {
                     const idx = tasks.indexOf(x);
-                    const timeStr = formatTimeChip(x);
-                    const priorityLabel = x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined;
                     return (
                         <React.Fragment key={idx}>
-                            <div className={mergeClasses(styles.taskRow, x.checked && styles.checkedTaskRow)}>
-                                <div className={styles.taskRowContent}>
-                                    <Checkbox
-                                        className={mergeClasses(styles.checkboxItem, isDetailView && styles.detailCheckboxItem)}
-                                        label={<span className={mergeClasses(styles.checkboxItemLabel, x.checked && styles.checkedLabel)}>{x.label}</span>}
-                                        checked={x.checked}
-                                        disabled={isReadOnly}
-                                        onChange={() => toggle(idx)}
-                                    />
-                                    {timeStr && (
-                                        <div className={styles.taskMeta}>
-                                            <span className={styles.taskTimeLabel}>
-                                                <ClockRegular fontSize={12} />
-                                                {timeStr}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                {x.color && priorityLabel && (
-                                    <PriorityBadge size="small" color={x.color} label={priorityLabel} />
-                                )}
-                            </div>
+                            <DayTaskItem
+                                task={x}
+                                isCustom={false}
+                                isDetailView={isDetailView}
+                                isReadOnly={isReadOnly}
+                                timeStr={formatTimeChip(x)}
+                                priorityLabel={x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined}
+                                onToggle={() => toggle(idx)}
+                            />
                             {i < arr.length - 1 && <div className={styles.taskDivider} />}
                         </React.Fragment>
                     );
                 })}
-
-                {tasks.some(t => t.is_custom) && tasks.some(t => !t.is_custom) && (
-                    <Divider className={styles.customDivider}>{rs.Custom}</Divider>
-                )}
 
                 {tasks.filter(x => x.is_custom).map((x, i, arr) => {
                     const idx = tasks.indexOf(x);
-                    const timeStr = formatTimeChip(x);
-                    const priorityLabel = x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined;
                     return (
                         <React.Fragment key={`custom-${idx}`}>
-                            <div className={mergeClasses(styles.customTaskRow, x.checked && styles.checkedTaskRow)}>
-                                <div className={styles.customTaskInner}>
-                                    <div className={styles.taskRowContent}>
-                                        <Checkbox
-                                            className={mergeClasses(styles.customTaskCheckbox, isDetailView && styles.detailCheckboxItem)}
-                                            label={<span className={x.checked ? styles.checkedLabel : undefined}>{x.label}</span>}
-                                            checked={x.checked}
-                                            disabled={isReadOnly}
-                                            onChange={() => toggle(idx)}
-                                        />
-                                        {timeStr && (
-                                            <div className={styles.taskMeta}>
-                                                <span className={styles.taskTimeLabel}>
-                                                    <ClockRegular fontSize={10} />
-                                                    {timeStr}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                    {x.color && priorityLabel && (
-                                        <PriorityBadge color={x.color} label={priorityLabel} />
-                                    )}
-                                    {x.id && (
-                                        <button
-                                            className={styles.deleteTaskButton}
-                                            onClick={() => removeCustomTask(x.id!)}
-                                            onPointerDown={e => e.stopPropagation()}
-                                        >
-                                            <DismissRegular fontSize={12} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                            {i === 0 && <Divider className={styles.customDivider}>{rs.Custom}</Divider>}
+                            <DayTaskItem
+                                task={x}
+                                isCustom={true}
+                                isDetailView={isDetailView}
+                                isReadOnly={isReadOnly}
+                                timeStr={formatTimeChip(x)}
+                                priorityLabel={x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined}
+                                onToggle={() => toggle(idx)}
+                            />
                             {i < arr.length - 1 && <div className={styles.taskDivider} />}
                         </React.Fragment>
                     );
                 })}
 
-                {adding && (
-                    <Input
-                        ref={inputRef}
-                        autoFocus
-                        size="small"
-                        appearance={isDetailView ? "outline" : "underline"}
-                        className={styles.addInput}
-                        placeholder={rs.TaskNamePlaceholder}
-                        value={draft}
-                        onChange={(_, d) => setDraft(d.value)}
-                        onKeyDown={onKeyDown}
-                        onBlur={commitDraft}
-                    />
-                )}
             </div>
 
-            <Menu>
-                <MenuTrigger disableButtonEnhancement>
-                    <Button
-                        appearance="subtle"
-                        size="small"
-                        icon={<MoreHorizontalRegular />}
-                        className={styles.menuButton}
-                    />
-                </MenuTrigger>
-                <MenuPopover>
-                    <MenuList>
-                        <MenuItem icon={<AddRegular />} onClick={() => setAdding(true)}>
-                            {rs.AddTask}
-                        </MenuItem>
-                    </MenuList>
-                </MenuPopover>
-            </Menu>
+            <Button
+                appearance="subtle"
+                size="medium"
+                icon={<EditRegular />}
+                className={styles.menuButton}
+                onClick={() => setEditPanelOpen(true)}
+            />
         </div>
+
+        <DayPlanPanel
+            open={editPanelOpen}
+            mode="editDay"
+            dateLabel={fullDate}
+            planLabels={tasks as PlanItem[]}
+            onClose={() => setEditPanelOpen(false)}
+            onSaveDay={onSaveFromPanel}
+        />
+        </>
     );
 };

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { saveDay, StoredTask } from "../../infrastructure/storages/day-storage";
+import { useEffect, useState } from "react";
+import { PlanItem, saveDay, StoredTask } from "../../infrastructure/storages/day-storage";
 
 interface UseDayCardOptions {
     year: number;
@@ -14,10 +14,7 @@ const toDateStr = (year: number, month: number, day: number) =>
 
 export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: UseDayCardOptions) => {
     const [tasks, setTasks] = useState<StoredTask[]>(initialTasks);
-    const [adding, setAdding] = useState(false);
-    const [draft, setDraft] = useState("");
-    const [saving, setSaving] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const [editPanelOpen, setEditPanelOpen] = useState(false);
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -49,60 +46,36 @@ export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: Us
         persist(tasks.map((x, idx) => idx === i ? { ...x, checked: !x.checked } : x));
     };
 
-    const removeCustomTask = (id: string) => {
-        persist(tasks.filter(x => x.id !== id));
-    };
-
-    const persistDraft = (label: string, currentTasks: StoredTask[]) => {
-        setSaving(true);
-        const newTask: StoredTask = {
-            label,
-            checked: false,
-            position: currentTasks.length,
-            is_custom: true,
-            id: crypto.randomUUID(),
-        };
-        const newTasks = [...currentTasks, newTask];
-        setTasks(newTasks);
-        onTasksChange?.(newTasks);
-        saveDay(toDateStr(year, month, day), newTasks)
-            .catch(console.error)
-            .finally(() => setSaving(false));
-    };
-
-    const submitDraft = () => {
-        const label = draft.trim();
-        setDraft("");
-        if (label) persistDraft(label, tasks);
-        inputRef.current?.focus();
-    };
-
-    const commitDraft = () => {
-        const label = draft.trim();
-        setDraft("");
-        setAdding(false);
-        if (label) persistDraft(label, tasks);
-    };
-
-    const onKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") submitDraft();
-        if (e.key === "Escape") { setDraft(""); setAdding(false); }
+const onSaveFromPanel = (items: PlanItem[]) => {
+        const newTasks: StoredTask[] = items.map((x, i) => {
+            const s = x as StoredTask;
+            if (typeof s.checked === "undefined") {
+                return {
+                    label: s.label,
+                    checked: false,
+                    position: i,
+                    is_custom: true,
+                    id: crypto.randomUUID(),
+                    ...(s.color != null && { color: s.color }),
+                    ...(s.time_mode != null && { time_mode: s.time_mode }),
+                    ...(s.time_exact != null && { time_exact: s.time_exact }),
+                    ...(s.time_start != null && { time_start: s.time_start }),
+                    ...(s.time_end != null && { time_end: s.time_end }),
+                };
+            }
+            return { ...s, position: i };
+        });
+        persist(newTasks);
     };
 
     return {
         tasks,
-        adding,
-        setAdding,
-        draft,
-        setDraft,
-        saving,
         isPast,
         isReadOnly,
         progress,
         toggle,
-        removeCustomTask,
-        inputRef,
-        commitDraft,
-        onKeyDown,
+        editPanelOpen,
+        setEditPanelOpen,
+        onSaveFromPanel,
     };
 };

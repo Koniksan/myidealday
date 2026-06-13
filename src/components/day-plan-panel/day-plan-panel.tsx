@@ -27,13 +27,15 @@ import { useDayPlanPanel } from "./useDayPlanPanel";
 
 interface DayPlanPanelProps {
     open: boolean;
-    mode: "add" | "edit";
-    monthName: string;
+    mode: "add" | "edit" | "editDay";
+    monthName?: string;
+    dateLabel?: string;
     planLabels: PlanItem[];
     onClose: () => void;
-    addPlanToAllDays: (items: PlanItem[]) => Promise<void>;
-    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], fieldChanges: PlanItem[]) => Promise<void>;
-    resetPlan: () => Promise<void>;
+    addPlanToAllDays?: (items: PlanItem[]) => Promise<void>;
+    editPlan?: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], fieldChanges: PlanItem[]) => Promise<void>;
+    resetPlan?: () => Promise<void>;
+    onSaveDay?: (items: PlanItem[]) => void;
 }
 
 interface PriorityOption {
@@ -46,6 +48,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
     const rs = useLocalization();
     const {
         isEditMode,
+        isEditDayMode,
         items,
         draft,
         setDraft,
@@ -106,11 +109,13 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                             />
                         }
                     >
-                        {isEditMode ? rs.EditPlan : rs.AddPlanToAllDays}
+                        {isEditDayMode ? props.dateLabel : (isEditMode ? rs.EditPlan : rs.AddPlanToAllDays)}
                     </DrawerHeaderTitle>
-                    <Subtitle2 block as="h2" className={styles.description}>
-                        {rs.ChangesApplyTo} {props.monthName}.
-                    </Subtitle2>
+                    {!isEditDayMode && (
+                        <Subtitle2 block as="h2" className={styles.description}>
+                            {rs.ChangesApplyTo} {props.monthName}.
+                        </Subtitle2>
+                    )}
                 </DrawerHeader>
 
                 <DrawerBody className={styles.body}>
@@ -272,7 +277,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                 </DrawerBody>
 
                 <DrawerFooter className={styles.footer}>
-                    {isEditMode && (
+                    {isEditMode && !isEditDayMode && (
                         <DesktopTooltip content={rs.ResetAllTasks} relationship="label">
                             <Button
                                 className={styles.resetButton}
@@ -290,7 +295,7 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                         disabled={!hasChanges || saving}
                         icon={saving ? <Spinner size="tiny" /> : undefined}
                     >
-                        {isEditMode ? rs.SaveChanges : rs.AddToAllDays}
+                        {isEditDayMode ? rs.SaveChanges : (isEditMode ? rs.SaveChanges : rs.AddToAllDays)}
                     </Button>
                 </DrawerFooter>
             </OverlayDrawer>
