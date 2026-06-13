@@ -8,6 +8,7 @@ import { useDayCardList } from "./useDayCardList";
 import { DayPlanPanel } from "../day-plan-panel";
 import { useHeaderActions } from "../../infrastructure/context/header-actions-context";
 import { useLocalization } from "../../infrastructure/context/locale-context";
+import { useScreenSize } from "../../infrastructure";
 
 export const DayCardList: React.FC = () => {
     const styles = useDayCardListStyles();
@@ -16,15 +17,8 @@ export const DayCardList: React.FC = () => {
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
-    const [isMobile, setIsMobile] = useState(() => window.matchMedia("(max-width: 768px)").matches);
+    const { isMobile } = useScreenSize();
     const { setActions } = useHeaderActions();
-
-    useEffect(() => {
-        const mq = window.matchMedia("(max-width: 768px)");
-        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-        mq.addEventListener("change", handler);
-        return () => mq.removeEventListener("change", handler);
-    }, []);
 
     const openDialog = (mode: "add" | "edit") => {
         setDialogMode(mode);

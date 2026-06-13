@@ -2,7 +2,7 @@ import { mergeClasses } from "@fluentui/react-components";
 import React from "react";
 import { usePriorityBadgeStyles } from "./priority-badge-styles";
 
-type PriorityBadgeSize = "small" | "medium" | "large";
+type PriorityBadgeSize = "mini" | "small" | "medium" | "large";
 
 interface PriorityBadgeProps {
     color: string | null | undefined;
@@ -16,12 +16,18 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({ color, label, empt
     const resolvedColor = color ?? null;
 
     const sizeClass = styles[size];
-    const dotSizeClass = styles[size === "small" ? "dotSmall" : size === "large" ? "dotLarge" : "dotMedium"];
+    const dotSizeClass = styles[size === "mini" ? "dotMini" : size === "small" ? "dotSmall" : size === "large" ? "dotLarge" : "dotMedium"];
 
     if (!resolvedColor) {
+        if (size === "mini") return <span className={mergeClasses(styles.dot, styles.dotMiniEmpty)} />;
         if (!emptyText) return null;
         return <span className={mergeClasses(styles.base, styles.empty, sizeClass)}>{emptyText}</span>;
     }
+
+    if (size === "mini") {
+        return <span className={mergeClasses(styles.dot, dotSizeClass)} style={{ backgroundColor: resolvedColor, border: `1.5px solid ${resolvedColor}99` }} />;
+    }
+
     return (
         <span
             className={mergeClasses(styles.base, styles.badge, sizeClass)}

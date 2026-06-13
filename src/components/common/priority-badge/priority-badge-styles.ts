@@ -22,6 +22,20 @@ export const usePriorityBadgeStyles = makeStyles({
     },
 
     // Sizes
+    mini: {
+        padding: "0",
+        gap: "0",
+    },
+    dotMini: {
+        width: "12px",
+        height: "12px",
+    },
+    dotMiniEmpty: {
+        width: "12px",
+        height: "12px",
+        backgroundColor: "transparent",
+        border: `1.5px dashed ${tokens.colorNeutralStroke1}`,
+    },
     small: {
         gap: "4px",
         padding: "1px 6px",
