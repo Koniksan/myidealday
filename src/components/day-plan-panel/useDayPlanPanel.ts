@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { PlanItem } from "../../infrastructure/storages/day-storage";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { PlanItem } from "../../infrastructure";
 
 interface UseDayPlanPanelProps {
     open: boolean;
@@ -11,6 +11,14 @@ interface UseDayPlanPanelProps {
     resetPlan?: () => Promise<void>;
     onSaveDay?: (items: PlanItem[]) => void;
 }
+
+const makePanelToggle =
+    (set: React.Dispatch<React.SetStateAction<number | null>>,
+     closeOther: React.Dispatch<React.SetStateAction<number | null>>) =>
+    (index: number) => {
+        set(prev => prev === index ? null : index);
+        closeOther(null);
+    };
 
 export const useDayPlanPanel = ({
     open,
@@ -58,7 +66,10 @@ export const useDayPlanPanel = ({
         return () => { document.body.style.overflow = prev; };
     }, [open]);
 
-    const hasChanges = JSON.stringify(items) !== JSON.stringify(originalItems.current);
+    const hasChanges = useMemo(
+        () => JSON.stringify(items) !== JSON.stringify(originalItems.current),
+        [items]
+    );
 
     const handleOpenChange = (_: unknown, d: { open: boolean }) => {
         if (!d.open) {
@@ -69,7 +80,7 @@ export const useDayPlanPanel = ({
 
     const addItem = () => {
         const label = draft.trim();
-        if (label && !items.some(i => i.label === label)) {
+        if (label && !items.some(x => x.label === label)) {
             setItems(prev => [...prev, { label, color: null }]);
             setDraft("");
         }
@@ -90,15 +101,10 @@ export const useDayPlanPanel = ({
         setItems(prev => prev.map((x, i) => i === index ? { ...x, ...patch } : x));
     };
 
-    const togglePicker = (index: number) => {
-        setOpenPickerIndex(prev => prev === index ? null : index);
-        setOpenTimePickerIndex(null);
-    };
+    const togglePicker = makePanelToggle(setOpenPickerIndex, setOpenTimePickerIndex);
+    const toggleTimePicker = makePanelToggle(setOpenTimePickerIndex, setOpenPickerIndex);
 
-    const toggleTimePicker = (index: number) => {
-        setOpenTimePickerIndex(prev => prev === index ? null : index);
-        setOpenPickerIndex(null);
-    };
+    const clearEdit = () => { setEditingIndex(null); setEditingValue(""); };
 
     const startEditing = (index: number) => {
         setEditingIndex(index);
@@ -109,17 +115,12 @@ export const useDayPlanPanel = ({
     const commitEdit = () => {
         if (editingIndex === null) return;
         const value = editingValue.trim();
-        if (value && !items.some((item, i) => item.label === value && i !== editingIndex)) {
-            setItems(prev => prev.map((item, i) => i === editingIndex ? { ...item, label: value } : item));
-        }
-        setEditingIndex(null);
-        setEditingValue("");
+        if (value && !items.some((x, i) => x.label === value && i !== editingIndex))
+            setItems(prev => prev.map((x, i) => i === editingIndex ? { ...x, label: value } : x));
+        clearEdit();
     };
 
-    const cancelEdit = () => {
-        setEditingIndex(null);
-        setEditingValue("");
-    };
+    const cancelEdit = () => clearEdit();
 
     const handleDragStart = (i: number) => {
         dragIndex.current = i;
@@ -187,8 +188,8 @@ export const useDayPlanPanel = ({
         setSaving(true);
         try {
             if (isEditMode) {
-                const origLabels = originalItems.current.map(i => i.label);
-                const currentLabels = items.map(i => i.label);
+                const origLabels = originalItems.current.map(x => x.label);
+                const currentLabels = items.map(x => x.label);
                 const labelsToRemove = origLabels.filter(x => !currentLabels.includes(x));
                 const itemsToAdd = items.filter(x => !origLabels.includes(x.label));
                 const fieldChanges = items.filter(x => {

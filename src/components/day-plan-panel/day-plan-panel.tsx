@@ -1,11 +1,5 @@
 import {
     Button,
-    Dialog,
-    DialogActions,
-    DialogBody,
-    DialogContent,
-    DialogSurface,
-    DialogTitle,
     DrawerBody,
     DrawerFooter,
     DrawerHeader,
@@ -18,11 +12,10 @@ import {
 } from "@fluentui/react-components";
 import { AddRegular, ArrowSortFilled, CheckmarkRegular, ChevronDownRegular, ClockRegular, DeleteRegular, DismissRegular, EditRegular, TimerRegular } from "@fluentui/react-icons";
 import React, { useMemo } from "react";
-import { DesktopTooltip, PriorityBadge } from "../common";
-import { useLocalization } from "../../infrastructure/context/locale-context";
-import { PlanItem, TASK_COLORS } from "../../infrastructure/storages/day-storage";
+import { ConfirmDialog, DesktopTooltip, PriorityBadge } from "../common";
+import { PlanItem, TASK_COLORS, useLocalization } from "../../infrastructure";
 import { useDayPlanPanelStyles } from "./day-plan-panel-styles";
-import { TimePickerPanel, formatTimeChip } from "./time-picker-panel";
+import { TimePickerPanel } from "./time-picker-panel";
 import { useDayPlanPanel } from "./useDayPlanPanel";
 
 interface DayPlanPanelProps {
@@ -142,7 +135,6 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                                 const isPriorityOpen = openPickerIndex === i;
                                 const isTimeOpen = openTimePickerIndex === i;
                                 const isAnyOpen = isPriorityOpen || isTimeOpen;
-                                const timeLabel = formatTimeChip(item);
                                 const hasTime = !!(item.time_mode && (item.time_exact || item.time_start));
                                 return (
                                     <div
@@ -299,31 +291,25 @@ export const DayPlanPanel: React.FC<DayPlanPanelProps> = (props) => {
                 </DrawerFooter>
             </OverlayDrawer>
 
-            <Dialog open={confirmDiscard} onOpenChange={(_, d) => !d.open && setConfirmDiscard(false)}>
-                <DialogSurface className={styles.confirmSurface}>
-                    <DialogBody>
-                        <DialogTitle>{rs.DiscardChangesTitle}</DialogTitle>
-                        <DialogContent>{rs.DiscardChangesMessage}</DialogContent>
-                        <DialogActions className={styles.confirmActions}>
-                            <Button appearance="secondary" onClick={() => setConfirmDiscard(false)}>{rs.KeepEditing}</Button>
-                            <Button appearance="primary" onClick={props.onClose}>{rs.Discard}</Button>
-                        </DialogActions>
-                    </DialogBody>
-                </DialogSurface>
-            </Dialog>
+            <ConfirmDialog
+                open={confirmDiscard}
+                title={rs.DiscardChangesTitle}
+                message={rs.DiscardChangesMessage}
+                cancelLabel={rs.KeepEditing}
+                confirmLabel={rs.Discard}
+                onCancel={() => setConfirmDiscard(false)}
+                onConfirm={props.onClose}
+            />
 
-            <Dialog open={confirmReset} onOpenChange={(_, d) => !d.open && setConfirmReset(false)}>
-                <DialogSurface className={styles.confirmSurface}>
-                    <DialogBody>
-                        <DialogTitle>{rs.ResetAllTasksTitle}</DialogTitle>
-                        <DialogContent>{rs.ResetWarningMessage}</DialogContent>
-                        <DialogActions className={styles.confirmActions}>
-                            <Button appearance="secondary" onClick={() => setConfirmReset(false)}>{rs.Cancel}</Button>
-                            <Button appearance="primary" onClick={reset}>{rs.Reset}</Button>
-                        </DialogActions>
-                    </DialogBody>
-                </DialogSurface>
-            </Dialog>
+            <ConfirmDialog
+                open={confirmReset}
+                title={rs.ResetAllTasksTitle}
+                message={rs.ResetWarningMessage}
+                cancelLabel={rs.Cancel}
+                confirmLabel={rs.Reset}
+                onCancel={() => setConfirmReset(false)}
+                onConfirm={reset}
+            />
         </>
     );
 };

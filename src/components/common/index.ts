@@ -10,3 +10,4 @@ export * from "./status-badge";
 export * from "./kanban-item-panel";
 export * from "./image-upload-preview";
 export * from "./priority-badge";
+export * from "./confirm-dialog";

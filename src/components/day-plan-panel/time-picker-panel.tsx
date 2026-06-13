@@ -1,9 +1,9 @@
 import { mergeClasses } from "@fluentui/react-components";
 import { DeleteRegular } from "@fluentui/react-icons";
-import React, { useState } from "react";
-import { Translations } from "../../infrastructure/context/translations";
-import { PlanItem } from "../../infrastructure/storages/day-storage";
+import React from "react";
+import { PlanItem, Translations } from "../../infrastructure";
 import { useDayPlanPanelStyles } from "./day-plan-panel-styles";
+import { useTimePickerPanel } from "./use-time-picker-panel";
 
 export const EXACT_PRESETS = ["07:00", "08:00", "09:00", "12:00", "18:00", "22:00"];
 export const INTERVAL_PRESET_MINUTES = [30, 60, 90, 120, 180];
@@ -42,60 +42,21 @@ interface TimePickerPanelProps {
 }
 
 export const TimePickerPanel: React.FC<TimePickerPanelProps> = ({ item, onUpdate, panelStyles, rs }) => {
-    const [tab, setTab] = useState<"exact" | "interval">(
-        item.time_mode === "interval" ? "interval" : "exact"
-    );
-    const [exactVal, setExactVal] = useState(item.time_exact ?? "");
-    const [startVal, setStartVal] = useState(item.time_start ?? "");
-    const [endVal, setEndVal] = useState(item.time_end ?? "");
-
-    const switchTab = (t: "exact" | "interval") => {
-        setTab(t);
-        onUpdate({ time_mode: t });
-    };
-
-    const selectExactPreset = (preset: string) => {
-        setExactVal(preset);
-        onUpdate({ time_mode: "exact", time_exact: preset });
-    };
-
-    const applyIntervalPreset = (minutes: number) => {
-        const s = startVal || "07:00";
-        const [h, m] = s.split(":").map(Number);
-        const endMins = h * 60 + m + minutes;
-        const eh = Math.floor(endMins / 60) % 24;
-        const em = endMins % 60;
-        const end = `${String(eh).padStart(2, "0")}:${String(em).padStart(2, "0")}`;
-        if (!startVal) setStartVal(s);
-        setEndVal(end);
-        onUpdate({ time_mode: "interval", time_start: s, time_end: end });
-    };
-
-    const handleExactChange = (val: string) => {
-        setExactVal(val);
-        onUpdate({ time_mode: "exact", time_exact: val || null });
-    };
-
-    const handleStartChange = (val: string) => {
-        setStartVal(val);
-        onUpdate({ time_mode: "interval", time_start: val || null, time_end: endVal || null });
-    };
-
-    const handleEndChange = (val: string) => {
-        setEndVal(val);
-        onUpdate({ time_mode: "interval", time_start: startVal || null, time_end: val || null });
-    };
-
-    const handleClear = () => {
-        setTab("exact");
-        setExactVal("");
-        setStartVal("");
-        setEndVal("");
-        onUpdate({ time_mode: null, time_exact: null, time_start: null, time_end: null });
-    };
-
-    const currentDurationMins = startVal && endVal ? getDurationMinutes(startVal, endVal) : null;
-    const durationStr = startVal && endVal ? calcDurationStr(startVal, endVal, rs) : null;
+    const {
+        tab,
+        exactVal,
+        startVal,
+        endVal,
+        currentDurationMins,
+        durationStr,
+        switchTab,
+        selectExactPreset,
+        applyIntervalPreset,
+        handleExactChange,
+        handleStartChange,
+        handleEndChange,
+        handleClear,
+    } = useTimePickerPanel(item, onUpdate, rs);
 
     return (
         <>
