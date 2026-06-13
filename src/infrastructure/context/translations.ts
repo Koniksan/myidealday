@@ -27,6 +27,7 @@ const en = {
     // day card
     Custom: "Custom",
     AddTask: "Add task",
+    EditDay: "Edit day",
     AddPriority: "+ priority",
     TaskColorNames: ["No priority", "Critical", "High", "Medium", "Low", "Info"],
     // header
@@ -167,6 +168,7 @@ const ru: typeof en = {
     // day card
     Custom: "Дополнительные",
     AddTask: "Добавить задачу",
+    EditDay: "Редактировать день",
     AddPriority: "+ приоритет",
     TaskColorNames: ["Без приоритета", "Критично", "Высокий", "Средний", "Низкий", "Инфо"],
     // header

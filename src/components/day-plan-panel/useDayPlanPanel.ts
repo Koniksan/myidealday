@@ -3,12 +3,13 @@ import { PlanItem } from "../../infrastructure/storages/day-storage";
 
 interface UseDayPlanPanelProps {
     open: boolean;
-    mode: "add" | "edit";
+    mode: "add" | "edit" | "editDay";
     planLabels: PlanItem[];
     onClose: () => void;
-    addPlanToAllDays: (items: PlanItem[]) => Promise<void>;
-    editPlan: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => Promise<void>;
-    resetPlan: () => Promise<void>;
+    addPlanToAllDays?: (items: PlanItem[]) => Promise<void>;
+    editPlan?: (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], colorChanges: PlanItem[]) => Promise<void>;
+    resetPlan?: () => Promise<void>;
+    onSaveDay?: (items: PlanItem[]) => void;
 }
 
 export const useDayPlanPanel = ({
@@ -19,8 +20,10 @@ export const useDayPlanPanel = ({
     addPlanToAllDays,
     editPlan,
     resetPlan,
+    onSaveDay,
 }: UseDayPlanPanelProps) => {
     const isEditMode = mode === "edit";
+    const isEditDayMode = mode === "editDay";
 
     const originalItems = useRef<PlanItem[]>(planLabels);
     const [items, setItems] = useState<PlanItem[]>(planLabels);
@@ -175,6 +178,11 @@ export const useDayPlanPanel = ({
     };
 
     const apply = async () => {
+        if (isEditDayMode) {
+            onSaveDay?.(items);
+            onClose();
+            return;
+        }
         if (saving) return;
         setSaving(true);
         try {
@@ -213,6 +221,7 @@ export const useDayPlanPanel = ({
 
     return {
         isEditMode,
+        isEditDayMode,
         items,
         draft,
         setDraft,
