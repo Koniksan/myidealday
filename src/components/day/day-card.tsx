@@ -40,92 +40,92 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
 
     return (
         <>
-        <div
-            className={mergeClasses(
-                styles.card,
-                isDetailView && styles.detailCard,
-                isToday && styles.today,
-                !isToday && isWeekend && styles.weekend,
-                isOtherMonth && styles.otherMonth,
-            )}
-            {...(isToday && !isDetailView ? { "data-today": "true" } : {})}
-        >
-            {isToday && (
-                <Badge appearance="filled" color="brand" size="small" className={styles.todayBadge}>
-                    {rs.Today}
-                </Badge>
-            )}
+            <div
+                className={mergeClasses(
+                    styles.card,
+                    isDetailView && styles.detailCard,
+                    isToday && styles.today,
+                    !isToday && isWeekend && styles.weekend,
+                    isOtherMonth && styles.otherMonth,
+                )}
+                {...(isToday && !isDetailView ? { "data-today": "true" } : {})}
+            >
+                {isToday && (
+                    <Badge appearance="filled" color="brand" size="small" className={styles.todayBadge}>
+                        {rs.Today}
+                    </Badge>
+                )}
 
-            <DayCardProgress progress={progress} saving={false} hasTasks={tasks.length > 0} isPast={isPast} />
+                <DayCardProgress progress={progress} saving={false} hasTasks={tasks.length > 0} isPast={isPast} />
 
-            {isDetailView ? (
-                <div className={styles.detailHeader}>
-                    <span className={styles.detailDate}>{fullDate}</span>
+                {isDetailView ? (
+                    <div className={styles.detailHeader}>
+                        <span className={styles.detailDate}>{fullDate}</span>
+                    </div>
+                ) : (
+                    <div className={styles.header}>
+                        <span className={styles.dayName}>{shortName}</span>
+                        <span className={styles.dayNumber}>{day}</span>
+                    </div>
+                )}
+
+                <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
+                    {tasks.filter(x => !x.is_custom).map((x, i, arr) => {
+                        const idx = tasks.indexOf(x);
+                        return (
+                            <React.Fragment key={idx}>
+                                <DayTaskItem
+                                    task={x}
+                                    isCustom={false}
+                                    isDetailView={isDetailView}
+                                    isReadOnly={isReadOnly}
+                                    timeStr={formatTimeChip(x)}
+                                    priorityLabel={x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined}
+                                    onToggle={() => toggle(idx)}
+                                />
+                                {i < arr.length - 1 && <div className={styles.taskDivider} />}
+                            </React.Fragment>
+                        );
+                    })}
+
+                    {tasks.filter(x => x.is_custom).map((x, i, arr) => {
+                        const idx = tasks.indexOf(x);
+                        return (
+                            <React.Fragment key={`custom-${idx}`}>
+                                {i === 0 && <Divider className={styles.customDivider}>{rs.Custom}</Divider>}
+                                <DayTaskItem
+                                    task={x}
+                                    isCustom={true}
+                                    isDetailView={isDetailView}
+                                    isReadOnly={isReadOnly}
+                                    timeStr={formatTimeChip(x)}
+                                    priorityLabel={x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined}
+                                    onToggle={() => toggle(idx)}
+                                />
+                                {i < arr.length - 1 && <div className={styles.taskDivider} />}
+                            </React.Fragment>
+                        );
+                    })}
+
                 </div>
-            ) : (
-                <div className={styles.header}>
-                    <span className={styles.dayName}>{shortName}</span>
-                    <span className={styles.dayNumber}>{day}</span>
-                </div>
-            )}
 
-            <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
-                {tasks.filter(x => !x.is_custom).map((x, i, arr) => {
-                    const idx = tasks.indexOf(x);
-                    return (
-                        <React.Fragment key={idx}>
-                            <DayTaskItem
-                                task={x}
-                                isCustom={false}
-                                isDetailView={isDetailView}
-                                isReadOnly={isReadOnly}
-                                timeStr={formatTimeChip(x)}
-                                priorityLabel={x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined}
-                                onToggle={() => toggle(idx)}
-                            />
-                            {i < arr.length - 1 && <div className={styles.taskDivider} />}
-                        </React.Fragment>
-                    );
-                })}
-
-                {tasks.filter(x => x.is_custom).map((x, i, arr) => {
-                    const idx = tasks.indexOf(x);
-                    return (
-                        <React.Fragment key={`custom-${idx}`}>
-                            {i === 0 && <Divider className={styles.customDivider}>{rs.Custom}</Divider>}
-                            <DayTaskItem
-                                task={x}
-                                isCustom={true}
-                                isDetailView={isDetailView}
-                                isReadOnly={isReadOnly}
-                                timeStr={formatTimeChip(x)}
-                                priorityLabel={x.color ? rs.TaskColorNames[TASK_COLORS.indexOf(x.color) + 1] : undefined}
-                                onToggle={() => toggle(idx)}
-                            />
-                            {i < arr.length - 1 && <div className={styles.taskDivider} />}
-                        </React.Fragment>
-                    );
-                })}
-
+                <Button
+                    appearance="subtle"
+                    size="medium"
+                    icon={<EditRegular />}
+                    className={styles.menuButton}
+                    onClick={() => setEditPanelOpen(true)}
+                />
             </div>
 
-            <Button
-                appearance="subtle"
-                size="medium"
-                icon={<EditRegular />}
-                className={styles.menuButton}
-                onClick={() => setEditPanelOpen(true)}
+            <DayPlanPanel
+                open={editPanelOpen}
+                mode="editDay"
+                dateLabel={fullDate}
+                planLabels={tasks as PlanItem[]}
+                onClose={() => setEditPanelOpen(false)}
+                onSaveDay={onSaveFromPanel}
             />
-        </div>
-
-        <DayPlanPanel
-            open={editPanelOpen}
-            mode="editDay"
-            dateLabel={fullDate}
-            planLabels={tasks as PlanItem[]}
-            onClose={() => setEditPanelOpen(false)}
-            onSaveDay={onSaveFromPanel}
-        />
         </>
     );
 };
