@@ -3,8 +3,8 @@ export type Locale = "en" | "ru";
 const en = {
     // day-plan-panel
     Close: "Close",
-    EditPlan: "Edit plan",
-    AddPlanToAllDays: "Add plan to all days",
+    EditPlan: "Edit habbits",
+    AddPlanToAllDays: "Add habbits",
     ChangesApplyTo: "Changes will apply to all days in",
     TaskNamePlaceholder: "Task name...",
     ResetAllTasks: "Reset all tasks",
@@ -34,7 +34,7 @@ const en = {
     SwitchToLight: "Switch to light mode",
     SwitchToDark: "Switch to dark mode",
     SwitchLanguage: "Switch to Russian",
-    MyHabit: "My Habit",
+    MyHabbits: "My habbits",
     Account: "Account",
     Back: "Back",
     Profile: "Profile",
@@ -144,8 +144,8 @@ const en = {
 const ru: typeof en = {
     // day-plan-panel
     Close: "Закрыть",
-    EditPlan: "Редактировать план",
-    AddPlanToAllDays: "Добавить план ко всем дням",
+    EditPlan: "Редактировать привычки",
+    AddPlanToAllDays: "Добавить привычки",
     ChangesApplyTo: "Изменения применятся ко всем дням в",
     TaskNamePlaceholder: "Название задачи...",
     ResetAllTasks: "Сбросить все задачи",
@@ -267,7 +267,7 @@ const ru: typeof en = {
     AdminSearchPlaceholder: "Поиск по имени...",
     AddCard: "Добавить карточку",
     GoToToday: "К сегодняшнему дню",
-    MyHabit: "Мои привычки",
+    MyHabbits: "Мои привычки",
     Home: "Главная",
     Performance: "Производительность",
     // time picker
