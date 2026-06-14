@@ -3,8 +3,10 @@ import { breakpoints } from "../styles";
 
 export const useStyles = makeStyles({
     wrapper: {
+        display: "flex",
         width: "100%",
-        minHeight: "100dvh",
+        height: "100dvh",
+        overflow: "hidden",
         background: tokens.colorNeutralBackground3,
     },
     root: {
@@ -12,17 +14,22 @@ export const useStyles = makeStyles({
         margin: "0 auto",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
         fontFamily: 'Segoe UI, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif',
         width: "100%",
-        padding: "80px 32px 48px",
+        height: "100%",
         boxSizing: "border-box",
+        overflow: "hidden",
+    },
+    content: {
+        flex: 1,
         overflow: "auto",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "32px",
+        boxSizing: "border-box",
         [breakpoints.mobile]: {
-            paddingTop: "calc(56px + env(safe-area-inset-top))",
-            paddingLeft: "0px",
-            paddingRight: "0px",
-            paddingBottom: "calc(56px + env(safe-area-inset-bottom))",
+            padding: "16px 0",
         },
     },
     centered: {

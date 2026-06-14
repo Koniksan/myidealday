@@ -5,9 +5,6 @@ export const useBottomNavStyles = makeStyles({
     root: {
         display: "none",
         [breakpoints.mobile]: {
-            position: "fixed",
-            bottom: 0,
-            left: 0,
             width: "100%",
             display: "flex",
             alignItems: "center",
@@ -17,7 +14,7 @@ export const useBottomNavStyles = makeStyles({
             borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
             background: tokens.colorNeutralBackground1,
             boxSizing: "border-box",
-            zIndex: 100,
+            flexShrink: 0,
         },
     },
     navButton: {
