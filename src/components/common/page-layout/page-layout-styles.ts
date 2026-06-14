@@ -17,11 +17,13 @@ export const useStyles = makeStyles({
         fontFamily: 'Segoe UI, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif',
         width: "100%",
         height: "100%",
+        minHeight: 0,
         boxSizing: "border-box",
         overflow: "hidden",
     },
     content: {
         flex: 1,
+        minHeight: 0,
         overflow: "auto",
         display: "flex",
         flexDirection: "column",

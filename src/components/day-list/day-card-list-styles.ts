@@ -139,7 +139,7 @@ export const useDayCardListStyles = makeStyles({
     detailSide: {
         flex: 1,
         position: "sticky",
-        top: "calc(56px + env(safe-area-inset-top) + 16px)",
+        top: "16px",
     },
     mobileLayout: {
         display: "none",
@@ -153,7 +153,8 @@ export const useDayCardListStyles = makeStyles({
         flexWrap: "nowrap",
         overflowX: "auto",
         justifyContent: "flex-start",
-        padding: "4px 20px 16px",
+        padding: "4px 9vw 16px",
+        scrollSnapType: "x mandatory",
         scrollbarWidth: "none",
         msOverflowStyle: "none",
         gap: "12px",
