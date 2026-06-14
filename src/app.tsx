@@ -2,7 +2,7 @@ import { Toaster } from "@fluentui/react-components";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { LoginPage, SignUpPage, HomePage, AccountPage, SettingsPage, HabitPage, AuthCallbackPage, NotFoundPage, AdminPage } from "./pages";
+import { LoginPage, SignUpPage, HomePage, AccountPage, SettingsPage, AuthCallbackPage, NotFoundPage, AdminPage } from "./pages";
 import { ThemeProvider } from "./infrastructure/context/theme-context";
 import { AuthProvider } from "./infrastructure/context/auth-context";
 import { LocaleProvider } from "./infrastructure/context/locale-context";
@@ -27,7 +27,6 @@ export const App = () => {
                         <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
                         <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
                         <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-                        <Route path="/habit" element={<ProtectedRoute><HabitPage /></ProtectedRoute>} />
                         <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
                         <Route path="/auth/callback" element={<AuthCallbackPage />} />
                         <Route path="*" element={<NotFoundPage />} />
