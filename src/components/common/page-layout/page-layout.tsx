@@ -16,9 +16,11 @@ export const PageLayout: React.FC<Props> = ({ children, centered = false }) => {
     return (
         <HeaderActionsProvider>
             <div className={styles.wrapper}>
-                <div className={mergeClasses(styles.root, centered && styles.centered)}>
+                <div className={styles.root}>
                     <Header />
-                    {children}
+                    <div className={mergeClasses(styles.content, centered && styles.centered)}>
+                        {children}
+                    </div>
                     <BottomNav />
                 </div>
             </div>

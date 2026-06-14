@@ -13,10 +13,7 @@ export const useHeaderStyles = makeStyles({
         borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
         background: tokens.colorNeutralBackground1,
         boxSizing: "border-box",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 100,
+        flexShrink: 0,
         [breakpoints.mobile]: {
             height: "calc(44px + env(safe-area-inset-top))",
             justifyContent: "center",
