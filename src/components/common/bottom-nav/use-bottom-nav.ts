@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { deleteDaysFromDate, loadPlan, PlanItem, savePlan } from "../../../infrastructure";
+import { deleteDaysFromDate, loadPlan, PlanItem, savePlan, usePlanVersion } from "../../../infrastructure";
 
 export const useBottomNav = () => {
+    const { bumpPlanVersion } = usePlanVersion();
     const [panelOpen, setPanelOpen] = useState(false);
     const [planLabels, setPlanLabels] = useState<PlanItem[]>([]);
     const [mode, setMode] = useState<"add" | "edit">("add");
@@ -19,6 +20,7 @@ export const useBottomNav = () => {
         const newPlan = [...planLabels, ...items];
         await savePlan(newPlan);
         setPlanLabels(newPlan);
+        bumpPlanVersion();
     };
 
     const editPlan = async (itemsToAdd: PlanItem[], labelsToRemove: string[], orderedLabels: string[], fieldChanges: PlanItem[]) => {
@@ -35,6 +37,7 @@ export const useBottomNav = () => {
             .concat(newPlan.filter(x => !orderedLabels.includes(x.label)));
         await savePlan(newPlan);
         setPlanLabels(newPlan);
+        bumpPlanVersion();
     };
 
     const resetPlan = async () => {
@@ -42,6 +45,7 @@ export const useBottomNav = () => {
         const fromStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
         await Promise.all([savePlan([]), deleteDaysFromDate(fromStr)]);
         setPlanLabels([]);
+        bumpPlanVersion();
     };
 
     return { panelOpen, planLabels, mode, openPanel, closePanel, addPlanToAllDays, editPlan, resetPlan };

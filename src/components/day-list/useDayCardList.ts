@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, RefObject } from "react";
+import { useCallback, useEffect, useRef, useState, RefObject } from "react";
 import { useLocalization } from "../../infrastructure/context/locale-context";
+import { usePlanVersion } from "../../infrastructure";
 import { DayCardProps } from "../day";
 import {
     loadPlan,
@@ -36,6 +37,7 @@ interface UseDayCardListResult {
 
 export const useDayCardList = (): UseDayCardListResult => {
     const rs = useLocalization();
+    const { planVersion } = usePlanVersion();
     const realToday = new Date();
     const todayYear = realToday.getFullYear();
     const todayMonth = realToday.getMonth();
@@ -127,16 +129,19 @@ export const useDayCardList = (): UseDayCardListResult => {
     const prevYear = month === 0 ? year - 1 : year;
     const prevMonthIndex = month === 0 ? 11 : month - 1;
 
-    useEffect(() => {
-        setLoading(true);
-        Promise.all([loadPlan(), loadAllDays()])
+    const loadData = useCallback((silent = false) => {
+        if (!silent) setLoading(true);
+        return Promise.all([loadPlan(), loadAllDays()])
             .then(([plan, days]) => {
                 setPlanItems(plan);
                 setDaysByDate(days);
             })
             .catch(console.error)
-            .finally(() => setLoading(false));
+            .finally(() => { if (!silent) setLoading(false); });
     }, []);
+
+    useEffect(() => { loadData(); }, []);
+    useEffect(() => { if (planVersion > 0) loadData(true); }, [planVersion]);
 
     useEffect(() => {
         if (loading) return;
