@@ -3,6 +3,7 @@ import { breakpoints } from "../styles";
 
 export const useHeaderStyles = makeStyles({
     root: {
+        position: "relative",
         width: "100%",
         display: "flex",
         alignItems: "center",
@@ -47,5 +48,12 @@ export const useHeaderStyles = makeStyles({
         flexGrow: 0,
         height: "20px",
         margin: "0 4px",
+    },
+    refreshButton: {
+        position: "absolute",
+        left: "8px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        marginTop: "calc(env(safe-area-inset-top) / 2)",
     },
 });
