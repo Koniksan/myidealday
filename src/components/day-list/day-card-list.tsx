@@ -111,6 +111,7 @@ export const DayCardList: React.FC = () => {
                                 isToday={isToday}
                                 isWeekend={isWeekend}
                                 initialTasks={initialTasks}
+                                onTasksChange={(tasks) => updateDayTasks(day, tasks)}
                             />
                         ))
                     }
