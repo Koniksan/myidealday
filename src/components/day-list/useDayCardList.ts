@@ -176,7 +176,16 @@ export const useDayCardList = (): UseDayCardListResult => {
         if (!snapshot) return planTasks;
         const merged = planTasks.map(x => {
             const snap = snapshot.tasks.find(y => y.label === x.label && !y.is_custom);
-            return { ...x, checked: snap?.checked ?? false };
+            if (!snap) return x;
+            return {
+                ...x,
+                checked: snap.checked,
+                color: snap.color !== undefined ? snap.color : x.color,
+                time_mode: snap.time_mode !== undefined ? snap.time_mode : x.time_mode,
+                time_exact: snap.time_exact !== undefined ? snap.time_exact : x.time_exact,
+                time_start: snap.time_start !== undefined ? snap.time_start : x.time_start,
+                time_end: snap.time_end !== undefined ? snap.time_end : x.time_end,
+            };
         });
         return [...merged, ...snapshot.tasks.filter(x => x.is_custom)];
     };
