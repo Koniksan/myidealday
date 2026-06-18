@@ -47,6 +47,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     isToday && styles.today,
                     !isToday && isWeekend && styles.weekend,
                     isOtherMonth && styles.otherMonth,
+                    isReadOnly && styles.readOnly,
                 )}
                 {...(isToday && !isDetailView ? { "data-today": "true" } : {})}
             >
@@ -69,7 +70,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     </div>
                 )}
 
-                <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
+                <div className={mergeClasses(styles.body, isDetailView && styles.detailBody, tasks.some(x => x.is_custom) && styles.bodyFooterGap)}>
                     {tasks.filter(x => !x.is_custom).map((x, i, arr) => {
                         const idx = tasks.indexOf(x);
                         return (
