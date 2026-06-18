@@ -70,7 +70,7 @@ export const DayCard: React.FC<DayCardProps> = ({ year, month, day, shortName, i
                     </div>
                 )}
 
-                <div className={mergeClasses(styles.body, isDetailView && styles.detailBody, tasks.some(x => x.is_custom) && styles.bodyFooterGap)}>
+                <div className={mergeClasses(styles.body, isDetailView && styles.detailBody)}>
                     {tasks.filter(x => !x.is_custom).map((x, i, arr) => {
                         const idx = tasks.indexOf(x);
                         return (
