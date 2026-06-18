@@ -54,6 +54,13 @@ export const useDayCardStyles = makeStyles({
         border: `1px solid ${tokens.colorNeutralStrokeDisabled}`,
         pointerEvents: "none",
     },
+    readOnly: {
+        opacity: "0.6",
+        ":hover": {
+            boxShadow: "none",
+            border: `1px solid ${tokens.colorNeutralStroke2}`,
+        },
+    },
     progressCircle: {
         position: "absolute",
         top: "10px",
@@ -144,6 +151,9 @@ export const useDayCardStyles = makeStyles({
         flex: 1,
         padding: "0 6px 8px",
         gap: "2px",
+    },
+    bodyFooterGap: {
+        paddingBottom: "44px",
     },
     checkboxItem: {
         width: "100%",

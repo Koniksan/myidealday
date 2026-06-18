@@ -26,7 +26,7 @@ export const useDayCard = ({ year, month, day, initialTasks, onTasksChange }: Us
 
     const cardDate = new Date(year, month, day);
     const isPast = cardDate <= yesterday;
-    const isReadOnly = cardDate < yesterday || cardDate > tomorrow;
+    const isReadOnly = cardDate >= tomorrow;
 
     useEffect(() => {
         setTasks(initialTasks);
