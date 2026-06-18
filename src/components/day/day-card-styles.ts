@@ -149,11 +149,8 @@ export const useDayCardStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         flex: 1,
-        padding: "0 6px 8px",
+        padding: "0 6px 44px",
         gap: "2px",
-    },
-    bodyFooterGap: {
-        paddingBottom: "44px",
     },
     checkboxItem: {
         width: "100%",
@@ -182,7 +179,7 @@ export const useDayCardStyles = makeStyles({
         textTransform: "capitalize",
     },
     detailBody: {
-        padding: "0 16px 32px 16px",
+        padding: "0 16px 52px 16px",
         gap: "4px",
     },
     detailCheckboxItem: {
