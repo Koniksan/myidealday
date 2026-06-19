@@ -31,9 +31,11 @@ export const useBottomNavStyles = makeStyles({
         color: tokens.colorNeutralForeground3,
         borderRadius: tokens.borderRadiusMedium,
         transition: "color 0.15s",
-        ":hover": {
-            background: tokens.colorNeutralBackground1Hover,
-            color: tokens.colorNeutralForeground2,
+        "@media (hover: hover)": {
+            ":hover": {
+                background: tokens.colorNeutralBackground1Hover,
+                color: tokens.colorNeutralForeground2,
+            },
         },
         ":active": {
             background: tokens.colorNeutralBackground1Pressed,
@@ -41,8 +43,10 @@ export const useBottomNavStyles = makeStyles({
     },
     navButtonActive: {
         color: tokens.colorBrandForeground1,
-        ":hover": {
-            color: tokens.colorBrandForeground1,
+        "@media (hover: hover)": {
+            ":hover": {
+                color: tokens.colorBrandForeground1,
+            },
         },
     },
     navLabel: {
