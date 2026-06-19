@@ -18,7 +18,8 @@
       "Bash(cp /Users/dimakisel/Downloads/MyIdealDay_Pro_Icon_Pack/favicon-32x32.png /Users/dimakisel/dev/myIdealDayApp/myidealday/src/favicon-32x32.png)",
       "Bash(cp /Users/dimakisel/Downloads/MyIdealDay_Pro_Icon_Pack/favicon-48x48.png /Users/dimakisel/dev/myIdealDayApp/myidealday/src/favicon-48x48.png)",
       "Bash(cp /Users/dimakisel/Downloads/MyIdealDay_Pro_Icon_Pack/favicon-optimized.ico /Users/dimakisel/dev/myIdealDayApp/myidealday/src/favicon.ico)",
-      "Bash(cp /Users/dimakisel/Downloads/MyIdealDay_Pro_Icon_Pack/apple-touch-icon.png /Users/dimakisel/dev/myIdealDayApp/myidealday/src/apple-touch-icon.png)"
+      "Bash(cp /Users/dimakisel/Downloads/MyIdealDay_Pro_Icon_Pack/apple-touch-icon.png /Users/dimakisel/dev/myIdealDayApp/myidealday/src/apple-touch-icon.png)",
+      "Bash(chromium-cli *)"
     ]
   }
 }
