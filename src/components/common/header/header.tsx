@@ -19,33 +19,35 @@ export const Header: React.FC = () => {
 
     return (
         <header className={styles.root}>
-            {isStandalone && (
-                <Button
-                    className={styles.refreshButton}
-                    appearance="subtle"
-                    icon={<ArrowClockwiseRegular />}
-                    aria-label="Refresh"
-                    onClick={() => window.location.reload()}
-                />
-            )}
-            <div className={styles.brand} onClick={() => navigate(isLoggedIn ? "/home" : "/")} style={{ cursor: "pointer" }}>
-                <Logo />
-                <Text className={styles.title}>My Ideal Day</Text>
-            </div>
+            <div className={styles.inner}>
+                {isStandalone && (
+                    <Button
+                        className={styles.refreshButton}
+                        appearance="subtle"
+                        icon={<ArrowClockwiseRegular />}
+                        aria-label="Refresh"
+                        onClick={() => window.location.reload()}
+                    />
+                )}
+                <div className={styles.brand} onClick={() => navigate(isLoggedIn ? "/home" : "/")} style={{ cursor: "pointer" }}>
+                    <Logo />
+                    <Text className={styles.title}>My Ideal Day</Text>
+                </div>
 
-            <div className={styles.actions}>
-                {actions.map(action => (
-                    <DesktopTooltip key={action.id} content={action.label} relationship="label">
-                        <Button
-                            appearance={action.appearance ?? "subtle"}
-                            icon={action.icon}
-                            aria-label={action.label}
-                            onClick={(e) => { (e.currentTarget as HTMLElement).blur(); action.onClick(); }}
-                        />
-                    </DesktopTooltip>
-                ))}
-                {actions.length > 0 && isLoggedIn && <Divider vertical className={styles.divider} />}
-                {isLoggedIn && <div className={styles.userLogo}><UserLogo /></div>}
+                <div className={styles.actions}>
+                    {actions.map(action => (
+                        <DesktopTooltip key={action.id} content={action.label} relationship="label">
+                            <Button
+                                appearance={action.appearance ?? "subtle"}
+                                icon={action.icon}
+                                aria-label={action.label}
+                                onClick={(e) => { (e.currentTarget as HTMLElement).blur(); action.onClick(); }}
+                            />
+                        </DesktopTooltip>
+                    ))}
+                    {actions.length > 0 && isLoggedIn && <Divider vertical className={styles.divider} />}
+                    {isLoggedIn && <div className={styles.userLogo}><UserLogo /></div>}
+                </div>
             </div>
         </header>
     );

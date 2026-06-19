@@ -10,8 +10,6 @@ export const useStyles = makeStyles({
         background: tokens.colorNeutralBackground3,
     },
     root: {
-        maxWidth: "1400px",
-        margin: "0 auto",
         display: "flex",
         flexDirection: "column",
         fontFamily: 'Segoe UI, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif',
@@ -28,6 +26,9 @@ export const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        width: "100%",
+        maxWidth: "1400px",
+        margin: "0 auto",
         padding: "32px",
         boxSizing: "border-box",
         [breakpoints.mobile]: {
