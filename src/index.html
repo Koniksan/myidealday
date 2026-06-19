@@ -4,8 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>My Ideal Day</title>
-    <link rel="icon" href="<%= require('./favicon.svg') %>" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="<%= require('./apple-touch-icon.png') %>" />
+    <link rel="icon" href="<%= require('./favicon.ico') %>" sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= require('./favicon-16x16.png') %>" />
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= require('./favicon-32x32.png') %>" />
+    <link rel="icon" type="image/png" sizes="48x48" href="<%= require('./favicon-48x48.png') %>" />
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= require('./apple-touch-icon.png') %>" />
+    <link rel="manifest" href="<%= require('./site.webmanifest') %>" />
+    <meta name="msapplication-TileImage" content="<%= require('./mstile-150x150.png') %>" />
+    <meta name="msapplication-TileColor" content="#0f1937" />
+    <meta name="theme-color" content="#0f1937" />
   </head>
   <body>
     <div id="root"></div>

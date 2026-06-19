@@ -40,8 +40,18 @@ module.exports = (env, argv) => {
           use: ["style-loader", "css-loader"],
         },
         {
-          test: /\.(png|jpe?g|gif|svg)$/i,
+          test: /\.(png|jpe?g|gif|svg|ico)$/i,
           type: "asset/resource",
+          generator: {
+            filename: "[name][ext][query]",
+          },
+        },
+        {
+          test: /\.webmanifest$/i,
+          type: "asset/resource",
+          generator: {
+            filename: "[name][ext]",
+          },
         },
       ],
     },
