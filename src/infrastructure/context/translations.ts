@@ -88,6 +88,9 @@ const en = {
     AlreadyHaveAccount: "Already have an account? ",
     // settings
     Settings: "Settings",
+    CropPhoto: "Crop photo",
+    Apply: "Apply",
+    Edit: "Edit",
     ChangePhoto: "Change photo",
     AddPhoto: "Add photo",
     Remove: "Remove",
@@ -228,6 +231,9 @@ const ru: typeof en = {
     AlreadyHaveAccount: "Уже есть аккаунт? ",
     // settings
     Settings: "Настройки",
+    CropPhoto: "Обрезать фото",
+    Apply: "Применить",
+    Edit: "Изменить",
     ChangePhoto: "Изменить фото",
     AddPhoto: "Добавить фото",
     Remove: "Удалить",
