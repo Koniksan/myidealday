@@ -50,5 +50,5 @@ export const uploadAvatar = async (file: File, userId: string): Promise<string> 
         throw new Error(`Bucket "${BUCKET}" is not public or does not exist`);
     }
 
-    return data.publicUrl;
+    return `${data.publicUrl}?t=${Date.now()}`;
 };

@@ -36,7 +36,7 @@ export const AccountPage: React.FC = () => {
 
     return (
         <PageLayout>
-            <PageShell backTo="/home">
+            <PageShell>
                 <div className={styles.avatarSection}>
                     <Avatar name={displayName ?? user?.email} image={imageUrl ? { src: imageUrl } : undefined} color="colorful" size={64} />
                     {displayName && <Text className={styles.displayName}>{displayName}</Text>}

@@ -12,21 +12,6 @@ export const usePageShellStyles = makeStyles({
         flexDirection: "column",
         gap: "24px",
     },
-    backButton: {
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "4px",
-        background: "none",
-        border: "none",
-        cursor: "pointer",
-        padding: "6px 4px",
-        color: tokens.colorBrandForeground1,
-        fontSize: "14px",
-        borderRadius: tokens.borderRadiusMedium,
-        ":hover": {
-            background: tokens.colorNeutralBackground1Hover,
-        },
-    },
     sectionLabel: {
         fontSize: "12px",
         fontWeight: 600,

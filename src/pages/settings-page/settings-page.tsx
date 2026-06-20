@@ -1,7 +1,7 @@
 import { Avatar, Button, Input, Switch, Text } from "@fluentui/react-components";
-import { CheckmarkRegular, DeleteRegular, ImageAddRegular } from "@fluentui/react-icons";
+import { CheckmarkRegular, CropRegular, DeleteRegular, ImageAddRegular } from "@fluentui/react-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { AvatarCropper } from "../../components/common";
 import { FlagRU, FlagUS } from "../../components/common/language-switcher/language-switcher-icon-list";
 import { PageLayout } from "../../components/common/page-layout";
 import { PageShell, usePageShellStyles } from "../../components/common/page-shell";
@@ -13,7 +13,6 @@ import { useSettingsPageStyles } from "./settings-page-styles";
 export const SettingsPage: React.FC = () => {
     const styles = useSettingsPageStyles();
     const shell = usePageShellStyles();
-    const navigate = useNavigate();
     const { profile, updateProfile } = useAuth();
     const rs = useLocalization();
     const { isDark, toggleTheme } = useTheme();
@@ -23,18 +22,24 @@ export const SettingsPage: React.FC = () => {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [pendingFile, setPendingFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [originalSrc, setOriginalSrc] = useState<string | null>(null);
+    const [cropSrc, setCropSrc] = useState<string | null>(null);
+    const [editLoading, setEditLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const profileInitialized = useRef(false);
 
     useEffect(() => {
-        if (profile && !profileInitialized.current) {
+        if (!profile) return;
+        if (!profileInitialized.current) {
             profileInitialized.current = true;
             setDisplayName(profile.fullName ?? "");
             setAvatarUrl(profile.avatarUrl ?? null);
+        } else if (!pendingFile && !originalSrc) {
+            setAvatarUrl(profile.avatarUrl ?? null);
         }
-    }, [profile]);
+    }, [profile, pendingFile, originalSrc]);
 
     useEffect(() => {
         if (!pendingFile) { setPreviewUrl(null); return; }
@@ -56,10 +61,42 @@ export const SettingsPage: React.FC = () => {
         if (!file) return;
         if (!file.type.startsWith("image/")) { setError("Please choose an image file."); return; }
         setError(null);
-        setPendingFile(file);
+        if (originalSrc) URL.revokeObjectURL(originalSrc);
+        const src = URL.createObjectURL(file);
+        setOriginalSrc(src);
+        setCropSrc(src);
     };
 
-    const removePhoto = () => { setPendingFile(null); setAvatarUrl(null); };
+    const handleCropConfirm = (blob: Blob) => {
+        const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+        setPendingFile(file);
+        setCropSrc(null);
+    };
+
+    const handleCropCancel = () => setCropSrc(null);
+
+    const handleEditPhoto = async () => {
+        if (originalSrc) { setCropSrc(originalSrc); return; }
+        if (!avatarUrl) return;
+        setEditLoading(true);
+        try {
+            const res = await fetch(avatarUrl);
+            const blob = await res.blob();
+            const src = URL.createObjectURL(blob);
+            setOriginalSrc(src);
+            setCropSrc(src);
+        } finally {
+            setEditLoading(false);
+        }
+    };
+
+    const removePhoto = () => {
+        if (originalSrc) URL.revokeObjectURL(originalSrc);
+        setOriginalSrc(null);
+        setCropSrc(null);
+        setPendingFile(null);
+        setAvatarUrl(null);
+    };
 
     const save = async () => {
         if (saving) return;
@@ -73,6 +110,8 @@ export const SettingsPage: React.FC = () => {
             });
             if (errMsg) { setError(errMsg); return; }
             setPendingFile(null);
+            if (originalSrc) URL.revokeObjectURL(originalSrc);
+            setOriginalSrc(null);
         } catch (e) {
             setError(e instanceof Error ? e.message : "Failed to save profile");
         } finally {
@@ -82,7 +121,7 @@ export const SettingsPage: React.FC = () => {
 
     return (
         <PageLayout>
-            <PageShell backTo="/account">
+            <PageShell>
 
                 <Text className={shell.sectionLabel}>{rs.Profile}</Text>
                 <div className={shell.card}>
@@ -104,6 +143,11 @@ export const SettingsPage: React.FC = () => {
                             <Button appearance="secondary" icon={<ImageAddRegular />} onClick={pickPhoto} disabled={saving}>
                                 {displayedAvatar ? rs.ChangePhoto : rs.AddPhoto}
                             </Button>
+                            {displayedAvatar && (
+                                <Button appearance="subtle" icon={<CropRegular />} onClick={handleEditPhoto} disabled={saving || editLoading}>
+                                    {rs.Edit}
+                                </Button>
+                            )}
                             {displayedAvatar && (
                                 <Button appearance="subtle" icon={<DeleteRegular />} onClick={removePhoto} disabled={saving}>
                                     {rs.Remove}
@@ -164,6 +208,13 @@ export const SettingsPage: React.FC = () => {
                 </div>
 
             </PageShell>
+            {cropSrc && (
+                <AvatarCropper
+                    imageSrc={cropSrc}
+                    onConfirm={handleCropConfirm}
+                    onClose={handleCropCancel}
+                />
+            )}
         </PageLayout>
     );
 };
