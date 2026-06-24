@@ -5,6 +5,8 @@ export interface ProfileUpdate {
     fullName?: string;
     avatarFile?: File | null;
     avatarUrl?: string | null;
+    theme?: string | null;
+    language?: string | null;
 }
 
 export const useProfile = (userId: string | null) => {
@@ -20,7 +22,7 @@ export const useProfile = (userId: string | null) => {
             .catch(() => setProfile(null));
     }, [userId]);
 
-    const updateProfile = async ({ fullName, avatarFile, avatarUrl }: ProfileUpdate): Promise<string | null> => {
+    const updateProfile = async ({ fullName, avatarFile, avatarUrl, theme, language }: ProfileUpdate): Promise<string | null> => {
         if (!userId) return "Not authenticated";
         try {
             let resolvedAvatarUrl = avatarUrl;
@@ -28,10 +30,13 @@ export const useProfile = (userId: string | null) => {
                 resolvedAvatarUrl = await uploadAvatar(avatarFile, userId);
             }
 
-            await upsertProfile(userId, { fullName, avatarUrl: resolvedAvatarUrl });
+            await upsertProfile(userId, { fullName, avatarUrl: resolvedAvatarUrl, theme, language });
             setProfile(prev => ({
                 fullName: fullName !== undefined ? (fullName || null) : (prev?.fullName ?? null),
                 avatarUrl: resolvedAvatarUrl !== undefined ? resolvedAvatarUrl : (prev?.avatarUrl ?? null),
+                isAdmin: prev?.isAdmin ?? false,
+                theme: theme !== undefined ? theme : (prev?.theme ?? null),
+                language: language !== undefined ? language : (prev?.language ?? null),
             }));
             return null;
         } catch (e) {

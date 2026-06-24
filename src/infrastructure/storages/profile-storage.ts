@@ -6,12 +6,14 @@ export interface UserProfile {
     fullName: string | null;
     avatarUrl: string | null;
     isAdmin: boolean;
+    theme: string | null;
+    language: string | null;
 }
 
 export const getProfile = async (userId: string): Promise<UserProfile> => {
     const { data, error } = await supabase
         .from("profiles")
-        .select("full_name, avatar_url, is_admin")
+        .select("full_name, avatar_url, is_admin, theme, language")
         .eq("id", userId)
         .single();
 
@@ -22,6 +24,8 @@ export const getProfile = async (userId: string): Promise<UserProfile> => {
         fullName: data?.full_name ?? null,
         avatarUrl: data?.avatar_url ?? null,
         isAdmin: data?.is_admin ?? false,
+        theme: data?.theme ?? null,
+        language: data?.language ?? null,
     };
 };
 
@@ -29,6 +33,8 @@ export const upsertProfile = async (userId: string, update: Partial<UserProfile>
     const row: Record<string, unknown> = { id: userId, updated_at: new Date().toISOString() };
     if (update.fullName !== undefined) row.full_name = update.fullName;
     if (update.avatarUrl !== undefined) row.avatar_url = update.avatarUrl;
+    if (update.theme !== undefined) row.theme = update.theme;
+    if (update.language !== undefined) row.language = update.language;
 
     const { error } = await supabase.from("profiles").upsert(row);
     if (error) throw error;

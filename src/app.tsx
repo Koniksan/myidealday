@@ -15,8 +15,8 @@ import "./reset.css";
 
 export const App = () => {
     return (
-        <LocaleProvider>
         <AuthProvider>
+        <LocaleProvider>
             <ThemeProvider>
                 <PlanProvider>
                 <NotificationBadgeProvider>
@@ -38,8 +38,8 @@ export const App = () => {
                 </NotificationBadgeProvider>
                 </PlanProvider>
             </ThemeProvider>
-        </AuthProvider>
         </LocaleProvider>
+        </AuthProvider>
     );
 };
 
